@@ -1,3 +1,92 @@
+
+// src/constants/index.ts
+
+// Roles de usuario
+export const ROLES = {
+  ADMINISTRADOR: 1,
+  DESARROLLADOR: 2,
+  ENTIDAD_SALUD: 3,
+  MEDICO: 4,
+  AUXILIAR: 5,
+  PACIENTE: 6,
+  EMBAJADOR: 7,
+};
+
+// Nombres de roles para mostrar
+export const NOMBRES_ROLES = {
+  [ROLES.ADMINISTRADOR]: 'Administrador',
+  [ROLES.DESARROLLADOR]: 'Desarrollador',
+  [ROLES.ENTIDAD_SALUD]: 'Entidad de Salud',
+  [ROLES.MEDICO]: 'Médico',
+  [ROLES.AUXILIAR]: 'Auxiliar',
+  [ROLES.PACIENTE]: 'Paciente',
+  [ROLES.EMBAJADOR]: 'Embajador',
+};
+
+// Tipos de identificación
+export const TIPOS_IDENTIFICACION = [
+  { valor: 'cc', etiqueta: 'Cédula de Ciudadanía' },
+  { valor: 'ti', etiqueta: 'Tarjeta de Identidad' },
+  { valor: 'nit', etiqueta: 'NIT' },
+  { valor: 'rcn', etiqueta: 'Registro Civil de Nacimiento' },
+  { valor: 'ce', etiqueta: 'Cédula de Extranjería' },
+  { valor: 'pp', etiqueta: 'Pasaporte' },
+];
+
+// Estados de campaña
+export const ESTADOS_CAMPANA = {
+  POSTULADA: 'POSTULADA',
+  EJECUCION: 'EJECUCION',
+  FINALIZADA: 'FINALIZADA',
+};
+
+// Opciones de género
+export const OPCIONES_GENERO = [
+  { valor: 'M', etiqueta: 'Masculino' },
+  { valor: 'F', etiqueta: 'Femenino' },
+  { valor: 'OTRO', etiqueta: 'Otro' },
+];
+
+// Niveles de prioridad
+export const NIVELES_PRIORIDAD = [
+  { valor: 'ALTA', etiqueta: 'Alta' },
+  { valor: 'MEDIA', etiqueta: 'Media' },
+  { valor: 'BAJA', etiqueta: 'Baja' },
+];
+
+// Estados de entidades de salud
+export const ESTADOS_ENTIDAD = [
+  { valor: 'ACTIVA', etiqueta: 'Activa' },
+  { valor: 'INACTIVA', etiqueta: 'Inactiva' },
+  { valor: 'SUSPENDIDA', etiqueta: 'Suspendida' },
+];
+
+// Estados de embajador
+export const ESTADOS_EMBAJADOR = [
+  { valor: 'ACTIVO', etiqueta: 'Activo' },
+  { valor: 'INACTIVO', etiqueta: 'Inactivo' },
+];
+
+// Estados de paciente
+export const ESTADOS_PACIENTE = [
+  { valor: 'ACTIVO', etiqueta: 'Activo' },
+  { valor: 'INACTIVO', etiqueta: 'Inactivo' },
+];
+
+// Rutas para los diferentes roles
+export const RUTAS_POR_ROL = {
+  [ROLES.ADMINISTRADOR]: '/admin/dashboard',
+  [ROLES.DESARROLLADOR]: '/desarrollador/dashboard',
+  [ROLES.ENTIDAD_SALUD]: '/entidad/dashboard',
+  [ROLES.MEDICO]: '/medico/dashboard',
+  [ROLES.AUXILIAR]: '/auxiliar/dashboard',
+  [ROLES.PACIENTE]: '/paciente/dashboard',
+  [ROLES.EMBAJADOR]: '/embajador/dashboard',
+};
+
+// Antes:
+
+
 export const GenderOptions = ["Male", "Female", "Other"];
 
 export const PatientFormDefaultValues = {

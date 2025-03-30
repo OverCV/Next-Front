@@ -1,3 +1,4 @@
+// app\api\sentry-example-api\route.ts
 /* eslint-disable no-unreachable */
 import { NextResponse } from "next/server";
 

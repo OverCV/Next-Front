@@ -1,3 +1,5 @@
+// app\patients\[userId]\new-appointment\page.tsx
+
 import Image from "next/image";
 
 import { AppointmentForm } from "@/components/forms/AppointmentForm";

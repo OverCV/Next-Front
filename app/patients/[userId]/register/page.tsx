@@ -1,3 +1,4 @@
+// app\patients\[userId]\register\page.tsx
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
