@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 
-import { AppointmentForm } from "@/components/forms/AppointmentForm";
-import { getPatient } from "@/lib/actions/patient.actions";
+import { AppointmentForm } from "@/src/components/forms/AppointmentForm";
+
+import { getPatient } from "@/src/lib/actions/patient.actionsions";
 
 const Appointment = async ({ params: { userId } }: SearchParamProps) => {
   const patient = await getPatient(userId);

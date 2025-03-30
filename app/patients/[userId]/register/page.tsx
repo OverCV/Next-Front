@@ -2,8 +2,9 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
-import RegisterForm from "@/components/forms/RegisterForm";
-import { getPatient, getUser } from "@/lib/actions/patient.actions";
+import RegistroForm from "@/src/components/forms/RegistroForm";
+
+import { getPatient, getUser } from "@/src/lib/actions/patient.actionsions";
 
 const Register = async ({ params: { userId } }: SearchParamProps) => {
   const user = await getUser(userId);
@@ -23,7 +24,7 @@ const Register = async ({ params: { userId } }: SearchParamProps) => {
             className="mb-12 h-10 w-fit"
           />
 
-          <RegisterForm user={user} />
+          <RegistroForm user={user} />
 
           <p className="copyright py-12">© 2024 CarePluse</p>
         </div>

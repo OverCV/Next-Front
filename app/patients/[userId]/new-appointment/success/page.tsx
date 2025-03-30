@@ -2,10 +2,11 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/src/components/ui/button";
+import { formatDateTime } from "@/src/lib/utils";
+
 import { Doctors } from "@/constants";
-import { getAppointment } from "@/lib/actions/appointment.actions";
-import { formatDateTime } from "@/lib/utils";
+import { getAppointment } from "@/src/lib/actions/appointment.actionsions";
 
 const RequestSuccess = async ({
   searchParams,
