@@ -19,7 +19,7 @@ export default function RegistroEntidadPage(): JSX.Element {
                     <div className="mb-8 flex items-center justify-between">
                         <Link href="/acceso">
                             <Image
-                                src="/assets/icons/logo-full.svg"
+                                src="/assets/brand/logo-black.ico"
                                 height={40}
                                 width={160}
                                 alt="Logo"

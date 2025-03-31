@@ -22,7 +22,7 @@ export default function AccesoPage({ paramsBusqueda }: parametrosBusquedaProps):
         <section className="remove-scrollbar container relative my-auto">
             <div className="sub-container">
                 <Image
-                    src="/assets/icons/logo-full.svg"
+                    src="/assets/brand/logo-white.ico"
                     height={180}
                     width={180}
                     alt="Logo"

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useAuth } from "@/src/providers/auth-provider";
 import { Button } from "@/src/components/ui/button";
@@ -16,14 +16,34 @@ export default function DashboardLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const { usuario, cerrarSesion } = useAuth();
+    const { usuario, cargando, cerrarSesion } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+
+    useEffect(() => {
+        // Solo redirigir cuando la carga haya terminado y no haya usuario
+        if (!cargando && !usuario) {
+            router.push("/acceso");
+        }
+    }, [cargando, usuario, router]);
+    // Mostrar un estado de carga mientras se verifica la autenticación
+    if (cargando) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <div className="text-center">
+                    <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-green-500"></div>
+                    <p className="mt-4">Verificando autenticación...</p>
+                </div>
+            </div>
+        );
+    }
+
+
     // Si no hay usuario, redirigir al login
     if (!usuario) {
-        router.push("/acceso");
+        // router.push("/acceso");
         return null;
     }
 
@@ -46,7 +66,7 @@ export default function DashboardLayout({
                     <div className="flex items-center">
                         <Link href="/dashboard" className="mr-6 flex items-center space-x-2">
                             <Image
-                                src="/assets/icons/logo-full.svg"
+                                src="/assets/brand/logo-black.ico"
                                 height={32}
                                 width={140}
                                 alt="logo"

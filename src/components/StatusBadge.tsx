@@ -2,19 +2,20 @@
 import clsx from "clsx";
 import Image from "next/image";
 
-import { StatusIcon } from "@/constants";
+import { Estatus } from "../types";
+import { StatusIcon } from "../constants";
 
-export const StatusBadge = ({ status }: { status: Status }) => {
+export const StatusBadge = ({ estatus }: { estatus: Estatus }) => {
   return (
     <div
-      className={clsx("status-badge", {
-        "bg-green-600": status === "scheduled",
-        "bg-blue-600": status === "pending",
-        "bg-red-600": status === "cancelled",
+      className={clsx("estatus-badge", {
+        "bg-blue-600": estatus === "postulada",
+        "bg-green-600": estatus === "ejecucion",
+        "bg-red-600": estatus === "cancelada",
       })}
     >
       <Image
-        src={StatusIcon[status]}
+        src={StatusIcon[estatus]}
         alt="doctor"
         width={24}
         height={24}
@@ -22,12 +23,12 @@ export const StatusBadge = ({ status }: { status: Status }) => {
       />
       <p
         className={clsx("text-12-semibold capitalize", {
-          "text-green-500": status === "scheduled",
-          "text-blue-500": status === "pending",
-          "text-red-500": status === "cancelled",
+          "text-blue-500": estatus === "postulada",
+          "text-green-500": estatus === "ejecucion",
+          "text-red-500": estatus === "cancelada",
         })}
       >
-        {status}
+        {estatus}
       </p>
     </div>
   );

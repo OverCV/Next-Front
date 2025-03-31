@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "Sistema de Campañas de Salud",
   description: "Plataforma para la organización y ejecución de campañas de salud enfocadas en el riesgo cardiovascular",
   icons: {
-    icon: "/assets/icons/logo-icon.svg",
+    icon: "/assets/brand/logo-white.ico",
   },
 };
 

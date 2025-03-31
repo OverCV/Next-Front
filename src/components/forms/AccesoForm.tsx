@@ -84,9 +84,9 @@ export default function AccesoForm(): JSX.Element {
                 <div className="space-y-2 items-center text-center">
                     <div className="flex items-center justify-center">
                         <Image
-                            src="/assets/icons/logo-icon.svg"
-                            width={20}
-                            height={20}
+                            src="/assets/images/logo.png"
+                            width={100}
+                            height={100}
                             alt="Logo"
                             className="h-auto w-16 mr-4"
                         />

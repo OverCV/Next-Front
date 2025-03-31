@@ -10,7 +10,7 @@ import { Appointment } from "@/src/types/appwrite.types";
 import { AppointmentModal } from "../AppointmentModal";
 import { StatusBadge } from "../StatusBadge";
 
-import { Doctors } from "@/constants";
+// import { Doctors } from "@/constants";
 
 export const columns: ColumnDef<Appointment>[] = [
   {
@@ -34,7 +34,7 @@ export const columns: ColumnDef<Appointment>[] = [
       const appointment = row.original;
       return (
         <div className="min-w-[115px]">
-          <StatusBadge status={appointment.status} />
+          <StatusBadge estatus={appointment.status} />
         </div>
       );
     },
@@ -57,20 +57,20 @@ export const columns: ColumnDef<Appointment>[] = [
     cell: ({ row }) => {
       const appointment = row.original;
 
-      const doctor = Doctors.find(
-        (doctor) => doctor.name === appointment.primaryPhysician
-      );
+      // const doctor = Doctors.find(
+      //   (doctor) => doctor.name === appointment.primaryPhysician
+      // );
 
       return (
         <div className="flex items-center gap-3">
           <Image
-            src={doctor?.image!}
+            src={`doctor?.image!`}
             alt="doctor"
             width={100}
             height={100}
             className="size-8"
           />
-          <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
+          <p className="whitespace-nowrap">Dr. {`doctor?.name`}</p>
         </div>
       );
     },

@@ -49,6 +49,13 @@ export const TIPOS_IDENTIFICACION: TipoIdentificacion[] = [
   { valor: "rcn", etiqueta: "Registro Civil de Nacimiento" },
 ];
 
+export const TIPOS_IDENTIFICACION_PACIENTE: TipoIdentificacion[] = [
+  { valor: "cc", etiqueta: "Cédula de Ciudadanía" },
+  { valor: "ti", etiqueta: "Tarjeta de Identidad" },
+  { valor: "rcn", etiqueta: "Registro Civil de Nacimiento" },
+];
+
+
 // Estados de campaña
 export const ESTADOS_CAMPANA: Record<string, string> = {
   POSTULADA: "POSTULADA",
@@ -81,8 +88,65 @@ export const NIVELES_PRIORIDAD: NivelPrioridad[] = [
 ];
 
 
+export const StatusIcon = {
+  postulada: "/assets/icons/postulada.svg",
+  ejecucion: "/assets/icons/activa.svg",
+  cancelada: "/assets/icons/cancelada.svg",
+};
+
+// Simulación de datos
+export const PACIENTES_MOCK = [
+  { id: 1, nombres: 'Juan', apellidos: 'Pérez', identificacion: '1234567890', fecha: '2023-03-28' },
+  { id: 2, nombres: 'María', apellidos: 'López', identificacion: '0987654321', fecha: '2023-03-27' },
+  { id: 3, nombres: 'Carlos', apellidos: 'González', identificacion: '5678901234', fecha: '2023-03-26' },
+  { id: 4, nombres: 'Ana', apellidos: 'Martínez', identificacion: '4321098765', fecha: '2023-03-25' },
+];
+
+export const CAMPANAS_MOCK = [
+  { id: 1, nombre: 'Campaña Cardiovascular Medellín', estatus: "ejecucion", pacientes: 45, fecha: '2023-04-15' },
+  { id: 2, nombre: 'Prevención Hipertensión Cali', estatus: "postulada", pacientes: 23, fecha: '2023-05-10' },
+];
+
 // Viejo:
 
+export const Doctores = [
+  {
+    imagen: "/assets/images/dr-green.png",
+    nombres: "John Green",
+  },
+  {
+    imagen: "/assets/images/dr-cameron.png",
+    nombres: "Leila Cameron",
+  },
+  {
+    imagen: "/assets/images/dr-livingston.png",
+    nombres: "David Livingston",
+  },
+  {
+    imagen: "/assets/images/dr-peter.png",
+    nombres: "Evan Peter",
+  },
+  {
+    imagen: "/assets/images/dr-powell.png",
+    nombres: "Jane Powell",
+  },
+  {
+    imagen: "/assets/images/dr-remirez.png",
+    nombres: "Alex Ramirez",
+  },
+  {
+    imagen: "/assets/images/dr-lee.png",
+    nombres: "Jasmine Lee",
+  },
+  {
+    imagen: "/assets/images/dr-cruz.png",
+    nombres: "Alyana Cruz",
+  },
+  {
+    imagen: "/assets/images/dr-sharma.png",
+    nombres: "Hardik Sharma",
+  },
+];
 
 // export const GenderOptions = ["Male", "Female", "Other"];
 
@@ -126,47 +190,4 @@ export const NIVELES_PRIORIDAD: NivelPrioridad[] = [
 //   "Voter ID Card",
 // ];
 
-export const Doctors = [
-  {
-    image: "/assets/images/dr-green.png",
-    name: "John Green",
-  },
-  {
-    image: "/assets/images/dr-cameron.png",
-    name: "Leila Cameron",
-  },
-  {
-    image: "/assets/images/dr-livingston.png",
-    name: "David Livingston",
-  },
-  {
-    image: "/assets/images/dr-peter.png",
-    name: "Evan Peter",
-  },
-  {
-    image: "/assets/images/dr-powell.png",
-    name: "Jane Powell",
-  },
-  {
-    image: "/assets/images/dr-remirez.png",
-    name: "Alex Ramirez",
-  },
-  {
-    image: "/assets/images/dr-lee.png",
-    name: "Jasmine Lee",
-  },
-  {
-    image: "/assets/images/dr-cruz.png",
-    name: "Alyana Cruz",
-  },
-  {
-    image: "/assets/images/dr-sharma.png",
-    name: "Hardik Sharma",
-  },
-];
 
-export const StatusIcon = {
-  scheduled: "/assets/icons/check.svg",
-  pending: "/assets/icons/pending.svg",
-  cancelled: "/assets/icons/cancelled.svg",
-};

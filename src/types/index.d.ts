@@ -41,13 +41,13 @@ declare type parametrosBusquedaProps = {
   paramsBusqueda: { [key: string]: string | string[] | undefined };
 };
 
+declare type Estatus = "postulada" | "ejecucion" | "cancelada";
 
 // Viejo:
 
 /* eslint-disable no-unused-vars */
 
 declare type Gender = "Male" | "Female" | "Other";
-declare type Status = "pending" | "scheduled" | "cancelled";
 
 declare interface CreateUserParams {
   nombres: string;
@@ -86,7 +86,7 @@ declare type CreateAppointmentParams = {
   primaryPhysician: string;
   reason: string;
   schedule: Date;
-  status: Status;
+  status: Estatus;
   note: string | undefined;
 };
 

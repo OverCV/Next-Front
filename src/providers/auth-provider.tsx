@@ -30,14 +30,38 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     const [usuario, setUsuario] = useState<Usuario | null>(null);
     const [cargando, setCargando] = useState<boolean>(true);
+    const [inicializado, setInicializado] = useState<boolean>(false);
     const router = useRouter();
+
+    // Verificar autenticación al iniciar - SOLO SE EJECUTA EN EL CLIENTE
+    useEffect(() => {
+        if (typeof window !== 'undefined' && !inicializado) {
+            const verificarAuth = () => {
+                try {
+                    // Intentar obtener el usuario del localStorage
+                    const usuarioActual = authService.getUsuarioActual();
+                    setUsuario(usuarioActual);
+                } catch (error) {
+                    console.error("Error al verificar autenticación:", error);
+                    // En caso de error, limpiar datos
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('usuario');
+                } finally {
+                    setCargando(false);
+                    setInicializado(true);
+                }
+            };
+
+            verificarAuth();
+        }
+    }, [inicializado]);
 
     // Registrar un nuevo usuario
     const registroUsuario = async (datos: DatosRegistro): Promise<Usuario> => {
         setCargando(true);
         try {
             const respuesta = await authService.registro(datos);
-            setUsuario(respuesta.usuario);
+            // setUsuario(respuesta.usuario);
             return respuesta.usuario;
         } catch (error) {
             console.error('Error al registrar usuario:', error);
@@ -46,22 +70,6 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
             setCargando(false);
         }
     };
-
-    // Verificar autenticación al cargar
-    useEffect(() => {
-        const verificarAuth = (): void => {
-            try {
-                const usuarioActual = authService.getUsuarioActual();
-                setUsuario(usuarioActual);
-            } catch (error) {
-                console.error('Error al verificar autenticación:', error);
-            } finally {
-                setCargando(false);
-            }
-        };
-
-        verificarAuth();
-    }, []);
 
     // Iniciar sesión
     const iniciarSesion = async (credenciales: DatosAcceso): Promise<Usuario> => {
@@ -84,7 +92,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         try {
             await authService.salir();
             setUsuario(null);
-            router.push('/');
+            router.push('/acceso');
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
         } finally {
@@ -116,12 +124,11 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
 }
 
 // Hook personalizado para usar el contexto
+// Hook para usar el contexto
 export function useAuth(): AuthContextType {
     const context = useContext(AuthContext);
-
-    if (context === undefined) {
-        throw new Error('useAuth debe ser usado dentro de un AuthProvider');
+    if (!context) {
+        throw new Error("useAuth debe usarse dentro de un AuthProvider");
     }
-
     return context;
 }

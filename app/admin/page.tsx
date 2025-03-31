@@ -21,7 +21,7 @@ const AdminPage = async () => {
       <header className="admin-header">
         <Link href="/" className="cursor-pointer">
           <Image
-            src="/assets/icons/logo-full.svg"
+            src="/assets/images/logo.png"
             height={32}
             width={162}
             alt="logo"
@@ -42,19 +42,19 @@ const AdminPage = async () => {
 
         <section className="admin-stat">
           <StatCard
-            type="appointments"
+            type="postulada"
             count={3}
             label="Scheduled appointments"
             icon={"/assets/icons/appointments.svg"}
           />
           <StatCard
-            type="pending"
+            type="ejecucion"
             count={2}
             label="Pending appointments"
             icon={"/assets/icons/pending.svg"}
           />
           <StatCard
-            type="cancelled"
+            type="cancelada"
             count={1}
             label="Cancelled appointments"
             icon={"/assets/icons/cancelled.svg"}

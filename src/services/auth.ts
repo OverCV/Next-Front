@@ -29,19 +29,34 @@ export const authService = {
      */
     acceso: async (credenciales: DatosAcceso): Promise<RespuestaAuth> => {
         try {
-            const response: AxiosResponse<RespuestaAuth> = await apiClient.post('/auth/acceso', credenciales);
+            const response = await apiClient.post('/auth/acceso', credenciales);
 
-            // Guardar datos en localStorage
-            if (response.data.token) {
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
-            }
+            // Guardar en cookie (más seguro y accesible por middleware)
+            document.cookie = `token=${response.data.token}; path=/; max-age=86400; samesite=strict`;
+
+            // Usuario puede seguir en localStorage
+            localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
 
             return response.data;
         } catch (error) {
             console.error('Error en el login:', error);
             throw error;
         }
+        // Opción sin cookies (menos seguro, pero más fácil de implementar en SSR). Guarda en localStorage
+        // try {
+        //     const response: AxiosResponse<RespuestaAuth> = await apiClient.post('/auth/acceso', credenciales);
+
+        //     // Guardar datos en localStorage
+        //     if (response.data.token) {
+        //         localStorage.setItem('token', response.data.token);
+        //         localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
+        //     }
+
+        //     return response.data;
+        // } catch (error) {
+        //     console.error('Error en el login:', error);
+        //     throw error;
+        // }
     },
 
     /**
@@ -62,6 +77,10 @@ export const authService = {
      * Obtiene el usuario actual desde localStorage
      */
     getUsuarioActual: (): Usuario | null => {
+        if (typeof window === 'undefined') {
+            return null; // Retorna null durante SSR
+        }
+
         const usuarioStr = localStorage.getItem('usuario');
         if (!usuarioStr) return null;
 
