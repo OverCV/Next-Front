@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 
 import { cn } from "@/src/lib/utils";
 import { AuthProvider } from "@/src/providers/auth-provider";
+import { ThemeToggle } from "@/src/components/ui/theme-toggle";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -30,7 +31,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen bg-dark-300 font-sans antialiased",
+          "min-h-screen font-sans antialiased bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50",
           fontSans.variable
         )}
       >
@@ -38,6 +39,9 @@ export default function RootLayout({
           <AuthProvider>
             {children}
           </AuthProvider>
+          <div className="absolute right-4 top-4">
+            <ThemeToggle />
+          </div>
         </ThemeProvider>
       </body>
     </html>

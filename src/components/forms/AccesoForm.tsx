@@ -1,3 +1,4 @@
+// src\components\forms\AccesoForm.tsx
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -75,8 +76,8 @@ export default function AccesoForm(): JSX.Element {
     };
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8">
-            <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
+        <div className="flex flex-col items-center justify-center p-4 md:p-8">
+            <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
                 <div className="flex flex-col items-center space-y-2">
                     <Image
                         src="/assets/icons/logo-full.svg"
@@ -142,6 +143,7 @@ export default function AccesoForm(): JSX.Element {
                         >
                             {cargando ? "Ingresando..." : "Iniciar Sesión"}
                         </Button>
+
                     </form>
                 </Form>
             </div>

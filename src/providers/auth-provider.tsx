@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 import { authService } from '../services/auth';
-import { DatosAcceso, Usuario } from '../types';
+import { DatosAcceso, DatosRegistro, Usuario } from '../types';
 
 
 // Interfaz para el contexto de autenticación
@@ -13,6 +13,7 @@ interface AuthContextType {
     usuario: Usuario | null;
     cargando: boolean;
     estaAutenticado: boolean;
+    registroUsuario: (datos: DatosRegistro) => Promise<Usuario>;
     iniciarSesion: (credenciales: DatosAcceso) => Promise<Usuario>;
     cerrarSesion: () => Promise<void>;
     tieneRol: (rolId: number) => boolean;
@@ -30,6 +31,21 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     const [usuario, setUsuario] = useState<Usuario | null>(null);
     const [cargando, setCargando] = useState<boolean>(true);
     const router = useRouter();
+
+    // Registrar un nuevo usuario
+    const registroUsuario = async (datos: DatosRegistro): Promise<Usuario> => {
+        setCargando(true);
+        try {
+            const respuesta = await authService.registro(datos);
+            setUsuario(respuesta.usuario);
+            return respuesta.usuario;
+        } catch (error) {
+            console.error('Error al registrar usuario:', error);
+            throw error;
+        } finally {
+            setCargando(false);
+        }
+    };
 
     // Verificar autenticación al cargar
     useEffect(() => {
@@ -86,6 +102,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         usuario,
         cargando,
         estaAutenticado: !!usuario,
+        registroUsuario,
         iniciarSesion,
         cerrarSesion,
         tieneRol

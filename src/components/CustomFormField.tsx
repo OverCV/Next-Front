@@ -48,7 +48,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
   switch (props.fieldType) {
     case FormFieldType.INPUT:
       return (
-        <div className="flex rounded-md border border-dark-500 bg-dark-400">
+        <div className="flex rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
           {props.iconSrc && (
             <Image
               src={props.iconSrc}
@@ -61,9 +61,9 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
           <FormControl>
             <Input
               placeholder={props.placeholder}
-              type={props.type || "text"} // Añadir soporte para type="password"
+              type={props.type || "text"}
               {...field}
-              className="shad-input border-0"
+              className="border-0 bg-transparent"
             />
           </FormControl>
         </div>
@@ -135,7 +135,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
         <FormControl>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
-              <SelectTrigger className="shad-select-trigger">
+              <SelectTrigger className="flex rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
                 <SelectValue placeholder={props.placeholder} />
               </SelectTrigger>
             </FormControl>

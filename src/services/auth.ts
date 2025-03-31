@@ -1,3 +1,4 @@
+// src\services\auth.ts
 import { AxiosResponse } from 'axios';
 
 import { DatosAcceso, DatosRegistro, RespuestaAuth, Usuario } from '../types';
@@ -7,6 +8,22 @@ import apiClient from './api';
 
 // Servicios de autenticación
 export const authService = {
+
+    /**
+     * Registra un nuevo usuario
+     */
+    registro: async (datosUsuario: DatosRegistro): Promise<RespuestaAuth> => {
+        try {
+            const response: AxiosResponse<RespuestaAuth> =
+                await apiClient.post('/auth/registro', datosUsuario);
+            return response.data;
+        } catch (error) {
+            console.error('Error en el registro:', error);
+            throw error;
+        }
+    },
+
+
     /**
      * Inicia sesión con credenciales
      */
@@ -23,20 +40,6 @@ export const authService = {
             return response.data;
         } catch (error) {
             console.error('Error en el login:', error);
-            throw error;
-        }
-    },
-
-    /**
-     * Registra un nuevo usuario
-     */
-    registro: async (datosUsuario: DatosRegistro): Promise<RespuestaAuth> => {
-        try {
-            const response: AxiosResponse<RespuestaAuth> =
-                await apiClient.post('/auth/registro', datosUsuario);
-            return response.data;
-        } catch (error) {
-            console.error('Error en el registro:', error);
             throw error;
         }
     },
