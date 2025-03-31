@@ -125,7 +125,7 @@ export default function DashboardLayout({
             <main className="container mx-auto px-4 py-8">
                 <div className="mb-8">
                     <h1 className="text-2xl font-bold">
-                        Bienvenido, {usuario.nombres} 👋
+                        Bienvenid@, {usuario.nombres} 👋
                     </h1>
                     <p className="text-slate-600 dark:text-slate-400">
                         Panel de {ROLES_NOMBRE[usuario.rolId] || "Usuario"}

@@ -1,10 +1,10 @@
-// src\services\auth.ts
+// src/services/auth.ts
 import { AxiosResponse } from 'axios';
+import Cookies from 'js-cookie';
 
 import { DatosAcceso, DatosRegistro, RespuestaAuth, Usuario } from '../types';
 
 import apiClient from './api';
-
 
 // Servicios de autenticación
 export const authService = {
@@ -23,7 +23,6 @@ export const authService = {
         }
     },
 
-
     /**
      * Inicia sesión con credenciales
      */
@@ -31,8 +30,12 @@ export const authService = {
         try {
             const response = await apiClient.post('/auth/acceso', credenciales);
 
-            // Guardar en cookie (más seguro y accesible por middleware)
-            document.cookie = `token=${response.data.token}; path=/; max-age=86400; samesite=strict`;
+            // Guardar token en cookie
+            Cookies.set('token', response.data.token, {
+                expires: 1, // 1 día
+                path: '/',
+                sameSite: 'strict'
+            });
 
             // Usuario puede seguir en localStorage
             localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
@@ -42,21 +45,6 @@ export const authService = {
             console.error('Error en el login:', error);
             throw error;
         }
-        // Opción sin cookies (menos seguro, pero más fácil de implementar en SSR). Guarda en localStorage
-        // try {
-        //     const response: AxiosResponse<RespuestaAuth> = await apiClient.post('/auth/acceso', credenciales);
-
-        //     // Guardar datos en localStorage
-        //     if (response.data.token) {
-        //         localStorage.setItem('token', response.data.token);
-        //         localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
-        //     }
-
-        //     return response.data;
-        // } catch (error) {
-        //     console.error('Error en el login:', error);
-        //     throw error;
-        // }
     },
 
     /**
@@ -68,7 +56,8 @@ export const authService = {
         } catch (error) {
             console.error('Error en el logout:', error);
         } finally {
-            localStorage.removeItem('token');
+            // Eliminar tanto de cookies como de localStorage
+            Cookies.remove('token');
             localStorage.removeItem('usuario');
         }
     },
@@ -97,7 +86,8 @@ export const authService = {
      * Verifica si hay un usuario autenticado
      */
     estaAutenticado: (): boolean => {
-        return !!localStorage.getItem('token');
+        // Verificar tanto en cookies como en localStorage para compatibilidad
+        return !!Cookies.get('token');
     },
 
     /**
@@ -112,6 +102,6 @@ export const authService = {
      * Obtiene el token JWT actual
      */
     getToken: (): string | null => {
-        return localStorage.getItem('token');
+        return Cookies.get('token') || null;
     },
 };

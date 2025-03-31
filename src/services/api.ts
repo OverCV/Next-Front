@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import Cookies from 'js-cookie';
 
 const API_URL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8090/api';
 
@@ -12,7 +13,9 @@ const apiClient: AxiosInstance = axios.create({
 // Interceptor para añadir el token a todas las peticiones
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-        const token = localStorage.getItem('token');
+        // Obtener token de las cookies
+        const token = Cookies.get('token');
+
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -26,13 +29,13 @@ apiClient.interceptors.response.use(
     (response: AxiosResponse): AxiosResponse => response,
     (error: AxiosError): Promise<AxiosError> => {
         if (error.response?.status === 401) {
-            // Si hay error de autenticación, limpiar localStorage
-            localStorage.removeItem('token');
+            // Si hay error de autenticación, limpiar cookie y localStorage
+            Cookies.remove('token');
             localStorage.removeItem('usuario');
 
             // Redirigir a login si estamos en el cliente
             if (typeof window !== 'undefined') {
-                window.location.href = '/auth/login';
+                window.location.href = '/acceso';
             }
         }
         return Promise.reject(error);
