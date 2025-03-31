@@ -13,12 +13,12 @@ import CustomFormField, { FormFieldType } from "@/src/components/CustomFormField
 import { Form } from "@/src/components/ui/form";
 import { SelectItem } from "@/src/components/ui/select";
 import { RUTAS_POR_ROL, TIPOS_IDENTIFICACION } from "@/src/constants";
-// import { useAuth } from "@/src/context/auth.context";
-import { useAuth } from "@/src/providers/auth-provider";
+
 import { DatosAcceso } from "@/src/types";
 
 import { Alert, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
+import { useAuth } from "@/src/providers/auth-provider";
 
 
 // Esquema de validación
@@ -38,6 +38,7 @@ export default function AccesoForm(): JSX.Element {
     const { iniciarSesion } = useAuth();
     const [error, setError] = useState<string | null>(null);
     const [cargando, setCargando] = useState<boolean>(false);
+    const [mostrarClave, setMostrarClave] = useState<boolean>(false);
 
     const form = useForm<AccesoFormValues>({
         resolver: zodResolver(loginSchema),
@@ -51,6 +52,8 @@ export default function AccesoForm(): JSX.Element {
     const onSubmit = async (datos: AccesoFormValues): Promise<void> => {
         setCargando(true);
         setError(null);
+
+        console.log(datos)
 
         try {
             const credenciales: DatosAcceso = {
@@ -78,19 +81,21 @@ export default function AccesoForm(): JSX.Element {
     return (
         <div className="flex flex-col items-center justify-center p-4 md:p-8">
             <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
-                <div className="flex flex-col items-center space-y-2">
-                    <Image
-                        src="/assets/icons/logo-full.svg"
-                        width={120}
-                        height={40}
-                        alt="Logo"
-                        className="h-auto w-32"
-                    />
-                    <h1 className="text-2xl font-bold">Iniciar Sesión</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Ingresa tus credenciales para acceder
-                    </p>
+                <div className="space-y-2 items-center text-center">
+                    <div className="flex items-center justify-center">
+                        <Image
+                            src="/assets/icons/logo-icon.svg"
+                            width={20}
+                            height={20}
+                            alt="Logo"
+                            className="h-auto w-16 mr-4"
+                        />
+                        <h1 className="text-2xl font-bold">Iniciar Sesión</h1>
+                    </div>
                 </div>
+                <p className="my-2 text-sm text-gray-500 dark:text-gray-500">
+                    Ingresa tus credenciales para acceder
+                </p>
 
                 {error && (
                     <Alert variant="destructive">
@@ -134,6 +139,8 @@ export default function AccesoForm(): JSX.Element {
                             type="password"
                             iconSrc="/assets/icons/lock.svg"
                             iconAlt="Contraseña"
+                            showPassword={mostrarClave}
+                            onTogglePassword={() => setMostrarClave(!mostrarClave)}
                         />
 
                         <Button

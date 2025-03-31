@@ -84,7 +84,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         try {
             await authService.salir();
             setUsuario(null);
-            router.push('/auth/login');
+            router.push('/');
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
         } finally {

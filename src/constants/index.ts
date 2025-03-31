@@ -14,9 +14,20 @@ export const ROLES: Record<string, number> = {
   EMBAJADOR: 7,
 };
 
+export const ROLES_NOMBRE: Record<number, string> = {
+  [ROLES.ADMINISTRADOR]: "Administrador",
+  [ROLES.DESARROLLADOR]: "Desarrollador",
+  [ROLES.ENTIDAD_SALUD]: "Entidad de Salud",
+  [ROLES.MEDICO]: "Médico",
+  [ROLES.AUXILIAR]: "Auxiliar",
+  [ROLES.PACIENTE]: "Paciente",
+  [ROLES.EMBAJADOR]: "Embajador",
+};
+
+
 // Rutas para redirección según rol
 export const RUTAS_POR_ROL: Record<number, string> = {
-  [ROLES.ADMINISTRADOR]: "/dashboard/admin",
+  [ROLES.ADMINISTRADOR]: "/admin",
   [ROLES.DESARROLLADOR]: "/dashboard/desarrollador",
   [ROLES.ENTIDAD_SALUD]: "/dashboard/entidad",
   [ROLES.MEDICO]: "/dashboard/medico",

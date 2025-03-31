@@ -60,6 +60,15 @@ export function truncarTexto(texto?: string, longitud: number = 100): string {
   return texto.substring(0, longitud) + "...";
 }
 
+
+export function cifrarLlave(passkey: string) {
+  return btoa(passkey);
+}
+
+export function descifrarLlave(passkey: string) {
+  return atob(passkey);
+}
+
 // Funciones viejas:
 
 // FORMAT DATE TIME
@@ -125,11 +134,4 @@ export const formatDateTime = (dateString: Date | string, timeZone: string = Int
   };
 };
 
-export function encryptKey(passkey: string) {
-  return btoa(passkey);
-}
-
-export function decryptKey(passkey: string) {
-  return atob(passkey);
-}
 

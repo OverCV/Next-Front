@@ -17,6 +17,7 @@ import {
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 export enum FormFieldType {
   INPUT = "input",
@@ -42,10 +43,13 @@ interface CustomProps {
   renderSkeleton?: (field: any) => React.ReactNode;
   fieldType: FormFieldType;
   type?: string; // Propiedad para campos password
+  showPassword?: boolean;          // Nueva propiedad
+  onTogglePassword?: () => void;   // Nueva propiedad
 }
 
 const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
   switch (props.fieldType) {
+
     case FormFieldType.INPUT:
       return (
         <div className="flex rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
@@ -59,12 +63,28 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
             />
           )}
           <FormControl>
-            <Input
-              placeholder={props.placeholder}
-              type={props.type || "text"}
-              {...field}
-              className="border-0 bg-transparent"
-            />
+            <div className="relative w-full">
+              <Input
+                placeholder={props.placeholder}
+                type={props.type === "password" && props.showPassword ? "text" : props.type || "text"}
+                {...field}
+                className="border-0 bg-transparent pr-10"
+              />
+              {props.type === "password" && (
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+                  onClick={props.onTogglePassword}
+                  tabIndex={-1}
+                >
+                  {props.showPassword ? (
+                    <EyeOffIcon className="h-4 w-4" />
+                  ) : (
+                    <EyeIcon className="h-4 w-4" />
+                  )}
+                </button>
+              )}
+            </div>
           </FormControl>
         </div>
       );

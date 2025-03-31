@@ -55,10 +55,10 @@ export default function Page() {
                 op: "test",
               },
               async () => {
-                const res = await fetch("/api/sentry-example-api");
-                if (!res.ok) {
-                  throw new Error("Sentry Example Frontend Error");
-                }
+                // const res = await fetch("/api/sentry-example-api");
+                // if (!res.ok) {
+                //   throw new Error("Sentry Example Frontend Error");
+                // }
               }
             );
           }}
@@ -66,7 +66,7 @@ export default function Page() {
           Throw error!
         </button>
 
-        <p>
+        {/* <p>
           Next, look for the error on the{" "}
           <a href="https://javascript-mastery.sentry.io/issues/?project=4507458386526208">
             Issues Page
@@ -78,7 +78,7 @@ export default function Page() {
           <a href="https://docs.sentry.io/platforms/javascript/guides/nextjs/">
             https://docs.sentry.io/platforms/javascript/guides/nextjs/
           </a>
-        </p>
+        </p> */}
       </main>
     </div>
   );

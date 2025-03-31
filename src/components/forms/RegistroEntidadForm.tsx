@@ -184,7 +184,7 @@ export default function RegistroEntidadForm(): JSX.Element {
                             control={form.control}
                             name="correo"
                             label="Correo Electrónico"
-                            placeholder="correo@entidad.com"
+                            placeholder="entidad@correo.com"
                             iconSrc="/assets/icons/email.svg"
                             iconAlt="Correo"
                         />

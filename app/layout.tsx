@@ -37,11 +37,22 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="light">
           <AuthProvider>
-            {children}
+            <div className="fixed right-4 top-4 z-50">
+              <ThemeToggle />
+            </div>
+
+            <div className="min-h-screen pb-16">
+              {children}
+            </div>
+
+            <footer className="fixed bottom-0 left-0 right-0 backdrop-blur-sm bg-white/75 dark:bg-slate-900/75 py-3 border-t border-slate-200 dark:border-slate-800 z-40">
+              <div className="container mx-auto text-center">
+                <p className="text-slate-500 dark:text-slate-400">
+                  © Healink 2025 — Campañas de Salud Cardiovascular
+                </p>
+              </div>
+            </footer>
           </AuthProvider>
-          <div className="absolute right-4 top-4">
-            <ThemeToggle />
-          </div>
         </ThemeProvider>
       </body>
     </html>

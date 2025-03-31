@@ -12,8 +12,8 @@ export function RegistroButton() {
     };
 
     return (
-        <div className="mt-6 text-center">
-            <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
+        <div className="mt-1 text-center ">
+            <p className="mb-2 text-sm text-slate-500 dark:text-slate-400">
                 ¿Eres una entidad de salud y necesitas registrarte?
             </p>
             <Button
