@@ -19,12 +19,10 @@ import { useAuth } from '@/src/providers/auth-provider';
 import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { StatusBadge } from '@/src/components/StatusBadge';
 import { StatCard } from '@/src/components/StatCard';
-import { usuariosService } from '@/src/services/usuarios';
 import { CAMPANAS_MOCK, ROLES } from '@/src/constants';
 import { formatearFecha } from '@/src/lib/utils';
 import { Usuario } from '@/src/types';
-
-
+import { usuariosService } from '@/src/services/usuarios';
 
 export default function EmbajadorPage() {
     const router = useRouter();
@@ -35,22 +33,23 @@ export default function EmbajadorPage() {
     const [error, setError] = useState<string | null>(null);
 
     // Cargar pacientes desde la API
-    useEffect(() => {
-        const cargarPacientes = async () => {
-            setCargando(true);
-            setError(null);
-            try {
-                // Obtener usuarios con rol de paciente (rolId: 7)
-                const pacientesData = await usuariosService.obtenerUsuariosPorRol(ROLES.PACIENTE);
-                setPacientes(pacientesData);
-            } catch (err: any) {
-                console.error('Error al cargar pacientes:', err);
-                setError('No se pudieron cargar los pacientes. Por favor, intente de nuevo.');
-            } finally {
-                setCargando(false);
-            }
-        };
+    const cargarPacientes = async () => {
+        setCargando(true);
+        setError(null);
+        try {
+            // Obtener usuarios con rol de paciente (rolId: 6)
+            const pacientesData = await usuariosService.obtenerUsuariosPorRol(ROLES.PACIENTE);
+            setPacientes(pacientesData);
+        } catch (err: any) {
+            console.error('Error al cargar pacientes:', err);
+            setError('No se pudieron cargar los pacientes. Por favor, intente de nuevo.');
+        } finally {
+            setCargando(false);
+        }
+    };
 
+    // Cargar datos al iniciar
+    useEffect(() => {
         cargarPacientes();
     }, []);
 
@@ -68,17 +67,8 @@ export default function EmbajadorPage() {
     };
 
     // Función para recargar datos
-    const recargarDatos = async () => {
-        setCargando(true);
-        setError(null);
-        try {
-            const pacientesData = await usuariosService.obtenerUsuariosPorRol(ROLES.PACIENTE);
-            setPacientes(pacientesData);
-        } catch (err: any) {
-            setError('Error al recargar los datos. Por favor, intente de nuevo.');
-        } finally {
-            setCargando(false);
-        }
+    const recargarDatos = () => {
+        cargarPacientes();
     };
 
     return (
@@ -196,7 +186,12 @@ export default function EmbajadorPage() {
                                         <td className="py-3">{paciente.celular}</td>
                                         <td className="py-3 text-slate-600 dark:text-slate-400">{paciente.correo}</td>
                                         <td className="py-3 text-right">
-                                            <Button variant="ghost" size="sm" className="h-8">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-8"
+                                                onClick={() => router.push(`/dashboard/embajador/pacientes/${paciente.id}`)}
+                                            >
                                                 Ver Detalles
                                             </Button>
                                         </td>
@@ -234,7 +229,13 @@ export default function EmbajadorPage() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <StatusBadge estatus={campana.estatus as any} />
-                                <Button variant="outline" size="sm">Ver Detalles</Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => router.push(`/dashboard/embajador/campanas/${campana.id}`)}
+                                >
+                                    Ver Detalles
+                                </Button>
                             </div>
                         </div>
                     ))}
