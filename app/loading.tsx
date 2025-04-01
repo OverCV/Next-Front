@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Loading() {
   return (
-    <div className="flex-center size-full h-screen gap-3 text-white">
+    <div className="flex-center size-full h-screen gap-3 text-black dark:text-white">
       <Image
         src="/assets/icons/loader.svg"
         alt="loader"
@@ -11,7 +11,7 @@ export default function Loading() {
         height={3240}
         className="animate-spin"
       />
-      Loading...
+      Cargando...
     </div>
   );
 }

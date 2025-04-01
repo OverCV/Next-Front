@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
-
-const API_URL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8090/api';
+import { API_URL } from '@/src/config/env';
 
 const apiClient: AxiosInstance = axios.create({
     baseURL: API_URL,

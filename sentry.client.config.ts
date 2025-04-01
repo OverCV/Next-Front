@@ -1,31 +1,34 @@
-// sentry.client.config.ts
-// This file configures the initialization of Sentry on the client.
-// The config you add here will be used whenever a users loads a page in their browser.
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/
-
 import * as Sentry from "@sentry/nextjs";
+import { SENTRY_DSN, IS_PRODUCTION } from "@/src/config/env";
 
+// Solo activamos funcionalidades completas de Sentry si tenemos un DSN
+// En caso contrario, creamos una inicialización mínima
 Sentry.init({
-  // dsn: "https://3d627de24f5d06a1fc39000a06ca9a94@o4506813739368448.ingest.us.sentry.io/4507458386526208",
+  dsn: SENTRY_DSN || undefined,
 
-  // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 1,
+  // Solo activamos el 10% de trazas en producción, pero 100% en desarrollo
+  tracesSampleRate: IS_PRODUCTION ? 0.1 : 1.0,
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: false,
+  // Habilitamos debugging solo en desarrollo
+  debug: !IS_PRODUCTION,
 
-  replaysOnErrorSampleRate: 1.0,
+  // Solo capturamos el 10% de los errores en producción para no saturar
+  replaysOnErrorSampleRate: IS_PRODUCTION ? 0.1 : 1.0,
 
-  // This sets the sample rate to be 10%. You may want this to be 100% while
-  // in development and sample at a lower rate in production
-  replaysSessionSampleRate: 0.1,
+  // Solo habilitamos recolección de datos en producción
+  replaysSessionSampleRate: IS_PRODUCTION ? 0.05 : 0,
 
-  // You can remove this option if you're not planning to use the Sentry Session Replay feature:
+  // Configuración para proteger datos sensibles
   integrations: [
     Sentry.replayIntegration({
-      // Additional Replay configuration goes in here, for example:
       maskAllText: true,
       blockAllMedia: true,
     }),
   ],
+
+  // Solo enviamos eventos en producción
+  enabled: !!SENTRY_DSN || IS_PRODUCTION,
+
+  // Desactivamos telemetría interna de Sentry
+  skipOpenTelemetrySetup: true,
 });

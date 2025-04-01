@@ -5,9 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { StatCard } from "@/src/components/StatCard";
-// import { columns } from "@/src/components/table/columns";
-// import { DataTable } from "@/src/components/table/DataTable";
-// import { getRecentAppointmentList } from "@/lib/actions/appointment.actions";
 import { PasskeyModal } from "@/src/components/PasskeyModal";
 
 import { useRouter } from "next/navigation";
@@ -15,10 +12,10 @@ import { useAuth } from "@/src/providers/auth-provider";
 import { Button } from "@/src/components/ui/button";
 import { LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
-// import { useState } from "react";
+import NotificacionPrueba from "@/src/components/notificacionPrueba";
 
-const AdminPage = async () => {
-  // const appointments = await getRecentAppointmentList();
+// Página de administración
+const AdminPage = () => {
   const { cerrarSesion } = useAuth();
   const router = useRouter();
 
@@ -30,10 +27,7 @@ const AdminPage = async () => {
   };
 
   return (
-
-
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
-
       <PasskeyModal />
 
       <header className="admin-header">
@@ -56,7 +50,7 @@ const AdminPage = async () => {
             onClick={handleLogout}
             className="flex items-center gap-2 text-red-500 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-950 dark:hover:text-red-300"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="size-4" />
             Cerrar Sesión
           </Button>
         </nav>
@@ -67,18 +61,18 @@ const AdminPage = async () => {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? (
-            <X className="h-6 w-6" />
+            <X className="size-6" />
           ) : (
-            <Menu className="h-6 w-6" />
+            <Menu className="size-6" />
           )}
         </button>
       </header>
 
       <main className="admin-main">
         <section className="w-full space-y-4">
-          <h1 className="header">Welcome 👋</h1>
+          <h1 className="header">Bienvenid@ 👋</h1>
           <p className="text-dark-700">
-            Start the day with managing new appointments
+            Administre campañas de salud y gestione notificaciones desde este panel
           </p>
         </section>
 
@@ -103,7 +97,8 @@ const AdminPage = async () => {
           />
         </section>
 
-        {/* <DataTable columns={columns} data={appointments.documents} /> */}
+        {/* Componente de prueba para notificaciones SMS */}
+        <NotificacionPrueba />
       </main>
     </div>
   );

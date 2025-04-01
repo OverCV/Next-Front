@@ -32,7 +32,7 @@ export default function DashboardLayout({
     if (cargando) {
         return (
             <div className="flex h-screen items-center justify-center">
-                <div className="text-center">
+                <div className="flex flex-col items-center text-center">
                     <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-green-500"></div>
                     <p className="mt-4">Verificando autenticación...</p>
                 </div>

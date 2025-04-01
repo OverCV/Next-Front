@@ -28,6 +28,8 @@ export const authService = {
      */
     acceso: async (credenciales: DatosAcceso): Promise<RespuestaAuth> => {
         try {
+            console.log("Intento acceso desde url:", apiClient.defaults.baseURL);
+
             const response = await apiClient.post('/auth/acceso', credenciales);
 
             // Guardar token en cookie
