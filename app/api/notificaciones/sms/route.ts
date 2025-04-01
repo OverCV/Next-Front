@@ -1,18 +1,14 @@
+// app/api/notificaciones/sms/route.ts
 import { NextResponse } from 'next/server';
+// Twilio solo se importa en el servidor
 import twilio from 'twilio';
 
-// Inicializar cliente de Twilio
-const client = twilio(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-);
-
+// Este código solo se ejecuta en el servidor
 export async function POST(request: Request) {
     try {
         const body = await request.json();
         const { telefono, mensaje } = body;
 
-        // Validación básica
         if (!telefono || !mensaje) {
             return NextResponse.json(
                 { success: false, message: "Faltan datos requeridos" },
@@ -20,13 +16,16 @@ export async function POST(request: Request) {
             );
         }
 
-        // Asegurarnos que el formato del teléfono sea correcto
-        // Twilio necesita formato internacional: +57XXXXXXXXXX para Colombia
+        // Inicializar cliente de Twilio
+        const client = twilio(
+            process.env.TWILIO_ACCOUNT_SID,
+            process.env.TWILIO_AUTH_TOKEN
+        );
+
+        // Formato para Colombia si no incluye código de país
         let telefonoFormateado = telefono;
-        let prefijoColombia = '57';
         if (!telefono.startsWith('+')) {
-            // Asumimos Colombia si no se especifica el código de país
-            telefonoFormateado = `+${prefijoColombia}${telefono}`;
+            telefonoFormateado = `+57${telefono}`;
         }
 
         // Enviar SMS

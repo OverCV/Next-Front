@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
+
 import { API_URL } from '@/src/config/env';
 
 const apiClient: AxiosInstance = axios.create({

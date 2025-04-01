@@ -34,29 +34,12 @@ const decryptKey = (encryptedKey: string): string => {
 export const PasskeyModal = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isAdmin = searchParams.get('admin') === 'true';
 
   const [open, setOpen] = useState(false);
   const [passkey, setPasskey] = useState("");
   const [error, setError] = useState("");
 
   // Comprobar si debemos mostrar el modal al cargar
-  // useEffect(() => {
-  //   if (isAdmin) {
-  //     const storedKey = localStorage.getItem("accessKey");
-  //     const validKey = storedKey && decryptKey(storedKey) === process.env.NEXT_PUBLIC_ADMIN_PASSKEY;
-
-  //     if (validKey) {
-  //       // Si ya tiene la clave correcta, redirigir
-  //       router.push("/admin");
-  //     } else {
-  //       // Si no, mostrar el modal
-  //       setOpen(true);
-  //     }
-  //   } else {
-  //     setOpen(false);
-  //   }
-  // }, [isAdmin, router]);
 
   const closeModal = () => {
     setOpen(false);
@@ -64,25 +47,24 @@ export const PasskeyModal = () => {
   };
 
   const validatePasskey = () => {
-    const adminPass = process.env.NEXT_PUBLIC_ADMIN_PASSKEY || "111111";
+    const clavePase = process.env.NEXT_PUBLIC_PASSKEY || "999999";
 
-    if (passkey === adminPass) {
+    if (passkey === clavePase) {
       localStorage.setItem("accessKey", encryptKey(passkey));
       setOpen(false);
-      router.push("/admin");
+      router.push("/ruta-por-parametro?");
     } else {
       setError("Código de acceso inválido. Por favor, inténtelo de nuevo.");
     }
   };
 
-  // if (!isAdmin) return null;
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent className="z-50">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-start justify-between">
-            Verificación de Acceso Administrativo
+            Verificación de Acceso
             <button onClick={closeModal} className="cursor-pointer">
               <Image
                 src="/assets/icons/close.svg"
@@ -93,7 +75,7 @@ export const PasskeyModal = () => {
             </button>
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Para acceder a la página de administrador, ingrese el código de acceso.
+            Para acceder a la página, ingrese el código de acceso.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div>
@@ -123,7 +105,7 @@ export const PasskeyModal = () => {
             onClick={validatePasskey}
             className="w-full"
           >
-            Ingresar Código de Administrador
+            Ingresar Código
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,24 +1,26 @@
+// src/components/notificacionPrueba.tsx
 "use client";
 
+import { AlertCircle, Mail, MessageSquare, Send } from 'lucide-react';
 import { useState } from 'react';
-import { notificacionesService } from '@/src/services/notificaciones';
+
+import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
-import { Textarea } from '@/src/components/ui/textarea';
-import { AlertCircle, Mail, MessageSquare, Send } from 'lucide-react';
-import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/src/components/ui/tabs';
+import { Textarea } from '@/src/components/ui/textarea';
+import { notificacionesService } from '@/src/services/notificaciones';
 
 export default function NotificacionPrueba() {
-    // Estado para SMS
+    // Estados para formularios
     const [telefono, setTelefono] = useState('');
     const [mensajeSMS, setMensajeSMS] = useState('');
-    const [enviandoSMS, setEnviandoSMS] = useState(false);
-
-    // Estado para correo
     const [correo, setCorreo] = useState('');
     const [asunto, setAsunto] = useState('');
     const [cuerpoCorreo, setCuerpoCorreo] = useState('');
+
+    // Estados de carga
+    const [enviandoSMS, setEnviandoSMS] = useState(false);
     const [enviandoCorreo, setEnviandoCorreo] = useState(false);
 
     // Estado de resultado
@@ -47,6 +49,7 @@ export default function NotificacionPrueba() {
                     : "Error al enviar SMS"
             });
         } catch (error) {
+            console.error("Error completo:", error);
             setResultado({
                 exito: false,
                 mensaje: "Error al enviar SMS: " + (error instanceof Error ? error.message : String(error))
@@ -83,6 +86,7 @@ export default function NotificacionPrueba() {
                     : "Error al enviar correo"
             });
         } catch (error) {
+            console.error("Error completo:", error);
             setResultado({
                 exito: false,
                 mensaje: "Error al enviar correo: " + (error instanceof Error ? error.message : String(error))

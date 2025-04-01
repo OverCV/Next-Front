@@ -1,18 +1,17 @@
 // app\admin\page.tsx
 "use client";
 
+import { LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-import { StatCard } from "@/src/components/StatCard";
-import { PasskeyModal } from "@/src/components/PasskeyModal";
-
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/src/providers/auth-provider";
-import { Button } from "@/src/components/ui/button";
-import { LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
+
 import NotificacionPrueba from "@/src/components/notificacionPrueba";
+import { PasskeyModal } from "@/src/components/PasskeyModal";
+import { StatCard } from "@/src/components/StatCard";
+import { Button } from "@/src/components/ui/button";
+import { useAuth } from "@/src/providers/auth-provider";
 
 // Página de administración
 const AdminPage = () => {
@@ -44,7 +43,7 @@ const AdminPage = () => {
         <p className="text-16-semibold mr-8">Admin Dashboard</p>
 
         {/* Navegación para escritorio */}
-        <nav className="hidden mr-4 mt-1 md:flex md:items-center md:space-x-4 lg:space-x-6">
+        <nav className="mr-4 mt-1 hidden md:flex md:items-center md:space-x-4 lg:space-x-6">
           <Button
             variant="outline"
             onClick={handleLogout}
@@ -57,7 +56,7 @@ const AdminPage = () => {
 
         {/* Botón de menú móvil */}
         <button
-          className="mr-12 ml-3 md:hidden"
+          className="ml-3 mr-12 md:hidden"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? (
