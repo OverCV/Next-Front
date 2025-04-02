@@ -1,9 +1,5 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import {
     UserPlus,
     Calendar,
@@ -12,17 +8,21 @@ import {
     Search,
     AlertCircle
 } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
+import { StatCard } from '@/src/components/StatCard';
+import { StatusBadge } from '@/src/components/StatusBadge';
+import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
-import { useAuth } from '@/src/providers/auth-provider';
-import { Alert, AlertDescription } from '@/src/components/ui/alert';
-import { StatusBadge } from '@/src/components/StatusBadge';
-import { StatCard } from '@/src/components/StatCard';
 import { CAMPANAS_MOCK, ROLES } from '@/src/constants';
 import { formatearFecha } from '@/src/lib/utils';
-import { Usuario } from '@/src/types';
+import { useAuth } from '@/src/providers/auth-provider';
 import { usuariosService } from '@/src/services/usuarios';
+import { Usuario } from '@/src/types';
 
 export default function EmbajadorPage() {
     const router = useRouter();
@@ -103,13 +103,13 @@ export default function EmbajadorPage() {
                     onClick={irARegistroPaciente}
                     className="flex items-center gap-2"
                 >
-                    <UserPlus className="h-4 w-4" />
+                    <UserPlus className="size-4" />
                     Registrar Paciente
                 </Button>
 
                 <div className="flex items-center gap-2">
                     <div className="relative w-full max-w-xs">
-                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                         <Input
                             placeholder="Buscar paciente..."
                             value={busqueda}
@@ -123,7 +123,7 @@ export default function EmbajadorPage() {
                         onClick={recargarDatos}
                         disabled={cargando}
                     >
-                        <RefreshCw className={`h-4 w-4 ${cargando ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`size-4 ${cargando ? 'animate-spin' : ''}`} />
                     </Button>
                 </div>
             </section>
@@ -131,7 +131,7 @@ export default function EmbajadorPage() {
             {/* Mensaje de error */}
             {error && (
                 <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertCircle className="size-4" />
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
@@ -166,7 +166,7 @@ export default function EmbajadorPage() {
                                 <tr>
                                     <td colSpan={5} className="py-8 text-center">
                                         <div className="flex justify-center">
-                                            <RefreshCw className="h-6 w-6 animate-spin text-slate-400" />
+                                            <RefreshCw className="size-6 animate-spin text-slate-400" />
                                         </div>
                                         <p className="mt-2 text-slate-500">Cargando pacientes...</p>
                                     </td>

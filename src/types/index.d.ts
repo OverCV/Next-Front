@@ -1,6 +1,111 @@
 // src\types\index.d.ts
 
-// Interfaces
+export interface Triaje {
+  id: number;
+  pacienteId: number;
+  fechaTriaje: string;
+  edad: number;
+  presionSistolica: number;
+  presionDiastolica: number;
+  colesterolTotal: number;
+  hdl: number;
+  tabaquismo: boolean;
+  alcoholismo: boolean;
+  diabetes: boolean;
+  peso: number;
+  talla: number;
+  imc: number;
+  dolorPecho: boolean;
+  dolorIrradiado: boolean;
+  sudoracion: boolean;
+  nauseas: boolean;
+  antecedentesCardiacos: boolean;
+  resultadoRiesgoCv: number; // 0-1
+  descripcion?: string;
+  nivelPrioridad: 'ALTA' | 'MEDIA' | 'BAJA';
+}
+
+// Interfaz para factores de riesgo
+export interface FactorRiesgo {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  tipo: 'SOCIAL' | 'AMBIENTAL' | 'RACIAL';
+}
+
+// Interfaz para datos clínicos
+export interface DatoClinico {
+  id: number;
+  pacienteId: number;
+  fechaRegistro: string;
+  presionSistolica: number;
+  presionDiastolica: number;
+  frecuenciaCardiacaMin: number;
+  frecuenciaCardiacaMax: number;
+  saturacionOxigeno: number;
+  temperatura: number;
+  peso: number;
+  talla: number;
+  imc: number;
+  observaciones?: string;
+}
+
+// Interfaz para localización
+export interface Localizacion {
+  id: number;
+  departamento: string;
+  municipio: string;
+  vereda?: string;
+  localidad?: string;
+  latitud?: number;
+  longitud?: number;
+}
+
+// Interfaz para servicios médicos
+export interface ServicioMedico {
+  id: number;
+  nombre: string;
+  descripcion: string;
+}
+
+declare type Estatus = "postulada" | "ejecucion" | "finalizada" | "cancelada";
+
+// Interfaz para campañas de salud
+export interface Campana {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  localizacion?: Localizacion;
+  fechaInicio: string;
+  fechaLimite: string;
+  minParticipantes: number;
+  maxParticipantes: number;
+  entidadId: number;
+  estatus: Estatus;
+  fechaCreacion: string;
+  pacientes?: number; // Número de pacientes inscritos
+  fecha?: string; // Formato legible de fecha
+  servicios?: ServicioMedico[];
+  factores?: FactorRiesgo[];
+}
+
+// Interfaz para citaciones
+export interface Citacion {
+  id: number;
+  pacienteId: number;
+  campanaId: number;
+  medicoId: number;
+  horaProgramada: string;
+  horaAtencion?: string;
+  duracionEstimada: number; // en minutos
+  estado: 'AGENDADA' | 'ATENDIDA' | 'CANCELADA';
+  prediccionAsistencia?: number; // 0-100%
+  prioridad: number; // 1-5
+  notas?: string;
+}
+
+
+// Interfaces autenticación y usuario
 export interface DatosAcceso {
   tipoIdentificacion: string;
   identificacion: string;
@@ -36,16 +141,15 @@ export interface RespuestaAuth {
   token: string;
 }
 
-declare type parametrosBusquedaProps = {
-  params: { [key: string]: string };
-  paramsBusqueda: { [key: string]: string | string[] | undefined };
-};
-
-declare type Estatus = "postulada" | "ejecucion" | "cancelada";
 
 // Viejo:
 
 /* eslint-disable no-unused-vars */
+
+// declare type parametrosBusquedaProps = {
+//   params: { [key: string]: string };
+//   paramsBusqueda: { [key: string]: string | string[] | undefined };
+// };
 
 declare type Gender = "Male" | "Female" | "Other";
 

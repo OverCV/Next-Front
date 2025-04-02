@@ -88,7 +88,8 @@ export default function RegistroPacienteForm() {
                 nombres: datos.nombres,
                 apellidos: datos.apellidos,
                 correo: datos.correo || `${datos.identificacion}@placeholder.com`,
-                clave: "paciente123", // Contraseña por defecto para pacientes
+                // Contraseña por defecto para los pacientes
+                clave: datos.identificacion,
                 celular: datos.telefono,
                 estaActivo: true,
                 rolId: ROLES.PACIENTE,

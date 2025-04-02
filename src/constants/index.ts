@@ -1,7 +1,7 @@
 
 // src/constants/index.ts
 
-import { Gender } from "../types";
+// import { Gender } from "../types";
 
 // Roles de usuario
 export const ROLES: Record<string, number> = {
@@ -43,16 +43,16 @@ export interface TipoIdentificacion {
 }
 
 export const TIPOS_IDENTIFICACION: TipoIdentificacion[] = [
-  { valor: "cc", etiqueta: "Cédula de Ciudadanía" },
-  { valor: "ti", etiqueta: "Tarjeta de Identidad" },
-  { valor: "nit", etiqueta: "NIT" },
-  { valor: "rcn", etiqueta: "Registro Civil de Nacimiento" },
+  { valor: "CC", etiqueta: "Cédula de Ciudadanía" },
+  { valor: "TI", etiqueta: "Tarjeta de Identidad" },
+  { valor: "NIT", etiqueta: "NIT" },
+  { valor: "RCN", etiqueta: "Registro Civil de Nacimiento" },
 ];
 
 export const TIPOS_IDENTIFICACION_PACIENTE: TipoIdentificacion[] = [
-  { valor: "cc", etiqueta: "Cédula de Ciudadanía" },
-  { valor: "ti", etiqueta: "Tarjeta de Identidad" },
-  { valor: "rcn", etiqueta: "Registro Civil de Nacimiento" },
+  { valor: "CC", etiqueta: "Cédula de Ciudadanía" },
+  { valor: "TI", etiqueta: "Tarjeta de Identidad" },
+  { valor: "RCN", etiqueta: "Registro Civil de Nacimiento" },
 ];
 
 
@@ -90,7 +90,8 @@ export const NIVELES_PRIORIDAD: NivelPrioridad[] = [
 
 export const StatusIcon = {
   postulada: "/assets/icons/postulada.svg",
-  ejecucion: "/assets/icons/activa.svg",
+  ejecucion: "/assets/icons/ambulancia.svg",
+  finalizada: "/assets/icons/activa.svg",
   cancelada: "/assets/icons/cancelada.svg",
 };
 
@@ -102,9 +103,88 @@ export const PACIENTES_MOCK = [
   { id: 4, nombres: 'Ana', apellidos: 'Martínez', identificacion: '4321098765', fecha: '2023-03-25' },
 ];
 
+// Campañas mock para desarrollo
 export const CAMPANAS_MOCK = [
-  { id: 1, nombre: 'Campaña Cardiovascular Medellín', estatus: "ejecucion", pacientes: 45, fecha: '2023-04-15' },
-  { id: 2, nombre: 'Prevención Hipertensión Cali', estatus: "postulada", pacientes: 23, fecha: '2023-05-10' },
+  {
+    id: 1,
+    nombre: "Jornada Cardiovascular Rural",
+    descripcion: "Evaluación y prevención de riesgo cardiovascular en zonas rurales",
+    fechaInicio: "2025-04-15T00:00:00",
+    fechaLimite: "2025-04-20T00:00:00",
+    minParticipantes: 30,
+    maxParticipantes: 50,
+    entidadId: 1,
+    estatus: "postulada",
+    fechaCreacion: "2025-03-01T00:00:00",
+    pacientes: 18,
+    fecha: "15 de abril, 2025",
+    localizacion: {
+      id: 1,
+      departamento: "Antioquia",
+      municipio: "Santa Fe",
+      vereda: "El Retiro"
+    }
+  },
+  {
+    id: 2,
+    nombre: "Prevención Hipertensión",
+    descripcion: "Campaña de detección temprana y control de la hipertensión",
+    fechaInicio: "2025-05-10T00:00:00",
+    fechaLimite: "2025-05-12T00:00:00",
+    minParticipantes: 20,
+    maxParticipantes: 40,
+    entidadId: 2,
+    estatus: "ejecucion",
+    fechaCreacion: "2025-03-15T00:00:00",
+    pacientes: 32,
+    fecha: "10 de mayo, 2025",
+    localizacion: {
+      id: 2,
+      departamento: "Cundinamarca",
+      municipio: "Subachoque",
+      vereda: "La Pradera"
+    }
+  },
+  {
+    id: 3,
+    nombre: "Diabetes: Detección y Control",
+    descripcion: "Evaluación de niveles de glucosa y factores de riesgo asociados",
+    fechaInicio: "2025-06-05T00:00:00",
+    fechaLimite: "2025-06-07T00:00:00",
+    minParticipantes: 15,
+    maxParticipantes: 35,
+    entidadId: 1,
+    estatus: "postulada",
+    fechaCreacion: "2025-04-01T00:00:00",
+    pacientes: 12,
+    fecha: "5 de junio, 2025",
+    localizacion: {
+      id: 3,
+      departamento: "Santander",
+      municipio: "Piedecuesta",
+      vereda: "San Isidro"
+    }
+  },
+  {
+    id: 4,
+    nombre: "Salud Cardiovascular para Adultos Mayores",
+    descripcion: "Programa especial para evaluación cardiovascular en adultos mayores",
+    fechaInicio: "2025-07-15T00:00:00",
+    fechaLimite: "2025-07-20T00:00:00",
+    minParticipantes: 25,
+    maxParticipantes: 45,
+    entidadId: 3,
+    estatus: "ejecucion",
+    fechaCreacion: "2025-05-01T00:00:00",
+    pacientes: 28,
+    fecha: "15 de julio, 2025",
+    localizacion: {
+      id: 4,
+      departamento: "Valle del Cauca",
+      municipio: "El Cerrito",
+      vereda: "El Placer"
+    }
+  }
 ];
 
 // Viejo:

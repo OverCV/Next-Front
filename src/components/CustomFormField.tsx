@@ -1,6 +1,7 @@
 // components\CustomFormField.tsx
 /* eslint-disable no-unused-vars */
 import { E164Number } from "libphonenumber-js/core";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import Image from "next/image";
 import ReactDatePicker from "react-datepicker";
 import { Control } from "react-hook-form";
@@ -17,7 +18,6 @@ import {
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 export enum FormFieldType {
   INPUT = "input",
@@ -78,9 +78,9 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
                   tabIndex={-1}
                 >
                   {props.showPassword ? (
-                    <EyeOffIcon className="h-4 w-4" />
+                    <EyeOffIcon className="size-4" />
                   ) : (
-                    <EyeIcon className="h-4 w-4" />
+                    <EyeIcon className="size-4" />
                   )}
                 </button>
               )}

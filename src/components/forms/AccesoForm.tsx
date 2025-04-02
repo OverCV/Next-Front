@@ -13,12 +13,12 @@ import CustomFormField, { FormFieldType } from "@/src/components/CustomFormField
 import { Form } from "@/src/components/ui/form";
 import { SelectItem } from "@/src/components/ui/select";
 import { RUTAS_POR_ROL, TIPOS_IDENTIFICACION } from "@/src/constants";
-
+import { useAuth } from "@/src/providers/auth-provider";
 import { DatosAcceso } from "@/src/types";
 
 import { Alert, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
-import { useAuth } from "@/src/providers/auth-provider";
+
 
 
 // Esquema de validación
@@ -81,14 +81,14 @@ export default function AccesoForm(): JSX.Element {
     return (
         <div className="flex flex-col items-center justify-center p-4 md:p-8">
             <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
-                <div className="space-y-2 items-center text-center">
+                <div className="items-center space-y-2 text-center">
                     <div className="flex items-center justify-center">
                         <Image
                             src="/assets/images/logo.png"
                             width={100}
                             height={100}
                             alt="Logo"
-                            className="h-auto w-16 mr-4"
+                            className="mr-4 h-auto w-16"
                         />
                         <h1 className="text-2xl font-bold">Iniciar Sesión</h1>
                     </div>

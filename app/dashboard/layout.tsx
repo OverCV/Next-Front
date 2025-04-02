@@ -1,15 +1,15 @@
 // src/app/dashboard/layout.tsx
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
 import { LogOut, Menu, X } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useAuth } from "@/src/providers/auth-provider";
 import { Button } from "@/src/components/ui/button";
 import { ROLES_NOMBRE } from "@/src/constants";
+import { useAuth } from "@/src/providers/auth-provider";
 
 export default function DashboardLayout({
     children,
@@ -33,7 +33,7 @@ export default function DashboardLayout({
         return (
             <div className="flex h-screen items-center justify-center">
                 <div className="flex flex-col items-center text-center">
-                    <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-green-500"></div>
+                    <div className="size-10 animate-spin rounded-full border-y-2 border-green-500"></div>
                     <p className="mt-4">Verificando autenticación...</p>
                 </div>
             </div>
@@ -79,26 +79,26 @@ export default function DashboardLayout({
                     </div>
 
                     {/* Navegación para escritorio */}
-                    <nav className="hidden mr-4 mt-1 md:flex md:items-center md:space-x-4 lg:space-x-6">
+                    <nav className="mr-4 mt-1 hidden md:flex md:items-center md:space-x-4 lg:space-x-6">
                         <Button
                             variant="outline"
                             onClick={handleLogout}
                             className="flex items-center gap-2 text-red-500 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-950 dark:hover:text-red-300"
                         >
-                            <LogOut className="h-4 w-4" />
+                            <LogOut className="size-4" />
                             Cerrar Sesión
                         </Button>
                     </nav>
 
                     {/* Botón de menú móvil */}
                     <button
-                        className="mr-12 ml-3 md:hidden"
+                        className="ml-3 mr-12 md:hidden"
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     >
                         {mobileMenuOpen ? (
-                            <X className="h-6 w-6" />
+                            <X className="size-6" />
                         ) : (
-                            <Menu className="h-6 w-6" />
+                            <Menu className="size-6" />
                         )}
                     </button>
                 </div>
@@ -108,13 +108,13 @@ export default function DashboardLayout({
             {mobileMenuOpen && (
                 <div className="md:hidden">
                     <div className="fixed inset-0 z-30 bg-black bg-opacity-25" onClick={() => setMobileMenuOpen(false)} />
-                    <nav className="absolute left-0 right-0 z-40 border-b border-slate-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-900">
+                    <nav className="absolute inset-x-0 z-40 border-b border-slate-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-900">
                         <Button
                             variant="outline"
                             onClick={handleLogout}
                             className="mt-2 flex w-full items-center justify-center gap-2 text-red-500 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-950 dark:hover:text-red-300"
                         >
-                            <LogOut className="h-4 w-4" />
+                            <LogOut className="size-4" />
                             Cerrar Sesión
                         </Button>
                     </nav>

@@ -19,7 +19,7 @@ export async function POST(request: Request) {
             service: 'Gmail',
             auth: {
                 user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASSWORD, // Debe ser una App Password para Gmail
+                pass: process.env.EMAIL_PASSWORD,
             },
             debug: true, // Ayuda a diagnóstico
             logger: true, // Muestra logs detallados
