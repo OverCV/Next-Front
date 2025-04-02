@@ -4,7 +4,8 @@
 import { LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+//  usePathname,
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/src/components/ui/button";
@@ -18,7 +19,7 @@ export default function DashboardLayout({
 }) {
     const { usuario, cargando, cerrarSesion } = useAuth();
     const router = useRouter();
-    const pathname = usePathname();
+    // const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
 
@@ -52,11 +53,11 @@ export default function DashboardLayout({
         router.push("/acceso");
     };
 
-    const isActive = (path: string) => {
-        return pathname.startsWith(path)
-            ? "bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-white"
-            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white";
-    };
+    // const isActive = (path: string) => {
+    //     return pathname.startsWith(path)
+    //         ? "bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-white"
+    //         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white";
+    // };
 
     return (
         <div className="min-h-screen">

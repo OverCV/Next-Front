@@ -2,14 +2,14 @@
 
 import {
     UserPlus,
-    Calendar,
-    Users,
+    // Calendar,
+    // Users,
     RefreshCw,
     Search,
     AlertCircle
 } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+// import Image from 'next/image';
+// import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -19,14 +19,14 @@ import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { CAMPANAS_MOCK, ROLES } from '@/src/constants';
-import { formatearFecha } from '@/src/lib/utils';
+// import { formatearFecha } from '@/src/lib/utils';
 import { useAuth } from '@/src/providers/auth-provider';
 import { usuariosService } from '@/src/services/usuarios';
 import { Usuario } from '@/src/types';
 
 export default function EmbajadorPage() {
     const router = useRouter();
-    const { usuario } = useAuth();
+    // const { usuario } = useAuth();
     const [busqueda, setBusqueda] = useState('');
     const [pacientes, setPacientes] = useState<Usuario[]>([]);
     const [cargando, setCargando] = useState(true);

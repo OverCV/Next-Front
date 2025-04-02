@@ -2,7 +2,7 @@
 
 import {
     UserPlus,
-    Calendar,
+    // Calendar,
     RefreshCw,
     Search,
     AlertCircle,
@@ -18,13 +18,13 @@ import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs';
 import { CAMPANAS_MOCK, ROLES } from '@/src/constants';
-import { useAuth } from '@/src/providers/auth-provider';
+// import { useAuth } from '@/src/providers/auth-provider';
 import { usuariosService } from '@/src/services/usuarios';
 import { Usuario } from '@/src/types';
 
 export default function EntidadPage() {
     const router = useRouter();
-    const { usuario } = useAuth();
+    // const { usuario } = useAuth();
     const [busqueda, setBusqueda] = useState('');
     const [embajadores, setEmbajadores] = useState<Usuario[]>([]);
     const [cargando, setCargando] = useState(true);

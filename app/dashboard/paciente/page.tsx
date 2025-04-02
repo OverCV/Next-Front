@@ -3,11 +3,12 @@
 import { Calendar, Heart, AlertCircle, RefreshCw } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+import TriajeForm from '@/src/components/forms/TriajeForm';
 import { StatCard } from '@/src/components/StatCard';
 import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Button } from '@/src/components/ui/button';
-import TriajeForm from '@/src/components/forms/TriajeForm';
 import { useAuth } from '@/src/providers/auth-provider';
+import { Triaje, Campana } from '@/src/types';
 // import { useAuth } from '@/src/providers/auth-provider';
 
 // import TriajeForm from '@/src/components/forms/TriajeForm';
@@ -37,14 +38,14 @@ export default function PacientePage() {
             setError(null);
 
             try {
-                // Intentar cargar el triaje del paciente
-                const triajeData = await triajeService.obtenerTriajePorPaciente(usuario.id);
-                setTriaje(triajeData);
+                // // Intentar cargar el triaje del paciente
+                // const triajeData = await triajeService.obtenerTriajePorPaciente(usuario.id);
+                // setTriaje(triajeData);
 
-                // Si no hay triaje, mostrar el formulario
-                if (!triajeData) {
-                    setMostrarTriajeForm(true);
-                }
+                // // Si no hay triaje, mostrar el formulario
+                // if (!triajeData) {
+                //     setMostrarTriajeForm(true);
+                // }
             } catch (err: any) {
                 console.error('Error al cargar triaje:', err);
                 setError('No se pudo cargar la información médica. Intente nuevamente.');
@@ -66,12 +67,12 @@ export default function PacientePage() {
 
             try {
                 // Cargar campañas en las que el paciente está registrado
-                const campanasData = await campanasService.obtenerCampanasPorPaciente(usuario.id);
-                setCampanas(campanasData);
+                // const campanasData = await campanasService.obtenerCampanasPorPaciente(usuario.id);
+                // setCampanas(campanasData);
 
-                // Cargar campañas disponibles
-                const disponibles = await campanasService.obtenerCampanasDisponibles();
-                setCampanasDisponibles(disponibles);
+                // // Cargar campañas disponibles
+                // const disponibles = await campanasService.obtenerCampanasDisponibles();
+                // setCampanasDisponibles(disponibles);
             } catch (err: any) {
                 console.error('Error al cargar campañas:', err);
             } finally {
@@ -85,13 +86,13 @@ export default function PacientePage() {
     // Manejar envío del formulario de triaje
     const handleTriajeSubmit = async (datosTriaje: any) => {
         try {
-            const nuevoTriaje = await triajeService.crearTriaje({
-                pacienteId: usuario!.id,
-                ...datosTriaje
-            });
+            // const nuevoTriaje = await triajeService.crearTriaje({
+            //     pacienteId: usuario!.id,
+            //     ...datosTriaje
+            // });
 
-            setTriaje(nuevoTriaje);
-            setMostrarTriajeForm(false);
+            // setTriaje(nuevoTriaje);
+            // setMostrarTriajeForm(false);
         } catch (err: any) {
             console.error('Error al guardar triaje:', err);
             setError('Error al guardar la información médica. Intente nuevamente.');
@@ -181,17 +182,18 @@ export default function PacientePage() {
                         <p className="mt-2 text-slate-500">Cargando campañas...</p>
                     </div>
                 ) : campanas.length > 0 ? (
-                    <div className="space-y-4">
-                        {campanas.map(campana => (
-                            <CampanaCard
-                                key={campana.id}
-                                campana={campana}
-                                isRegistered={true}
-                                onCancel={() => { }}
-                                onDetails={() => { }}
-                            />
-                        ))}
-                    </div>
+                    // <div className="space-y-4">
+                    //     {campanas.map(campana => (
+                    //         <CampanaCard
+                    //             key={campana.id}
+                    //             campana={campana}
+                    //             isRegistered={true}
+                    //             onCancel={() => { }}
+                    //             onDetails={() => { }}
+                    //         />
+                    //     ))}
+                    // </div>
+                    <></>
                 ) : (
                     <div className="rounded-lg border border-dashed border-slate-300 p-8 text-center dark:border-slate-700">
                         <Calendar className="mx-auto size-10 text-slate-400" />
@@ -219,7 +221,7 @@ export default function PacientePage() {
                     </div>
                 ) : campanasDisponibles.length > 0 ? (
                     <div className="space-y-4">
-                        {campanasDisponibles.map(campana => (
+                        {/* {campanasDisponibles.map(campana => (
                             <CampanaCard
                                 key={campana.id}
                                 campana={campana}
@@ -227,7 +229,8 @@ export default function PacientePage() {
                                 onRegister={() => { }}
                                 onDetails={() => { }}
                             />
-                        ))}
+                        ))} */}
+                        <></>
                     </div>
                 ) : (
                     <div className="rounded-lg border border-dashed border-slate-300 p-8 text-center dark:border-slate-700">
@@ -241,60 +244,62 @@ export default function PacientePage() {
             </div>
 
             {/* Información de Salud */}
-            {triaje && (
-                <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                    <div className="mb-4 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-xl font-semibold">Mi Información de Salud</h2>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
-                                Resultados de su evaluación de salud.
-                            </p>
-                        </div>
-                        <Button
-                            variant="outline"
-                            onClick={() => setMostrarTriajeForm(true)}
-                        >
-                            Actualizar Información
-                        </Button>
-                    </div>
-
-                    <div className="grid gap-6 md:grid-cols-2">
-                        <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-700">
-                            <h3 className="mb-2 font-medium">Factores de Riesgo</h3>
-                            <ul className="space-y-2 text-sm">
-                                {triaje.tabaquismo && <li className="flex items-center gap-2">🚬 Tabaquismo</li>}
-                                {triaje.alcoholismo && <li className="flex items-center gap-2">🍷 Alcoholismo</li>}
-                                {triaje.diabetes && <li className="flex items-center gap-2">🩸 Diabetes</li>}
-                                {triaje.antecedentesCardiacos && (
-                                    <li className="flex items-center gap-2">❤️ Antecedentes cardíacos</li>
-                                )}
-                            </ul>
+            {
+                triaje && (
+                    <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                        <div className="mb-4 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-xl font-semibold">Mi Información de Salud</h2>
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
+                                    Resultados de su evaluación de salud.
+                                </p>
+                            </div>
+                            <Button
+                                variant="outline"
+                                onClick={() => setMostrarTriajeForm(true)}
+                            >
+                                Actualizar Información
+                            </Button>
                         </div>
 
-                        <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-700">
-                            <h3 className="mb-2 font-medium">Signos Vitales</h3>
-                            <ul className="space-y-2 text-sm">
-                                <li className="flex items-center justify-between">
-                                    <span>Presión arterial:</span>
-                                    <span className="font-medium">{triaje.presionSistolica}/{triaje.presionDiastolica} mmHg</span>
-                                </li>
-                                <li className="flex items-center justify-between">
-                                    <span>Colesterol total:</span>
-                                    <span className="font-medium">{triaje.colesterolTotal} mg/dL</span>
-                                </li>
-                                <li className="flex items-center justify-between">
-                                    <span>Peso:</span>
-                                    <span className="font-medium">{triaje.peso} kg</span>
-                                </li>
-                                <li className="flex items-center justify-between">
-                                    <span>IMC:</span>
-                                    <span className="font-medium">{triaje.imc}</span>
-                                </li>
-                            </ul>
+                        <div className="grid gap-6 md:grid-cols-2">
+                            <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-700">
+                                <h3 className="mb-2 font-medium">Factores de Riesgo</h3>
+                                <ul className="space-y-2 text-sm">
+                                    {triaje.tabaquismo && <li className="flex items-center gap-2">🚬 Tabaquismo</li>}
+                                    {triaje.alcoholismo && <li className="flex items-center gap-2">🍷 Alcoholismo</li>}
+                                    {triaje.diabetes && <li className="flex items-center gap-2">🩸 Diabetes</li>}
+                                    {triaje.antecedentesCardiacos && (
+                                        <li className="flex items-center gap-2">❤️ Antecedentes cardíacos</li>
+                                    )}
+                                </ul>
+                            </div>
+
+                            <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-700">
+                                <h3 className="mb-2 font-medium">Signos Vitales</h3>
+                                <ul className="space-y-2 text-sm">
+                                    <li className="flex items-center justify-between">
+                                        <span>Presión arterial:</span>
+                                        <span className="font-medium">{triaje.presionSistolica}/{triaje.presionDiastolica} mmHg</span>
+                                    </li>
+                                    <li className="flex items-center justify-between">
+                                        <span>Colesterol total:</span>
+                                        <span className="font-medium">{triaje.colesterolTotal} mg/dL</span>
+                                    </li>
+                                    <li className="flex items-center justify-between">
+                                        <span>Peso:</span>
+                                        <span className="font-medium">{triaje.peso} kg</span>
+                                    </li>
+                                    <li className="flex items-center justify-between">
+                                        <span>IMC:</span>
+                                        <span className="font-medium">{triaje.imc}</span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

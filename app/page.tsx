@@ -1,9 +1,8 @@
 // app\page.tsx
 import { redirect } from "next/navigation";
 
-import { parametrosBusquedaProps } from "@/src/types";
 
-const Home = ({ paramsBusqueda }: parametrosBusquedaProps) => {
+const Home = () => {
   redirect("/acceso")
 }
 
