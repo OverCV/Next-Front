@@ -1,8 +1,6 @@
 
 // src/constants/index.ts
 
-// import { Gender } from "../types";
-
 // Roles de usuario
 export const ROLES: Record<string, number> = {
   ADMINISTRADOR: 1,
@@ -70,9 +68,8 @@ export interface OpcionGenero {
 }
 
 export const OPCIONES_GENERO: OpcionGenero[] = [
-  { valor: "M", etiqueta: "Masculino" },
-  { valor: "F", etiqueta: "Femenino" },
-  { valor: "OTRO", etiqueta: "Otro" },
+  { valor: "MASCULINO", etiqueta: "Masculino" },
+  { valor: "FEMENINO", etiqueta: "Femenino" },
 ];
 
 // Niveles de prioridad
@@ -228,7 +225,6 @@ export const Doctores = [
   },
 ];
 
-// export const GenderOptions = ["Male", "Female", "Other"];
 
 // export const PatientFormDefaultValues = {
 //   firstName: "",
