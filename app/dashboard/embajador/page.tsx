@@ -20,7 +20,7 @@ import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { CAMPANAS_MOCK, ROLES } from '@/src/constants';
 // import { formatearFecha } from '@/src/lib/utils';
-import { useAuth } from '@/src/providers/auth-provider';
+// import { useAuth } from '@/src/providers/auth-provider';
 import { usuariosService } from '@/src/services/usuarios';
 import { Usuario } from '@/src/types';
 

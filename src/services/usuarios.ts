@@ -1,6 +1,8 @@
 // src\services\usuarios.ts
-import apiClient from './api';
 import { Usuario } from '../types';
+
+import apiClient from './api';
+
 
 // Servicios para manejo de usuarios
 export const usuariosService = {
@@ -24,7 +26,7 @@ export const usuariosService = {
         try {
             const response = await apiClient.get(`/usuarios`);
 
-            // Filtrar por rol:
+            // Filtrar por rol:npm run d
             const usuariosFiltrados = response.data.filter((usuario: Usuario) => usuario.rolId === rolId);
             return usuariosFiltrados;
 

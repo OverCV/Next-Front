@@ -12,13 +12,13 @@ import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { Button } from "@/src/components/ui/button";
 import { Form } from "@/src/components/ui/form";
 import { SelectItem } from "@/src/components/ui/select";
-import { ROLES, TIPOS_IDENTIFICACION } from "@/src/constants";
+import { ROLES, TIPOS_IDENTIFICACION, TiposIdentificacionEnum } from "@/src/constants";
 import { useAuth } from "@/src/providers/auth-provider";
 import { DatosRegistro } from "@/src/types";
 
 // Esquema de validación
 const registroEmbajadorSchema = z.object({
-    tipoIdentificacion: z.string({
+    tipoIdentificacion: z.nativeEnum(TiposIdentificacionEnum, {
         required_error: "Selecciona un tipo de identificación",
     }),
     identificacion: z.string()
@@ -60,7 +60,7 @@ export default function RegistroEmbajadorForm() {
     const form = useForm<RegistroEmbajadorFormValues>({
         resolver: zodResolver(registroEmbajadorSchema),
         defaultValues: {
-            tipoIdentificacion: "",
+            tipoIdentificacion: TiposIdentificacionEnum.CC,
             identificacion: "",
             nombres: "",
             apellidos: "",
@@ -153,7 +153,7 @@ export default function RegistroEmbajadorForm() {
                             label="Tipo de Identificación"
                             placeholder="Selecciona tipo"
                         >
-                            {TIPOS_IDENTIFICACION.filter(tipo => tipo.valor !== "nit").map((tipo) => (
+                            {TIPOS_IDENTIFICACION.filter(tipo => tipo.valor !== "NIT").map((tipo) => (
                                 <SelectItem key={tipo.valor} value={tipo.valor}>
                                     {tipo.etiqueta}
                                 </SelectItem>

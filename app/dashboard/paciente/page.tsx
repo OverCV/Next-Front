@@ -1,6 +1,7 @@
 "use client";
 
 import { Calendar, Heart, AlertCircle, RefreshCw } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 import TriajeForm from '@/src/components/forms/TriajeForm';
@@ -19,80 +20,138 @@ import { Triaje, Campana } from '@/src/types';
 // import { Triaje, Campana } from '@/src/types';
 
 export default function PacientePage() {
+    const router = useRouter();
     const { usuario } = useAuth();
     const [triaje, setTriaje] = useState<Triaje | null>(null);
     const [campanas, setCampanas] = useState<Campana[]>([]);
     const [campanasDisponibles, setCampanasDisponibles] = useState<Campana[]>([]);
+    const [pacienteId, setPacienteId] = useState<number | null>(null);
 
     const [cargandoTriaje, setCargandoTriaje] = useState(true);
     const [cargandoCampanas, setCargandoCampanas] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [mostrarTriajeForm, setMostrarTriajeForm] = useState(false);
 
+    // Primero obtenemos el pacienteId
+    useEffect(() => {
+        const obtenerPaciente = async () => {
+            if (!usuario?.id) return;
+
+            try {
+                const response = await fetch(`/api/pacientes/usuario/${usuario.id}`);
+
+                // Si no existe el perfil del paciente, redirigir a completarlo
+                if (response.status === 404) {
+                    router.push('/dashboard/paciente/completar-perfil');
+                    return;
+                }
+
+                if (!response.ok) throw new Error("Error al obtener datos del paciente");
+
+                const paciente = await response.json();
+                setPacienteId(paciente.id);
+            } catch (err) {
+                console.error("Error al obtener paciente:", err);
+                setError("Error al obtener datos del paciente");
+            }
+        };
+
+        obtenerPaciente();
+    }, [usuario?.id, router]);
+
+    const cargarCampanas = async () => {
+        if (!pacienteId) return;
+
+        setCargandoCampanas(true);
+
+        try {
+            // Cargar todas las campañas disponibles
+            const responseCampanas = await fetch('/api/campana');
+            if (!responseCampanas.ok) throw new Error("Error al obtener campañas");
+            const todasCampanas = await responseCampanas.json();
+            setCampanasDisponibles(todasCampanas);
+
+            // Cargar inscripciones del paciente
+            const responseInscripciones = await fetch(`/api/inscripciones-campana/paciente/${pacienteId}`);
+            if (!responseInscripciones.ok) throw new Error("Error al obtener inscripciones");
+            const inscripciones = await responseInscripciones.json();
+
+            // Filtrar las campañas en las que está inscrito
+            const campanasInscritas = todasCampanas.filter((campana: Campana) =>
+                inscripciones.some((inscripcion: any) =>
+                    inscripcion.campanaId === campana.id &&
+                    inscripcion.estado === 'INSCRITO'
+                )
+            );
+            setCampanas(campanasInscritas);
+        } catch (err: any) {
+            console.error('Error al cargar campañas:', err);
+            setError('Error al cargar las campañas. Intente nuevamente.');
+        } finally {
+            setCargandoCampanas(false);
+        }
+    };
+
+    // Cargar campañas inicialmente
+    useEffect(() => {
+        cargarCampanas();
+    }, [pacienteId]);
+
     // Cargar triaje inicial del paciente
     useEffect(() => {
         const cargarTriaje = async () => {
-            if (!usuario?.id) return;
+            if (!pacienteId) return;
 
             setCargandoTriaje(true);
             setError(null);
 
             try {
-                // // Intentar cargar el triaje del paciente
-                // const triajeData = await triajeService.obtenerTriajePorPaciente(usuario.id);
-                // setTriaje(triajeData);
+                const response = await fetch(`/api/triaje/paciente/${pacienteId}`);
+                if (!response.ok) throw new Error("Error al obtener triaje");
 
-                // // Si no hay triaje, mostrar el formulario
-                // if (!triajeData) {
-                //     setMostrarTriajeForm(true);
-                // }
+                const triajes = await response.json();
+                // Tomamos el triaje más reciente
+                const ultimoTriaje = triajes.length > 0 ? triajes[0] : null;
+                setTriaje(ultimoTriaje);
+
+                // Si no hay triaje, redirigir a crearlo
+                if (!ultimoTriaje) {
+                    router.push('/dashboard/paciente/triaje-inicial');
+
+                }
             } catch (err: any) {
                 console.error('Error al cargar triaje:', err);
                 setError('No se pudo cargar la información médica. Intente nuevamente.');
-                setMostrarTriajeForm(true); // Mostrar formulario en caso de error también
             } finally {
                 setCargandoTriaje(false);
             }
         };
 
         cargarTriaje();
-    }, [usuario?.id]);
-
-    // Cargar campañas del paciente
-    useEffect(() => {
-        const cargarCampanas = async () => {
-            if (!usuario?.id) return;
-
-            setCargandoCampanas(true);
-
-            try {
-                // Cargar campañas en las que el paciente está registrado
-                // const campanasData = await campanasService.obtenerCampanasPorPaciente(usuario.id);
-                // setCampanas(campanasData);
-
-                // // Cargar campañas disponibles
-                // const disponibles = await campanasService.obtenerCampanasDisponibles();
-                // setCampanasDisponibles(disponibles);
-            } catch (err: any) {
-                console.error('Error al cargar campañas:', err);
-            } finally {
-                setCargandoCampanas(false);
-            }
-        };
-
-        cargarCampanas();
-    }, [usuario?.id]);
+    }, [pacienteId, router]);
 
     // Manejar envío del formulario de triaje
     const handleTriajeSubmit = async (datosTriaje: any) => {
-        try {
-            // const nuevoTriaje = await triajeService.crearTriaje({
-            //     pacienteId: usuario!.id,
-            //     ...datosTriaje
-            // });
+        if (!pacienteId) return;
 
-            // setTriaje(nuevoTriaje);
-            // setMostrarTriajeForm(false);
+        try {
+            const response = await fetch('/api/triaje', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...datosTriaje,
+                    pacienteId,
+                    fechaTriaje: new Date()
+                })
+            });
+
+            if (!response.ok) throw new Error("Error al crear triaje");
+
+            const nuevoTriaje = await response.json();
+            setTriaje(nuevoTriaje);
+            setMostrarTriajeForm(false);
         } catch (err: any) {
             console.error('Error al guardar triaje:', err);
             setError('Error al guardar la información médica. Intente nuevamente.');
@@ -121,6 +180,15 @@ export default function PacientePage() {
         );
     }
 
+    // Si está cargando, mostrar indicador
+    if (cargandoTriaje) {
+        return (
+            <div className="flex h-[50vh] items-center justify-center">
+                <RefreshCw className="size-8 animate-spin text-slate-400" />
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8">
             {/* Mensaje de error */}
@@ -142,15 +210,15 @@ export default function PacientePage() {
 
                 <StatCard
                     type="postulada"
-                    count={triaje?.nivelPrioridad === 'ALTA' ? 1 : 0}
-                    label="Alertas de Salud"
-                    icon="/assets/icons/alert-circle.svg"
+                    count={campanasDisponibles.length}
+                    label="Campañas Disponibles"
+                    icon="/assets/icons/calendar.svg"
                 />
 
                 <StatCard
-                    type={triaje?.nivelPrioridad === 'ALTA' ? 'cancelada' : 'ejecucion'}
-                    count={Math.round((triaje?.resultadoRiesgoCv || 0) * 100)}
-                    label="Riesgo Cardiovascular"
+                    type={triaje ? 'ejecucion' : 'cancelada'}
+                    count={triaje ? 1 : 0}
+                    label="Triajes Realizados"
                     icon="/assets/icons/heart.svg"
                 />
             </section>
@@ -167,7 +235,7 @@ export default function PacientePage() {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => { }}
+                        onClick={cargarCampanas}
                         disabled={cargandoCampanas}
                         className="h-8 gap-2"
                     >
@@ -182,124 +250,27 @@ export default function PacientePage() {
                         <p className="mt-2 text-slate-500">Cargando campañas...</p>
                     </div>
                 ) : campanas.length > 0 ? (
-                    // <div className="space-y-4">
-                    //     {campanas.map(campana => (
-                    //         <CampanaCard
-                    //             key={campana.id}
-                    //             campana={campana}
-                    //             isRegistered={true}
-                    //             onCancel={() => { }}
-                    //             onDetails={() => { }}
-                    //         />
-                    //     ))}
-                    // </div>
-                    <></>
+                    <div className="space-y-4">
+                        {campanas.map(campana => (
+                            <div key={campana.id} className="rounded-lg border p-4">
+                                <h3 className="font-semibold">{campana.nombre}</h3>
+                                <p className="text-sm text-slate-500">{campana.descripcion}</p>
+                                <div className="mt-2 text-sm">
+                                    <span className="font-medium">Estado:</span> {campana.estatus}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 ) : (
                     <div className="rounded-lg border border-dashed border-slate-300 p-8 text-center dark:border-slate-700">
                         <Calendar className="mx-auto size-10 text-slate-400" />
-                        <h3 className="mt-3 text-lg font-medium">No está registrado en ninguna campaña</h3>
-                        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                            Consulte las campañas disponibles a continuación para registrarse.
+                        <h3 className="mt-3 text-lg font-medium">No tiene registro en campaña alguna</h3>
+                        <p className="mt-2 text-sm text-slate-500">
+                            Explore las campañas disponibles y regístrese en las que le interesen.
                         </p>
                     </div>
                 )}
             </div>
-
-            {/* Campañas Disponibles */}
-            <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                <div className="mb-4">
-                    <h2 className="text-xl font-semibold">Campañas Disponibles</h2>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                        Campañas de salud a las que puede registrarse.
-                    </p>
-                </div>
-
-                {cargandoCampanas ? (
-                    <div className="py-8 text-center">
-                        <RefreshCw className="mx-auto size-8 animate-spin text-slate-400" />
-                        <p className="mt-2 text-slate-500">Cargando campañas disponibles...</p>
-                    </div>
-                ) : campanasDisponibles.length > 0 ? (
-                    <div className="space-y-4">
-                        {/* {campanasDisponibles.map(campana => (
-                            <CampanaCard
-                                key={campana.id}
-                                campana={campana}
-                                isRegistered={false}
-                                onRegister={() => { }}
-                                onDetails={() => { }}
-                            />
-                        ))} */}
-                        <></>
-                    </div>
-                ) : (
-                    <div className="rounded-lg border border-dashed border-slate-300 p-8 text-center dark:border-slate-700">
-                        <Heart className="mx-auto size-10 text-slate-400" />
-                        <h3 className="mt-3 text-lg font-medium">No hay campañas disponibles</h3>
-                        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                            En este momento no hay campañas disponibles en su área.
-                        </p>
-                    </div>
-                )}
-            </div>
-
-            {/* Información de Salud */}
-            {
-                triaje && (
-                    <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                        <div className="mb-4 flex items-center justify-between">
-                            <div>
-                                <h2 className="text-xl font-semibold">Mi Información de Salud</h2>
-                                <p className="text-sm text-slate-500 dark:text-slate-400">
-                                    Resultados de su evaluación de salud.
-                                </p>
-                            </div>
-                            <Button
-                                variant="outline"
-                                onClick={() => setMostrarTriajeForm(true)}
-                            >
-                                Actualizar Información
-                            </Button>
-                        </div>
-
-                        <div className="grid gap-6 md:grid-cols-2">
-                            <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-700">
-                                <h3 className="mb-2 font-medium">Factores de Riesgo</h3>
-                                <ul className="space-y-2 text-sm">
-                                    {triaje.tabaquismo && <li className="flex items-center gap-2">🚬 Tabaquismo</li>}
-                                    {triaje.alcoholismo && <li className="flex items-center gap-2">🍷 Alcoholismo</li>}
-                                    {triaje.diabetes && <li className="flex items-center gap-2">🩸 Diabetes</li>}
-                                    {triaje.antecedentesCardiacos && (
-                                        <li className="flex items-center gap-2">❤️ Antecedentes cardíacos</li>
-                                    )}
-                                </ul>
-                            </div>
-
-                            <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-700">
-                                <h3 className="mb-2 font-medium">Signos Vitales</h3>
-                                <ul className="space-y-2 text-sm">
-                                    <li className="flex items-center justify-between">
-                                        <span>Presión arterial:</span>
-                                        <span className="font-medium">{triaje.presionSistolica}/{triaje.presionDiastolica} mmHg</span>
-                                    </li>
-                                    <li className="flex items-center justify-between">
-                                        <span>Colesterol total:</span>
-                                        <span className="font-medium">{triaje.colesterolTotal} mg/dL</span>
-                                    </li>
-                                    <li className="flex items-center justify-between">
-                                        <span>Peso:</span>
-                                        <span className="font-medium">{triaje.peso} kg</span>
-                                    </li>
-                                    <li className="flex items-center justify-between">
-                                        <span>IMC:</span>
-                                        <span className="font-medium">{triaje.imc}</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-        </div >
+        </div>
     );
 }

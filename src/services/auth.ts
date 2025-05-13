@@ -106,4 +106,41 @@ export const authService = {
     getToken: (): string | null => {
         return Cookies.get('token') || null;
     },
+
+    /**
+     * Verifica si existe el perfil del paciente
+     */
+    verificarPerfilPaciente: async (usuarioId: number): Promise<boolean> => {
+        try {
+            const response = await apiClient.get(`/pacientes/usuario/${usuarioId}`);
+            return !!response.data; // Si hay datos, existe el perfil
+        } catch (error: any) {
+            if (error.response?.status === 404) {
+                return false; // No existe el perfil
+            }
+            console.error('Error al verificar perfil del paciente:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Verifica si el paciente tiene triaje inicial
+     */
+    verificarTriajePaciente: async (usuarioId: number): Promise<boolean> => {
+        try {
+            // Primero obtenemos el pacienteId
+            const perfilResponse = await apiClient.get(`/pacientes/usuario/${usuarioId}`);
+            const pacienteId = perfilResponse.data.id;
+
+            // Luego verificamos si tiene triaje
+            const triajeResponse = await apiClient.get(`/triaje`);
+            const triajes = triajeResponse.data;
+
+            // Verificar si existe algún triaje para este paciente
+            return triajes.some((triaje: any) => triaje.pacienteId === pacienteId);
+        } catch (error) {
+            console.error('Error al verificar triaje del paciente:', error);
+            return false;
+        }
+    },
 };

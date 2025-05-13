@@ -2,6 +2,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+
 import { Button } from "@/src/components/ui/button";
 
 export function RegistroButton() {
@@ -14,7 +15,7 @@ export function RegistroButton() {
     return (
         <div className="mt-1 text-center ">
             <p className="mb-2 text-sm text-slate-500 dark:text-slate-400">
-                ¿Eres una entidad de salud y necesitas registrarte?
+                {/* ¿Eres una entidad de salud y necesitas registrarte? */}
             </p>
             <Button
                 type="button"

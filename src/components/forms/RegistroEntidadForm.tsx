@@ -73,7 +73,7 @@ export default function RegistroEntidadForm(): JSX.Element {
         try {
             // Preparar datos para enviar
             const datosRegistro: DatosRegistro = {
-                tipoIdentificacion: "nit",  // Fijo para entidades de salud
+                tipoIdentificacion: "NIT",  // Fijo para entidades de salud
                 identificacion: datos.identificacion,
                 nombres: datos.razonSocial, // Usamos razonSocial como nombres
                 apellidos: "-", // Campo requerido por la API, pero no aplicable para entidades

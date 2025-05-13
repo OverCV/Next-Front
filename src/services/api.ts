@@ -32,11 +32,6 @@ apiClient.interceptors.response.use(
             // Si hay error de autenticación, limpiar cookie y localStorage
             Cookies.remove('token');
             localStorage.removeItem('usuario');
-
-            // Redirigir a login si estamos en el cliente
-            if (typeof window !== 'undefined') {
-                window.location.href = '/acceso';
-            }
         }
         return Promise.reject(error);
     }

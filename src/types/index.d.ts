@@ -1,5 +1,7 @@
 // src\types\index.d.ts
 
+import { TiposIdentificacionEnum } from "../constants";
+
 export interface Triaje {
   id: number;
   pacienteId: number;
@@ -107,13 +109,13 @@ export interface Citacion {
 
 // Interfaces autenticación y usuario
 export interface DatosAcceso {
-  tipoIdentificacion: string;
+  tipoIdentificacion: TiposIdentificacionEnum;
   identificacion: string;
   clave: string;
 }
 
 export interface DatosRegistro {
-  tipoIdentificacion: string;
+  tipoIdentificacion: TiposIdentificacionEnum;
   identificacion: string;
   nombres: string;
   apellidos: string;
@@ -126,7 +128,7 @@ export interface DatosRegistro {
 
 export interface Usuario {
   id: number;
-  tipoIdentificacion: string;
+  tipoIdentificacion: TiposIdentificacionEnum;
   identificacion: string;
   nombres: string;
   apellidos: string;

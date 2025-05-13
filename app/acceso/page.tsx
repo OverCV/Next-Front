@@ -1,24 +1,17 @@
 // app/acceso/page.tsx - Server Component
-import { Metadata } from "next";
-import Image from "next/image";
-import AccesoForm from "@/src/components/forms/AccesoForm";
-import { RegistroButton } from "@/src/components/auth/RegistroButton";
-import Link from "next/link";
-import { parametrosBusquedaProps } from "@/src/types";
+import { Metadata } from "next"
+import Image from "next/image"
+
+// import { RegistroButton } from "@/src/components/auth/RegistroButton"
+import AccesoForm from "@/src/components/forms/AccesoForm"
 
 export const metadata: Metadata = {
     title: "Iniciar Sesión | Sistema de Campañas de Salud",
     description: "Accede al sistema de gestión de campañas de salud cardiovascular",
-};
+}
 
-export default function AccesoPage({ paramsBusqueda }: parametrosBusquedaProps): JSX.Element {
-    // const esAdmin = paramsBusqueda?.admin === "true";
-
+export default function AccesoPage(): JSX.Element {
     return <div className="flex h-screen max-h-screen">
-        {/* {esAdmin && } */}
-
-
-
         <section className="remove-scrollbar container relative my-auto">
             <div className="sub-container">
                 <Image
@@ -30,7 +23,6 @@ export default function AccesoPage({ paramsBusqueda }: parametrosBusquedaProps):
                 />
 
                 <AccesoForm />
-                <RegistroButton />
 
             </div>
         </section>

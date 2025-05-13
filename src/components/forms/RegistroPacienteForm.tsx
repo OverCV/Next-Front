@@ -12,13 +12,13 @@ import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { Button } from "@/src/components/ui/button";
 import { Form } from "@/src/components/ui/form";
 import { SelectItem } from "@/src/components/ui/select";
-import { ROLES, TIPOS_IDENTIFICACION_PACIENTE, OPCIONES_GENERO } from "@/src/constants";
+import { ROLES, TIPOS_IDENTIFICACION_PACIENTE, OPCIONES_GENERO, TiposIdentificacionEnum } from "@/src/constants";
 import { useAuth } from "@/src/providers/auth-provider";
 import { DatosRegistro } from "@/src/types";
 
 // Esquema de validación
 const registroPacienteSchema = z.object({
-    tipoIdentificacion: z.string({
+    tipoIdentificacion: z.nativeEnum(TiposIdentificacionEnum, {
         required_error: "Selecciona un tipo de identificación",
     }),
     identificacion: z.string()
@@ -61,7 +61,7 @@ export default function RegistroPacienteForm() {
     const form = useForm<RegistroPacienteFormValues>({
         resolver: zodResolver(registroPacienteSchema),
         defaultValues: {
-            tipoIdentificacion: "",
+            tipoIdentificacion: TiposIdentificacionEnum.CC,
             identificacion: "",
             nombres: "",
             apellidos: "",
@@ -127,6 +127,9 @@ export default function RegistroPacienteForm() {
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                     Complete los datos del paciente para registrarlo en el sistema
                 </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Ingresa los datos del paciente. La contraseña inicial será su número de identificación.
+                </p>
             </div>
 
             {error && (
@@ -137,9 +140,9 @@ export default function RegistroPacienteForm() {
             )}
 
             {exitoso && (
-                <Alert className="mb-6 bg-green-50 text-green-800 dark:bg-green-900 dark:text-green-50">
+                <Alert className="mb-6">
                     <AlertDescription>
-                        Paciente registrado exitosamente. Serás redirigido al listado...
+                        Paciente registrado exitosamente. El paciente podrá iniciar sesión usando su número de identificación como contraseña.
                     </AlertDescription>
                 </Alert>
             )}
@@ -210,7 +213,7 @@ export default function RegistroPacienteForm() {
                             fieldType={FormFieldType.SELECT}
                             control={form.control}
                             name="genero"
-                            label="Género"
+                            label="Género Biologico"
                             placeholder="Selecciona género"
                         >
                             {OPCIONES_GENERO.map((opcion) => (
