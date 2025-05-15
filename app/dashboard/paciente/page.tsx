@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Heart, AlertCircle, RefreshCw } from 'lucide-react';
+import { Calendar, AlertCircle, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -9,8 +9,8 @@ import { StatCard } from '@/src/components/StatCard';
 import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Button } from '@/src/components/ui/button';
 import { useAuth } from '@/src/providers/auth-provider';
+import apiClient from '@/src/services/api';
 import { Triaje, Campana } from '@/src/types';
-// import { useAuth } from '@/src/providers/auth-provider';
 
 // import TriajeForm from '@/src/components/forms/TriajeForm';
 // import { campanasService } from '@/src/services/campanas';
@@ -38,43 +38,48 @@ export default function PacientePage() {
             if (!usuario?.id) return;
 
             try {
-                const response = await fetch(`/api/pacientes/usuario/${usuario.id}`);
+                const response = await apiClient.get(`/pacientes/usuario/${usuario.id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${usuario.token}`
+                    }
+                });
 
-                // Si no existe el perfil del paciente, redirigir a completarlo
-                if (response.status === 404) {
+                setPacienteId(response.data.id);
+            } catch (err: any) {
+                console.error("Error al obtener paciente:", err);
+                if (err.response?.status === 404) {
                     router.push('/dashboard/paciente/completar-perfil');
                     return;
                 }
-
-                if (!response.ok) throw new Error("Error al obtener datos del paciente");
-
-                const paciente = await response.json();
-                setPacienteId(paciente.id);
-            } catch (err) {
-                console.error("Error al obtener paciente:", err);
                 setError("Error al obtener datos del paciente");
             }
         };
 
         obtenerPaciente();
-    }, [usuario?.id, router]);
+    }, [usuario?.id, router, usuario?.token]);
 
     const cargarCampanas = async () => {
-        if (!pacienteId) return;
+        if (!pacienteId || !usuario?.token) return;
 
         setCargandoCampanas(true);
 
         try {
             // Cargar todas las campañas disponibles
-            const responseCampanas = await fetch('/api/campana');
-            if (!responseCampanas.ok) throw new Error("Error al obtener campañas");
-            const todasCampanas = await responseCampanas.json();
+            const responseCampanas = await apiClient.get('/campanas', {
+                headers: {
+                    'Authorization': `Bearer ${usuario.token}`
+                }
+            });
+            const todasCampanas = responseCampanas.data;
             setCampanasDisponibles(todasCampanas);
 
             // Cargar inscripciones del paciente
-            const responseInscripciones = await fetch(`/api/inscripciones-campana/paciente/${pacienteId}`);
-            if (!responseInscripciones.ok) throw new Error("Error al obtener inscripciones");
-            const inscripciones = await responseInscripciones.json();
+            const responseInscripciones = await apiClient.get(`/inscripciones-campana/paciente/${pacienteId}`, {
+                headers: {
+                    'Authorization': `Bearer ${usuario.token}`
+                }
+            });
+            const inscripciones = responseInscripciones.data;
 
             // Filtrar las campañas en las que está inscrito
             const campanasInscritas = todasCampanas.filter((campana: Campana) =>
@@ -100,16 +105,19 @@ export default function PacientePage() {
     // Cargar triaje inicial del paciente
     useEffect(() => {
         const cargarTriaje = async () => {
-            if (!pacienteId) return;
+            if (!pacienteId || !usuario?.token) return;
 
             setCargandoTriaje(true);
             setError(null);
 
             try {
-                const response = await fetch(`/api/triaje/paciente/${pacienteId}`);
-                if (!response.ok) throw new Error("Error al obtener triaje");
+                const response = await apiClient.get(`/triaje/paciente/${pacienteId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${usuario.token}`
+                    }
+                });
 
-                const triajes = await response.json();
+                const triajes = response.data;
                 // Tomamos el triaje más reciente
                 const ultimoTriaje = triajes.length > 0 ? triajes[0] : null;
                 setTriaje(ultimoTriaje);
@@ -117,7 +125,6 @@ export default function PacientePage() {
                 // Si no hay triaje, redirigir a crearlo
                 if (!ultimoTriaje) {
                     router.push('/dashboard/paciente/triaje-inicial');
-
                 }
             } catch (err: any) {
                 console.error('Error al cargar triaje:', err);
@@ -128,28 +135,24 @@ export default function PacientePage() {
         };
 
         cargarTriaje();
-    }, [pacienteId, router]);
+    }, [pacienteId, router, usuario?.token]);
 
     // Manejar envío del formulario de triaje
     const handleTriajeSubmit = async (datosTriaje: any) => {
-        if (!pacienteId) return;
+        if (!pacienteId || !usuario?.token) return;
 
         try {
-            const response = await fetch('/api/triaje', {
-                method: 'POST',
+            const response = await apiClient.post('/triaje', {
+                ...datosTriaje,
+                pacienteId,
+                fechaTriaje: new Date()
+            }, {
                 headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...datosTriaje,
-                    pacienteId,
-                    fechaTriaje: new Date()
-                })
+                    'Authorization': `Bearer ${usuario.token}`
+                }
             });
 
-            if (!response.ok) throw new Error("Error al crear triaje");
-
-            const nuevoTriaje = await response.json();
+            const nuevoTriaje = response.data;
             setTriaje(nuevoTriaje);
             setMostrarTriajeForm(false);
         } catch (err: any) {

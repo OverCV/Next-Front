@@ -46,14 +46,20 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         if (typeof window !== 'undefined' && !inicializado) {
             const verificarAuth = () => {
                 try {
-                    // Intentar obtener el usuario del localStorage
+                    // Intentar obtener el usuario del localStorage y el token de las cookies
                     const usuarioActual = authService.getUsuarioActual()
-                    setUsuario(usuarioActual)
+                    if (usuarioActual && !usuarioActual.token) {
+                        // Si hay usuario pero no token, cerrar sesión
+                        authService.salir()
+                        setUsuario(null)
+                    } else {
+                        setUsuario(usuarioActual)
+                    }
                 } catch (error) {
                     console.error("Error al verificar autenticación:", error)
                     // En caso de error, limpiar datos
-                    localStorage.removeItem('token')
-                    localStorage.removeItem('usuario')
+                    authService.salir()
+                    setUsuario(null)
                 } finally {
                     setCargando(false)
                     setInicializado(true)

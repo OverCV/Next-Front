@@ -17,12 +17,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import CustomFormField, { FormFieldType } from "@/src/components/CustomFormField";
-import { Button } from "@/src/components/ui/button";
-import { Form } from "@/src/components/ui/form";
-import { Input } from "@/src/components/ui/input";
-import { SelectItem } from "@/src/components/ui/select";
-import { NIVELES_PRIORIDAD } from "@/src/constants";
-
 import {
     Accordion,
     AccordionContent,
@@ -30,7 +24,12 @@ import {
     AccordionTrigger
 } from "@/src/components/ui/accordion";
 import { Badge } from "@/src/components/ui/badge";
-// import { Card, CardContent } from "@/src/components/ui/card";
+import { Button } from "@/src/components/ui/button";
+import { Card, CardContent } from "@/src/components/ui/card";
+import { Form } from "@/src/components/ui/form";
+import { Input } from "@/src/components/ui/input";
+import { SelectItem } from "@/src/components/ui/select";
+import { NIVELES_PRIORIDAD } from "@/src/constants";
 import { atencionesService } from "@/src/services/atenciones";
 
 

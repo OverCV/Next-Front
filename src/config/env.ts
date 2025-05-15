@@ -31,7 +31,8 @@ export const API_ENDPOINTS = {
     // Autenticación
     AUTH: `${API_URL}/auth`,
     USUARIOS: `${API_URL}/usuarios`,
-    CAMPANAS: `${API_URL}/campanas`,
+    LOCALIZACIONES: `${API_URL}/localizaciones`,
+    PACIENTES: `${API_URL}/pacientes`,
     EMBAJADORES: `${API_URL}/embajadores`,
     NOTIFICACIONES: `${API_URL}/notificaciones`,
 };

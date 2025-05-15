@@ -136,6 +136,7 @@ export interface Usuario {
   celular: string;
   estaActivo: boolean;
   rolId: number;
+  token?: string;
 }
 
 export interface RespuestaAuth {

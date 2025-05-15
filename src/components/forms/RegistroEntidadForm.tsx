@@ -12,7 +12,7 @@ import CustomFormField, { FormFieldType } from "@/src/components/CustomFormField
 import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { Button } from "@/src/components/ui/button";
 import { Form } from "@/src/components/ui/form";
-import { ROLES } from "@/src/constants";
+import { ROLES, TiposIdentificacionEnum } from "@/src/constants";
 import { useAuth } from "@/src/providers/auth-provider";
 import { DatosRegistro } from "@/src/types";
 
@@ -73,7 +73,7 @@ export default function RegistroEntidadForm(): JSX.Element {
         try {
             // Preparar datos para enviar
             const datosRegistro: DatosRegistro = {
-                tipoIdentificacion: "NIT",  // Fijo para entidades de salud
+                tipoIdentificacion: TiposIdentificacionEnum.NIT,  // Fijo para entidades de salud
                 identificacion: datos.identificacion,
                 nombres: datos.razonSocial, // Usamos razonSocial como nombres
                 apellidos: "-", // Campo requerido por la API, pero no aplicable para entidades
