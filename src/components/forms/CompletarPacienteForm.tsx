@@ -14,12 +14,13 @@ import { Form } from "@/src/components/ui/form"
 import { SelectItem } from "@/src/components/ui/select"
 import { OPCIONES_GENERO, GeneroBiologicoEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
-import apiClient from "@/src/services/api"
 import { localizacionesService } from "@/src/services/domain/localizaciones.service"
+import { pacientesService } from "@/src/services/domain/pacientes.service"
 import { Localizacion } from "@/src/types"
+import { checkTokenStatus, runDebugTests } from "@/src/utils/debug"
 
 // Esquema de validación
-const completarPerfilSchema = z.object({
+const completarPacienteSchema = z.object({
     fechaNacimiento: z.date({
         required_error: "La fecha de nacimiento es requerida",
     }),
@@ -37,48 +38,18 @@ const completarPerfilSchema = z.object({
         ),
 })
 
-type CompletarPerfilFormValues = z.infer<typeof completarPerfilSchema>
+type CompletarPacienteFormValues = z.infer<typeof completarPacienteSchema>
 
-export default function CompletarPerfilForm() {
+export default function CompletarPacienteForm() {
     const router = useRouter()
     const { usuario, setNecesitaCompletarPerfil } = useAuth()
     const [error, setError] = useState<string | null>(null)
     const [cargando, setCargando] = useState<boolean>(false)
     const [localizaciones, setLocalizaciones] = useState<Localizacion[]>([])
+    const [formErrors, setFormErrors] = useState<string[]>([])
 
-    useEffect(() => {
-        const cargarLocalizaciones = async () => {
-            console.log("🔍 Estado del usuario:", {
-                id: usuario?.id,
-                token: usuario?.token ? `${usuario.token.substring(0, 15)}...` : null,
-                roles: usuario?.rolId
-            })
-
-            // if (!usuario?.token) {
-            //     console.warn("⚠️ No hay token disponible")
-            //     return
-            // }
-
-            try {
-                console.log("📡 Intentando cargar localizaciones...")
-                const data = await localizacionesService.obtenerLocalizaciones(usuario.token)
-                console.log("✅ Localizaciones cargadas:", data)
-                setLocalizaciones(data)
-            } catch (err: any) {
-                console.error("❌ Error al cargar localizaciones:", {
-                    mensaje: err.message,
-                    status: err.response?.status,
-                    data: err.response?.data
-                })
-                setError("Error al cargar las localizaciones")
-            }
-        }
-
-        cargarLocalizaciones()
-    }, [usuario?.token, usuario?.id, usuario?.rolId])
-
-    const form = useForm<CompletarPerfilFormValues>({
-        resolver: zodResolver(completarPerfilSchema),
+    const form = useForm<CompletarPacienteFormValues>({
+        resolver: zodResolver(completarPacienteSchema),
         defaultValues: {
             fechaNacimiento: undefined,
             genero: undefined,
@@ -87,34 +58,106 @@ export default function CompletarPerfilForm() {
         },
     })
 
-    const onSubmit = async (datos: CompletarPerfilFormValues) => {
-        if (!form.formState.isValid || !usuario?.token) return
+    useEffect(() => {
+        const verificarToken = () => {
+            // Verificar si hay token disponible
+            const tokenStatus = checkTokenStatus();
+
+            if (!tokenStatus) {
+                console.warn("⚠️ No se encontró token en verificarToken");
+                setError("No hay sesión activa. Por favor, inicia sesión nuevamente.");
+                return false;
+            }
+
+            return true;
+        }
+
+        const cargarLocalizaciones = async () => {
+            const token = usuario?.token || localStorage.getItem('token') || document.cookie.match(/token=([^;]+)/)?.[1] || "";
+
+            if (!token) {
+                console.warn("⚠️ No hay token disponible en usuario ni en almacenamiento")
+
+                // Intentar verificar si hay token en otro lugar
+                if (!verificarToken()) {
+                    // Ejecutar pruebas de depuración para intentar identificar el problema
+                    runDebugTests()
+                    return;
+                }
+            } else {
+                console.log("✅ Token encontrado:", token.substring(0, 15) + "...");
+            }
+
+            try {
+                const data = await localizacionesService.obtenerLocalizaciones(token)
+                setLocalizaciones(data)
+            } catch (err: any) {
+                console.error("❌ Error al cargar localizaciones:", err)
+                setError("Error al cargar las localizaciones")
+            }
+        }
+
+        // Ejecutar la carga de localizaciones con un pequeño retraso
+        // para asegurar que el token esté disponible
+        const timer = setTimeout(() => {
+            cargarLocalizaciones()
+        }, 500)
+
+        return () => clearTimeout(timer)
+    }, [usuario?.token])
+
+    const onSubmit = async (datos: CompletarPacienteFormValues) => {
+        setFormErrors([])
+
+        // Obtener token de cualquier lugar disponible
+        const token = usuario?.token || localStorage.getItem('token') || document.cookie.match(/token=([^;]+)/)?.[1] || "";
+
+        if (!token) {
+            setError("No hay sesión activa. Por favor, inicia sesión nuevamente.")
+            return
+        }
+
+        if (!form.formState.isValid) {
+            const errors = Object.entries(form.formState.errors).map(([field, error]) => {
+                return `${error.message}`
+            })
+            setFormErrors(errors)
+            return
+        }
 
         try {
             setCargando(true)
             setError(null)
 
-            console.log("Enviando datos:", {
+            console.log("📝 Datos del formulario:", {
                 ...datos,
-                usuarioId: usuario.id,
-                localizacion_id: datos.localizacion_id
+                usuarioId: usuario?.id
             })
 
-            // Crear el perfil del paciente
-            const response = await apiClient.post("/pacientes", {
-                ...datos,
-                usuarioId: usuario.id,
-            }, {
-                headers: {
-                    "Authorization": `Bearer ${usuario.token}`
+            if (!usuario?.id) {
+                setError("No se pudo obtener el ID del usuario. Por favor, inicia sesión nuevamente.")
+                return
+            }
+
+            // Crear el perfil del paciente usando el servicio
+            const response = await pacientesService.crearPerfil(
+                token,
+                {
+                    ...datos,
+                    usuarioId: usuario.id
                 }
-            })
+            )
 
-            console.log("Respuesta:", response.data)
+            console.log("✅ Perfil creado:", response)
             setNecesitaCompletarPerfil(false)
-            router.push("/dashboard/paciente/triaje-inicial")
+
+            // Redirigir al usuario después de un breve retraso para asegurar que los cambios se han aplicado
+            setTimeout(() => {
+                router.push("/dashboard/paciente/triaje-inicial")
+            }, 500)
+
         } catch (err: any) {
-            console.error("Error al guardar perfil:", err)
+            console.error("❌ Error al guardar perfil:", err)
             setError(err.response?.data?.message || "Error al guardar el perfil. Por favor intenta nuevamente.")
         } finally {
             setCargando(false)
@@ -137,16 +180,22 @@ export default function CompletarPerfilForm() {
                 </Alert>
             )}
 
+            {formErrors.length > 0 && (
+                <Alert variant="destructive" className="mb-6">
+                    <AlertCircle className="size-4" />
+                    <AlertDescription>
+                        <ul className="list-disc pl-4">
+                            {formErrors.map((err, index) => (
+                                <li key={index}>{err}</li>
+                            ))}
+                        </ul>
+                    </AlertDescription>
+                </Alert>
+            )}
+
             <Form {...form}>
                 <form
-                    onSubmit={(e) => {
-                        e.preventDefault()
-                        if (!form.formState.isValid) {
-                            setError("Por favor completa todos los campos correctamente")
-                            return
-                        }
-                        form.handleSubmit(onSubmit)(e)
-                    }}
+                    onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-6"
                     noValidate
                 >

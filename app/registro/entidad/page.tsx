@@ -2,6 +2,7 @@
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
 import RegistroEntidadForm from "@/src/components/forms/RegistroEntidadForm";
 
 export const metadata: Metadata = {

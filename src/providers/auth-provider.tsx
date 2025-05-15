@@ -2,7 +2,7 @@
 "use client"
 
 import { useRouter } from 'next/navigation'
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo, useCallback } from 'react'
 
 import { ROLES } from '../constants'
 import { authService } from '../services/auth'
@@ -46,18 +46,33 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         if (typeof window !== 'undefined' && !inicializado) {
             const verificarAuth = () => {
                 try {
-                    // Intentar obtener el usuario del localStorage y el token de las cookies
+                    // Intentar obtener el usuario y el token
                     const usuarioActual = authService.getUsuarioActual()
-                    if (usuarioActual && !usuarioActual.token) {
-                        // Si hay usuario pero no token, cerrar sesión
+                    const token = authService.getToken()
+
+                    console.log('token actual:', token ? token.substring(0, 15) + "..." : "no disponible")
+
+                    if (usuarioActual && !token) {
+                        console.warn("⚠️ Usuario encontrado pero sin token, cerrando sesión...")
                         authService.salir()
                         setUsuario(null)
-                    } else {
-                        setUsuario(usuarioActual)
+                    } else if (usuarioActual && token) {
+                        console.log("✅ Sesión restaurada:", {
+                            id: usuarioActual.id,
+                            token: token.substring(0, 15) + "..."
+                        })
+                        setUsuario({
+                            ...usuarioActual,
+                            token
+                        })
+
+                        // Si es paciente, verificar su estado
+                        if (usuarioActual.rolId === ROLES.PACIENTE) {
+                            verificarEstadoPaciente(usuarioActual.id, token)
+                        }
                     }
                 } catch (error) {
-                    console.error("Error al verificar autenticación:", error)
-                    // En caso de error, limpiar datos
+                    console.error("❌ Error al verificar autenticación:", error)
                     authService.salir()
                     setUsuario(null)
                 } finally {
@@ -71,30 +86,58 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     }, [inicializado])
 
     // Verificar si el usuario necesita completar su perfil o triaje inicial
-    const verificarEstadoPaciente = async (usuarioId: number) => {
+    const verificarEstadoPaciente = async (usuarioId: number, token: string) => {
         try {
-            // Aquí deberías hacer las llamadas a tu API para verificar:
-            // 1. Si existe el registro en la tabla paciente
-            // 2. Si tiene un triaje inicial
-            const tienePerfil = await authService.verificarPerfilPaciente(usuarioId)
-            const tieneTriaje = await authService.verificarTriajePaciente(usuarioId)
+            console.log("🔍 Verificando estado del paciente:", usuarioId)
 
-            setNecesitaCompletarPerfil(!tienePerfil)
-            setNecesitaTriajeInicial(!tieneTriaje)
+            // Verificar si tiene perfil
+            const perfilResponse = await fetch(`/api/pacientes/perfil?usuarioId=${usuarioId}&token=${token}`);
+            const perfilData = await perfilResponse.json();
 
-            return { tienePerfil, tieneTriaje }
+            const tienePerfil = perfilData.existe === true;
+            console.log("✅ Tiene perfil:", tienePerfil, perfilData);
+
+            setNecesitaCompletarPerfil(!tienePerfil);
+
+            // Si no tiene perfil, no necesitamos verificar el triaje
+            if (!tienePerfil) {
+                setNecesitaTriajeInicial(false);
+                return { tienePerfil, tieneTriaje: false, perfilData };
+            }
+
+            // Verificar si tiene triaje (usando el ID del paciente del perfil)
+            const pacienteId = perfilData.id;
+            console.log("🔍 ID del paciente para verificar triaje:", pacienteId);
+
+            if (!pacienteId) {
+                console.warn("⚠️ No se encontró ID de paciente en los datos del perfil");
+                setNecesitaTriajeInicial(true);
+                return { tienePerfil, tieneTriaje: false, perfilData };
+            }
+
+            const triajeResponse = await fetch(`/api/pacientes/triaje?pacienteId=${pacienteId}&token=${token}`);
+            const triajeData = await triajeResponse.json();
+
+            const tieneTriaje = triajeData.existe === true;
+            console.log("✅ Tiene triaje:", tieneTriaje, triajeData);
+
+            setNecesitaTriajeInicial(!tieneTriaje);
+
+            return { tienePerfil, tieneTriaje, perfilData, triajeData };
         } catch (error) {
-            console.error("Error al verificar estado del paciente:", error)
-            return { tienePerfil: false, tieneTriaje: false }
+            console.error("❌ Error al verificar estado del paciente:", error);
+            // Por defecto, asumimos que necesita completar perfil y triaje
+            setNecesitaCompletarPerfil(true);
+            setNecesitaTriajeInicial(true);
+            return { tienePerfil: false, tieneTriaje: false };
         }
     }
 
     // Registrar un nuevo usuario
-    const registroUsuario = async (datos: DatosRegistro): Promise<Usuario> => {
+    const registroUsuario = useCallback(async (datos: DatosRegistro): Promise<Usuario> => {
         setCargando(true)
         try {
             const respuesta = await authService.registro(datos)
-            // setUsuario(respuesta.usuario)
             return respuesta.usuario
         } catch (error) {
             console.error('Error al registrar usuario:', error)
@@ -102,38 +145,48 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         } finally {
             setCargando(false)
         }
-    }
+    }, [])
 
     // Iniciar sesión
-    const iniciarSesion = async (credenciales: DatosAcceso): Promise<Usuario> => {
+    const iniciarSesion = useCallback(async (credenciales: DatosAcceso): Promise<Usuario> => {
         setCargando(true)
         try {
             const respuesta = await authService.acceso(credenciales)
             setUsuario(respuesta.usuario)
 
-            // Si es paciente, verificar su estado
             if (respuesta.usuario.rolId === ROLES.PACIENTE) {
-                const { tienePerfil, tieneTriaje } = await verificarEstadoPaciente(respuesta.usuario.id)
+                const token = respuesta.usuario.token || ""
+                const { tienePerfil, tieneTriaje } = await verificarEstadoPaciente(
+                    respuesta.usuario.id,
+                    token
+                )
 
-                // Determinar la ruta de redirección basada en el estado
-                if (!tienePerfil) {
-                    router.push('/completar-perfil')
-                } else if (!tieneTriaje) {
-                    router.push('/triaje-inicial')
-                }
+                // Usar setTimeout para asegurar que la redirección ocurra después de que se actualice el estado
+                setTimeout(() => {
+                    if (!tienePerfil) {
+                        console.log("🔄 Redirigiendo a completar perfil")
+                        router.push('/dashboard/paciente/completar-perfil')
+                    } else if (!tieneTriaje) {
+                        console.log("🔄 Redirigiendo a triaje inicial")
+                        router.push('/dashboard/paciente/triaje-inicial')
+                    } else {
+                        console.log("✅ Usuario con perfil y triaje completos")
+                        router.push('/dashboard/paciente')
+                    }
+                }, 300)
             }
 
             return respuesta.usuario
         } catch (error) {
-            console.error('Error al iniciar sesión:', error)
+            console.error('❌ Error al iniciar sesión:', error)
             throw error
         } finally {
             setCargando(false)
         }
-    }
+    }, [router])
 
     // Cerrar sesión
-    const cerrarSesion = async (): Promise<void> => {
+    const cerrarSesion = useCallback(async (): Promise<void> => {
         setCargando(true)
         try {
             await authService.salir()
@@ -144,15 +197,15 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         } finally {
             setCargando(false)
         }
-    }
+    }, [router])
 
     // Verificar si el usuario tiene un rol específico
-    const tieneRol = (rolId: number): boolean => {
+    const tieneRol = useCallback((rolId: number): boolean => {
         return usuario?.rolId === rolId
-    }
+    }, [usuario?.rolId])
 
     // Valor del contexto
-    const contextValue: AuthContextType = {
+    const contextValue = useMemo(() => ({
         usuario,
         cargando,
         estaAutenticado: !!usuario,
@@ -164,7 +217,16 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         necesitaTriajeInicial,
         setNecesitaCompletarPerfil,
         setNecesitaTriajeInicial
-    }
+    }), [
+        usuario,
+        cargando,
+        necesitaCompletarPerfil,
+        necesitaTriajeInicial,
+        registroUsuario,
+        iniciarSesion,
+        cerrarSesion,
+        tieneRol
+    ])
 
     return (
         <AuthContext.Provider value={contextValue}>

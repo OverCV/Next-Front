@@ -21,9 +21,9 @@ export async function POST(request: Request) {
 			);
 		}
 
-		// Llamar al backend para crear el perfil del paciente
+		// Llamar al backend para crear el triaje del paciente
 		const response = await apiClient.post(
-			"/pacientes",
+			"/pacientes/triaje",
 			datosParaEnviar,
 			{
 				headers: {
@@ -32,17 +32,17 @@ export async function POST(request: Request) {
 			}
 		);
 
-		// En caso de éxito, enviamos una respuesta simplificada con existe: true
+		// En caso de éxito, enviamos una respuesta simplificada
 		return NextResponse.json({
 			...response.data,
 			existe: true,
-			mensaje: "Perfil creado correctamente"
+			mensaje: "Triaje creado correctamente"
 		});
 	} catch (error: any) {
-		logError("Error al crear perfil del paciente", error);
+		logError("Error al crear triaje del paciente", error);
 
 		return NextResponse.json(
-			{ error: "Error al crear el perfil del paciente" },
+			{ error: "Error al crear el triaje del paciente" },
 			{ status: error.response?.status || 500 }
 		);
 	}
@@ -50,57 +50,66 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
 	try {
-		// Obtener el ID del usuario de los parámetros de la URL
+		// Obtener el ID del paciente de los parámetros de la URL
 		const url = new URL(request.url)
-		const usuarioId = url.searchParams.get("usuarioId")
+		const pacienteId = url.searchParams.get("pacienteId")
 		const token = url.searchParams.get("token") || ""
 
-		if (!usuarioId) {
-			logError("ID de usuario no proporcionado", { url: url.toString() });
+		if (!pacienteId) {
+			logError("ID de paciente no proporcionado", { url: url.toString() });
 			return NextResponse.json(
-				{ error: "ID de usuario no proporcionado" },
+				{ error: "ID de paciente no proporcionado" },
 				{ status: 400 }
 			)
 		}
 
 		try {
-			// Intentar obtener el perfil del paciente
-			console.log(`[API] Consultando perfil para usuarioId: ${usuarioId}`);
+			// Intentar obtener el triaje del paciente
+			console.log(`[API] Consultando triaje para pacienteId: ${pacienteId}`);
 
 			try {
-				// Intentar obtener el perfil del backend real
-				const response = await apiClient.get(`/pacientes/usuario/${usuarioId}`, {
+				// Intentar obtener el triaje del backend real
+				const response = await apiClient.get(`/triaje/paciente/${pacienteId}`, {
 					headers: {
 						"Authorization": token ? `Bearer ${token}` : ""
 					}
 				})
 
-				// Si llegamos aquí, el perfil existe
-				console.log(`[API] Perfil encontrado para usuarioId: ${usuarioId}`, response.data);
+				// Si llegamos aquí, verificamos si hay triajes
+				console.log(`[API] Triaje encontrado para pacienteId: ${pacienteId}`, response.data);
+
+				// Si la respuesta es un array vacío, significa que no hay triajes
+				if (Array.isArray(response.data) && response.data.length === 0) {
+					return NextResponse.json({
+						existe: false,
+						mensaje: "El paciente no tiene triajes registrados",
+						triajes: []
+					}, { status: 200 })
+				}
 
 				return NextResponse.json({
-					...response.data,
-					existe: true
+					existe: true,
+					triajes: response.data
 				})
 			} catch (backendError: any) {
-				// Si el error es 404, significa que el perfil no existe
+				// Si el error es 404, significa que el triaje no existe
 				if (backendError.response?.status === 404) {
-					console.log(`[API] Perfil no encontrado para usuarioId: ${usuarioId} (404)`);
+					console.log(`[API] Triaje no encontrado para pacienteId: ${pacienteId} (404)`);
 
 					return NextResponse.json({
 						existe: false,
-						mensaje: "El perfil del paciente no existe"
+						mensaje: "El triaje del paciente no existe"
 					}, { status: 200 })
 				}
 
 				// Si es un error 403, simulamos una respuesta falsa para evitar loops
 				if (backendError.response?.status === 403) {
-					console.log(`[API] Error de autorización al consultar perfil para usuarioId: ${usuarioId} (403)`);
+					console.log(`[API] Error de autorización al consultar triaje para pacienteId: ${pacienteId} (403)`);
 
-					// Para destrabar el flujo, asumimos que el perfil no existe
+					// Para destrabar el flujo, asumimos que el triaje no existe
 					return NextResponse.json({
 						existe: false,
-						mensaje: "No se pudo verificar el perfil (error de autorización)",
+						mensaje: "No se pudo verificar el triaje (error de autorización)",
 						simulado: true
 					}, { status: 200 });
 				}
@@ -109,11 +118,11 @@ export async function GET(request: Request) {
 				throw backendError;
 			}
 		} catch (error: any) {
-			logError("Error al obtener perfil del paciente", error);
+			logError("Error al obtener triaje del paciente", error);
 
 			return NextResponse.json(
 				{
-					error: "Error al obtener el perfil del paciente",
+					error: "Error al obtener el triaje del paciente",
 					detalles: error.message,
 					status: error.response?.status
 				},
@@ -121,11 +130,11 @@ export async function GET(request: Request) {
 			)
 		}
 	} catch (error: any) {
-		logError("Error general al procesar solicitud de perfil", error);
+		logError("Error general al procesar solicitud de triaje", error);
 
 		return NextResponse.json(
 			{
-				error: "Error al procesar la solicitud del perfil",
+				error: "Error al procesar la solicitud del triaje",
 				detalles: error.message
 			},
 			{ status: 200 } // Devolvemos 200 para evitar errores en el cliente
