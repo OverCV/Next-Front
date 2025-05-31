@@ -1,13 +1,14 @@
-"use client";
+"use client"
 
-import { ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react"
+import { useRouter } from "next/navigation"
 
-import RegistroPacienteForm from "@/src/components/forms/RegistroPacienteForm";
-import { Button } from "@/src/components/ui/button";
+import RegistrarPacienteForm from "@/src/components/forms/CompletarPacienteForm"
+import RegistroUsuarioPacienteForm from "@/src/components/forms/RegistroPacienteForm"
+import { Button } from "@/src/components/ui/button"
 
 export default function RegistrarPacientePage() {
-    const router = useRouter();
+    const router = useRouter()
 
     return (
         <div>
@@ -22,7 +23,14 @@ export default function RegistrarPacientePage() {
                 <h1 className="text-2xl font-bold">Registrar Nuevo Paciente</h1>
             </div>
 
-            <RegistroPacienteForm />
+            <RegistroUsuarioPacienteForm />
+
+            <br />
+
+            <RegistrarPacienteForm />
+
+
+
         </div>
-    );
+    )
 }

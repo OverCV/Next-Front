@@ -51,5 +51,55 @@ export const pacientesService = {
 			console.error("❌ Error al obtener perfil:", error)
 			throw error
 		}
+	},
+
+	crearTriaje: async (token: string, datos: {
+		pacienteId: number
+		edad: number
+		presionSistolica: number
+		presionDiastolica: number
+		colesterolTotal: number
+		hdl: number
+		tabaquismo: boolean
+		alcoholismo: boolean
+		diabetes: boolean
+		peso: number
+		talla: number
+		dolorPecho: boolean
+		dolorIrradiado: boolean
+		sudoracion: boolean
+		nauseas: boolean
+		antecedentesCardiacos: boolean
+		descripcion?: string
+	}) => {
+		try {
+			console.log("📝 Creando triaje para paciente:", datos.pacienteId)
+
+			// Calcular IMC automáticamente
+			const talla = datos.talla / 100 // convertir cm a metros
+			const imc = Math.round((datos.peso / (talla * talla)) * 10) / 10 // IMC con 1 decimal
+
+			// Usar el endpoint local para evitar problemas con el token
+			const response = await fetch("/api/pacientes/triaje", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					...datos,
+					fechaTriaje: new Date().toISOString().split('T')[0],
+					imc,
+					nivelPrioridad: "MEDIA", // Por defecto asignamos prioridad MEDIA
+					token // Pasamos el token para que el endpoint lo use
+				})
+			})
+
+			const data = await response.json()
+			console.log("✅ Triaje creado:", data)
+			return data
+		} catch (error) {
+			console.error("❌ Error al crear triaje:", error)
+			throw error
+		}
 	}
 }

@@ -20,10 +20,10 @@ import { Localizacion } from "@/src/types"
 import { checkTokenStatus, runDebugTests } from "@/src/utils/debug"
 
 // Esquema de validación
-const completarPacienteSchema = z.object({
-    fechaNacimiento: z.date({
-        required_error: "La fecha de nacimiento es requerida",
-    }),
+const completarUsuarioPacienteSchema = z.object({
+    // fechaNacimiento: z.date({
+    //     required_error: "La fecha de nacimiento es requerida",
+    // }),
     genero: z.nativeEnum(GeneroBiologicoEnum, {
         required_error: "Selecciona un género",
     }),
@@ -38,9 +38,9 @@ const completarPacienteSchema = z.object({
         ),
 })
 
-type CompletarPacienteFormValues = z.infer<typeof completarPacienteSchema>
+type CompletarPacienteFormValues = z.infer<typeof completarUsuarioPacienteSchema>
 
-export default function CompletarPacienteForm() {
+export default function RegistrarPacienteForm() {
     const router = useRouter()
     const { usuario, setNecesitaCompletarPerfil } = useAuth()
     const [error, setError] = useState<string | null>(null)
@@ -48,10 +48,10 @@ export default function CompletarPacienteForm() {
     const [localizaciones, setLocalizaciones] = useState<Localizacion[]>([])
     const [formErrors, setFormErrors] = useState<string[]>([])
 
-    const form = useForm<CompletarPacienteFormValues>({
-        resolver: zodResolver(completarPacienteSchema),
+    const formPaciente = useForm<CompletarPacienteFormValues>({
+        resolver: zodResolver(completarUsuarioPacienteSchema),
         defaultValues: {
-            fechaNacimiento: undefined,
+            // fechaNacimiento: undefined,
             genero: undefined,
             direccion: "",
             localizacion_id: undefined,
@@ -117,8 +117,8 @@ export default function CompletarPacienteForm() {
             return
         }
 
-        if (!form.formState.isValid) {
-            const errors = Object.entries(form.formState.errors).map(([field, error]) => {
+        if (!formPaciente.formState.isValid) {
+            const errors = Object.entries(formPaciente.formState.errors).map(([field, error]) => {
                 return `${error.message}`
             })
             setFormErrors(errors)
@@ -167,9 +167,9 @@ export default function CompletarPacienteForm() {
     return (
         <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-md dark:border-slate-700 dark:bg-slate-900">
             <div className="mb-6">
-                <h2 className="text-xl font-semibold">Completa tu Perfil</h2>
+                <h2 className="text-xl font-semibold">Datos específicos del Paciente</h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Para continuar, necesitamos algunos datos adicionales
+                    Datos adicionales para el paciente
                 </p>
             </div>
 
@@ -193,15 +193,15 @@ export default function CompletarPacienteForm() {
                 </Alert>
             )}
 
-            <Form {...form}>
+            <Form {...formPaciente}>
                 <form
-                    onSubmit={form.handleSubmit(onSubmit)}
+                    onSubmit={formPaciente.handleSubmit(onSubmit)}
                     className="space-y-6"
                     noValidate
                 >
                     <CustomFormField
                         fieldType={FormFieldType.DATE_PICKER}
-                        control={form.control}
+                        control={formPaciente.control}
                         name="fechaNacimiento"
                         label="Fecha de Nacimiento"
                         placeholder="Seleccione fecha"
@@ -209,7 +209,7 @@ export default function CompletarPacienteForm() {
 
                     <CustomFormField
                         fieldType={FormFieldType.SELECT}
-                        control={form.control}
+                        control={formPaciente.control}
                         name="genero"
                         label="Género Biologico"
                         placeholder="Selecciona género"
@@ -223,7 +223,7 @@ export default function CompletarPacienteForm() {
 
                     <CustomFormField
                         fieldType={FormFieldType.INPUT}
-                        control={form.control}
+                        control={formPaciente.control}
                         name="direccion"
                         label="Dirección"
                         placeholder="Ingresa tu dirección completa"
@@ -233,7 +233,7 @@ export default function CompletarPacienteForm() {
 
                     <CustomFormField
                         fieldType={FormFieldType.SELECT}
-                        control={form.control}
+                        control={formPaciente.control}
                         name="localizacion_id"
                         label="Localización"
                         placeholder="Selecciona tu localización"

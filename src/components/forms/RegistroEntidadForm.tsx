@@ -14,7 +14,7 @@ import { Button } from "@/src/components/ui/button";
 import { Form } from "@/src/components/ui/form";
 import { ROLES, TiposIdentificacionEnum } from "@/src/constants";
 import { useAuth } from "@/src/providers/auth-provider";
-import { DatosRegistro } from "@/src/types";
+import { Usuario } from "@/src/types";
 
 // Esquema de validación
 const registroEntidadSchema = z.object({
@@ -72,7 +72,7 @@ export default function RegistroEntidadForm(): JSX.Element {
 
         try {
             // Preparar datos para enviar
-            const datosRegistro: DatosRegistro = {
+            const datosRegistro: Usuario = {
                 tipoIdentificacion: TiposIdentificacionEnum.NIT,  // Fijo para entidades de salud
                 identificacion: datos.identificacion,
                 nombres: datos.razonSocial, // Usamos razonSocial como nombres

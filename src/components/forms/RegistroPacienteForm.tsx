@@ -1,20 +1,20 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { AlertCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
-import CustomFormField, { FormFieldType } from "@/src/components/CustomFormField";
-import { Alert, AlertDescription } from "@/src/components/ui/alert";
-import { Button } from "@/src/components/ui/button";
-import { Form } from "@/src/components/ui/form";
-import { SelectItem } from "@/src/components/ui/select";
-import { ROLES, TIPOS_IDENTIFICACION_PACIENTE, OPCIONES_GENERO, TiposIdentificacionEnum } from "@/src/constants";
-import { useAuth } from "@/src/providers/auth-provider";
-import { DatosRegistro } from "@/src/types";
+import CustomFormField, { FormFieldType } from "@/src/components/CustomFormField"
+import { Alert, AlertDescription } from "@/src/components/ui/alert"
+import { Button } from "@/src/components/ui/button"
+import { Form } from "@/src/components/ui/form"
+import { SelectItem } from "@/src/components/ui/select"
+import { ROLES, TIPOS_IDENTIFICACION_PACIENTE, OPCIONES_GENERO, TiposIdentificacionEnum } from "@/src/constants"
+import { useAuth } from "@/src/providers/auth-provider"
+import { Usuario } from "@/src/types"
 
 // Esquema de validación
 const registroPacienteSchema = z.object({
@@ -47,16 +47,16 @@ const registroPacienteSchema = z.object({
     direccion: z.string()
         .min(5, "La dirección debe tener al menos 5 caracteres")
         .max(100, "La dirección no puede exceder 100 caracteres"),
-});
+})
 
-type RegistroPacienteFormValues = z.infer<typeof registroPacienteSchema>;
+type RegistroPacienteFormValues = z.infer<typeof registroPacienteSchema>
 
-export default function RegistroPacienteForm() {
-    const router = useRouter();
-    const { registroUsuario } = useAuth();
-    const [error, setError] = useState<string | null>(null);
-    const [cargando, setCargando] = useState<boolean>(false);
-    const [exitoso, setExitoso] = useState<boolean>(false);
+export default function RegistroUsuarioPacienteForm() {
+    const router = useRouter()
+    const { registroUsuario } = useAuth()
+    const [error, setError] = useState<string | null>(null)
+    const [cargando, setCargando] = useState<boolean>(false)
+    const [exitoso, setExitoso] = useState<boolean>(false)
 
     const form = useForm<RegistroPacienteFormValues>({
         resolver: zodResolver(registroPacienteSchema),
@@ -65,60 +65,61 @@ export default function RegistroPacienteForm() {
             identificacion: "",
             nombres: "",
             apellidos: "",
-            fechaNacimiento: undefined,
+            // fechaNacimiento: undefined,
             genero: "",
             telefono: "",
             correo: "",
             direccion: "",
         },
-    });
+    })
 
     const onSubmit = async (datos: RegistroPacienteFormValues): Promise<void> => {
-        setCargando(true);
-        setError(null);
-        setExitoso(false);
+        setCargando(true)
+        setError(null)
+        setExitoso(false)
 
         try {
-            console.log("Datos de registro:", datos);
+            console.log("Datos de registro:", datos)
 
             // Preparar datos para enviar al endpoint de registro
-            const datosRegistro: DatosRegistro = {
+            const datosRegistroUsuario: Usuario = {
                 tipoIdentificacion: datos.tipoIdentificacion,
                 identificacion: datos.identificacion,
                 nombres: datos.nombres,
                 apellidos: datos.apellidos,
-                correo: datos.correo || `${datos.identificacion}@placeholder.com`,
+                correo: datos.correo || `${datos.identificacion}@healink.com`,
+
                 // Contraseña por defecto para los pacientes
                 clave: datos.identificacion,
                 celular: datos.telefono,
                 estaActivo: true,
                 rolId: ROLES.PACIENTE,
-            };
+            }
 
             // Llamar al mismo endpoint de registro que usamos para las entidades
-            const respuesta = await registroUsuario(datosRegistro);
-            console.log("Registro exitoso:", respuesta);
+            const respuesta = await registroUsuario(datosRegistroUsuario)
+            console.log("Registro exitoso:", respuesta)
 
-            // TODO: Si es necesario, aquí podríamos guardar datos adicionales específicos
-            // del paciente como fechaNacimiento, genero, dirección, etc. en otra tabla
+            // TODO: Si es necesario, aquí podríamos guardar los datos adicionales específicos del paciente?
+            // del paciente como fechaNacimiento, genero, dirección, etc. en la otra tabla de pacientes, así mismo ya tendríamos el usuarioId
 
-            setExitoso(true);
+            setExitoso(true)
 
             // Redirigir después de 2 segundos
             setTimeout(() => {
-                router.push('/dashboard/embajador');
-            }, 2000);
+                router.push('/dashboard/embajador')
+            }, 2000)
 
         } catch (err: any) {
-            console.error("Error al registrar paciente:", err);
+            console.error("Error al registrar paciente:", err)
             setError(
                 err.response?.data?.mensaje ||
                 "Error al registrar el paciente. Por favor, verifica los datos e intenta nuevamente."
-            );
+            )
         } finally {
-            setCargando(false);
+            setCargando(false)
         }
-    };
+    }
 
     return (
         <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-md dark:border-slate-700 dark:bg-slate-900">
@@ -277,5 +278,5 @@ export default function RegistroPacienteForm() {
                 </form>
             </Form>
         </div>
-    );
+    )
 }

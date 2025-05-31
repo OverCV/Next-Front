@@ -14,7 +14,7 @@ import { Form } from "@/src/components/ui/form";
 import { SelectItem } from "@/src/components/ui/select";
 import { ROLES, TIPOS_IDENTIFICACION, TiposIdentificacionEnum } from "@/src/constants";
 import { useAuth } from "@/src/providers/auth-provider";
-import { DatosRegistro } from "@/src/types";
+import { Usuario } from "@/src/types";
 
 // Esquema de validación
 const registroEmbajadorSchema = z.object({
@@ -81,7 +81,7 @@ export default function RegistroEmbajadorForm() {
             console.log("Datos de registro:", datos);
 
             // Preparar datos para enviar al endpoint de registro
-            const datosRegistro: DatosRegistro = {
+            const datosRegistro: Usuario = {
                 tipoIdentificacion: datos.tipoIdentificacion,
                 identificacion: datos.identificacion,
                 nombres: datos.nombres,

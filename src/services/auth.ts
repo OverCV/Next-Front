@@ -2,7 +2,7 @@
 import { AxiosResponse } from 'axios'
 import Cookies from 'js-cookie'
 
-import { DatosAcceso, DatosRegistro, RespuestaAuth, Usuario } from '../types'
+import { DatosAcceso, Usuario, RespuestaAuth, UsuarioAccedido } from '../types'
 
 import apiClient from './api'
 
@@ -12,7 +12,7 @@ export const authService = {
     /**
      * Registra un nuevo usuario
      */
-    registro: async (datosUsuario: DatosRegistro): Promise<RespuestaAuth> => {
+    registro: async (datosUsuario: Usuario): Promise<RespuestaAuth> => {
         try {
             const response: AxiosResponse<RespuestaAuth> =
                 await apiClient.post('/auth/registro', datosUsuario)
@@ -82,7 +82,7 @@ export const authService = {
     /**
      * Obtiene el usuario actual desde localStorage
      */
-    getUsuarioActual: (): Usuario | null => {
+    getUsuarioActual: (): UsuarioAccedido | null => {
         if (typeof window === 'undefined') {
             return null
         }
@@ -113,7 +113,7 @@ export const authService = {
         if (!usuarioStr) return null
 
         try {
-            const usuario = JSON.parse(usuarioStr) as Usuario
+            const usuario = JSON.parse(usuarioStr) as UsuarioAccedido
 
             // Si el usuario tiene token almacenado pero no lo tenemos en la variable, usarlo
             if (!token && usuario.token) {
@@ -184,7 +184,7 @@ export const authService = {
             const usuarioStr = localStorage.getItem('usuario')
             if (usuarioStr) {
                 try {
-                    const usuario = JSON.parse(usuarioStr) as Usuario
+                    const usuario = JSON.parse(usuarioStr) as UsuarioAccedido
                     if (usuario.token) {
                         token = usuario.token as string;
                         // Restaurar token en cookies y localStorage

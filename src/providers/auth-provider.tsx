@@ -6,16 +6,16 @@ import { createContext, useContext, useState, useEffect, ReactNode, useMemo, use
 
 import { ROLES } from '../constants'
 import { authService } from '../services/auth'
-import { DatosAcceso, DatosRegistro, Usuario } from '../types'
+import { DatosAcceso, Usuario, UsuarioAccedido } from '../types'
 
 
 // Interfaz para el contexto de autenticación
 interface AuthContextType {
-    usuario: Usuario | null
+    usuario: UsuarioAccedido | null
     cargando: boolean
     estaAutenticado: boolean
-    registroUsuario: (datos: DatosRegistro) => Promise<Usuario>
-    iniciarSesion: (credenciales: DatosAcceso) => Promise<Usuario>
+    registroUsuario: (datos: Usuario) => Promise<UsuarioAccedido>
+    iniciarSesion: (credenciales: DatosAcceso) => Promise<UsuarioAccedido>
     cerrarSesion: () => Promise<void>
     tieneRol: (rolId: number) => boolean
     necesitaCompletarPerfil: boolean
@@ -33,7 +33,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
-    const [usuario, setUsuario] = useState<Usuario | null>(null)
+    const [usuario, setUsuario] = useState<UsuarioAccedido | null>(null)
     const [cargando, setCargando] = useState<boolean>(true)
     const [inicializado, setInicializado] = useState<boolean>(false)
 
@@ -134,7 +134,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     }
 
     // Registrar un nuevo usuario
-    const registroUsuario = useCallback(async (datos: DatosRegistro): Promise<Usuario> => {
+    const registroUsuario = useCallback(async (datos: Usuario): Promise<UsuarioAccedido> => {
         setCargando(true)
         try {
             const respuesta = await authService.registro(datos)
@@ -148,7 +148,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     }, [])
 
     // Iniciar sesión
-    const iniciarSesion = useCallback(async (credenciales: DatosAcceso): Promise<Usuario> => {
+    const iniciarSesion = useCallback(async (credenciales: DatosAcceso): Promise<UsuarioAccedido> => {
         setCargando(true)
         try {
             const respuesta = await authService.acceso(credenciales)

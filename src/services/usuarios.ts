@@ -1,5 +1,5 @@
 // src\services\usuarios.ts
-import { Usuario } from '../types';
+import { UsuarioAccedido } from '../types';
 
 import apiClient from './api';
 
@@ -9,7 +9,7 @@ export const usuariosService = {
     /**
      * Obtiene todos los usuarios
      */
-    obtenerUsuarios: async (): Promise<Usuario[]> => {
+    obtenerUsuarios: async (): Promise<UsuarioAccedido[]> => {
         try {
             const response = await apiClient.get('/usuarios');
             return response.data;
@@ -22,12 +22,12 @@ export const usuariosService = {
     /**
      * Obtiene usuarios filtrados por rol
      */
-    obtenerUsuariosPorRol: async (rolId: number): Promise<Usuario[]> => {
+    obtenerUsuariosPorRol: async (rolId: number): Promise<UsuarioAccedido[]> => {
         try {
             const response = await apiClient.get(`/usuarios`);
 
             // Filtrar por rol:npm run d
-            const usuariosFiltrados = response.data.filter((usuario: Usuario) => usuario.rolId === rolId);
+            const usuariosFiltrados = response.data.filter((usuario: UsuarioAccedido) => usuario.rolId === rolId);
             return usuariosFiltrados;
 
         } catch (error) {
@@ -39,7 +39,7 @@ export const usuariosService = {
     /**
      * Obtiene un usuario por su ID
      */
-    obtenerUsuarioPorId: async (id: number): Promise<Usuario> => {
+    obtenerUsuarioPorId: async (id: number): Promise<UsuarioAccedido> => {
         try {
             const response = await apiClient.get(`/usuarios/${id}`);
             return response.data;
@@ -52,7 +52,7 @@ export const usuariosService = {
     /**
      * Actualiza datos de un usuario
      */
-    actualizarUsuario: async (id: number, datos: Partial<Usuario>): Promise<Usuario> => {
+    actualizarUsuario: async (id: number, datos: Partial<UsuarioAccedido>): Promise<UsuarioAccedido> => {
         try {
             const response = await apiClient.put(`/usuarios/${id}`, datos);
             return response.data;
@@ -65,7 +65,7 @@ export const usuariosService = {
     /**
      * Cambia estado de un usuario (activar/desactivar)
      */
-    cambiarEstadoUsuario: async (id: number, estaActivo: boolean): Promise<Usuario> => {
+    cambiarEstadoUsuario: async (id: number, estaActivo: boolean): Promise<UsuarioAccedido> => {
         try {
             const response = await apiClient.patch(`/usuarios/${id}/estado`, { estaActivo });
             return response.data;
