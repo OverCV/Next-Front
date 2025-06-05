@@ -34,14 +34,14 @@ export const authService = {
       const response = await apiClient.post("/auth/acceso", credenciales);
 
       // Guardar token en cookie y también en localStorage para mayor seguridad
-      Cookies.set("token", response.data.token, {
+      Cookies.set("authToken", response.data.token, {
         expires: 1, // 1 día
         path: "/",
         sameSite: "strict",
       });
 
       // También guardamos el token en localStorage como respaldo
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("authToken", response.data.token);
 
       // Usuario puede seguir en localStorage
       localStorage.setItem(
@@ -81,8 +81,8 @@ export const authService = {
       // Continuamos con la limpieza local aunque falle el backend
     } finally {
       // Eliminar tanto de cookies como de localStorage
-      Cookies.remove("token");
-      localStorage.removeItem("token");
+      Cookies.remove("authToken");
+      localStorage.removeItem("authToken");
       localStorage.removeItem("usuario");
     }
   },
@@ -95,16 +95,16 @@ export const authService = {
       return null;
     }
 
-    const usuarioStr = localStorage.getItem("usuario");
-    let token = Cookies.get("token");
+    const usuarioStr = localStorage.getItem("authToken");
+    let token = Cookies.get("authToken");
 
     // Si no hay token en cookies, intentar obtenerlo de localStorage
     if (!token) {
-      token = localStorage.getItem("token");
+      token = localStorage.getItem("authToken");
 
       // Si encontramos el token en localStorage pero no en cookies, restaurarlo en cookies
       if (token) {
-        Cookies.set("token", token, {
+        Cookies.set("authToken", token, {
           expires: 1, // 1 día
           path: "/",
           sameSite: "strict",
@@ -127,13 +127,13 @@ export const authService = {
       if (!token && usuario.token) {
         token = usuario.token as string;
         // Restaurar token en cookies
-        Cookies.set("token", token, {
+        Cookies.set("authToken", token, {
           expires: 1, // 1 día
           path: "/",
           sameSite: "strict",
         });
         // Restaurar token en localStorage
-        localStorage.setItem("token", token);
+        localStorage.setItem("authToken", token);
         console.log("🔄 Token restaurado desde objeto usuario");
       }
 
@@ -152,7 +152,7 @@ export const authService = {
    * Verifica si hay un usuario autenticado
    */
   estaAutenticado: (): boolean => {
-    const token = Cookies.get("token");
+    const token = Cookies.get("authToken");
     console.log("🔑 Verificando autenticación:", {
       token: token ? "exists" : "null",
     });
@@ -172,15 +172,15 @@ export const authService = {
    */
   getToken: (): string | null => {
     // Intentar obtener el token de cookies
-    let token = Cookies.get("token");
+    let token = Cookies.get("authToken");
 
     // Si no hay token en cookies, intentar obtenerlo de localStorage
     if (!token) {
-      token = localStorage.getItem("token");
+      token = localStorage.getItem("authToken");
 
       // Si encontramos el token en localStorage pero no en cookies, restaurarlo en cookies
       if (token) {
-        Cookies.set("token", token, {
+        Cookies.set("authToken", token, {
           expires: 1, // 1 día
           path: "/",
           sameSite: "strict",
@@ -198,12 +198,12 @@ export const authService = {
           if (usuario.token) {
             token = usuario.token as string;
             // Restaurar token en cookies y localStorage
-            Cookies.set("token", token, {
+            Cookies.set("authToken", token, {
               expires: 1, // 1 día
               path: "/",
               sameSite: "strict",
             });
-            localStorage.setItem("token", token);
+            localStorage.setItem("authToken", token);
             console.log("🔄 Token restaurado desde objeto usuario");
           }
         } catch (error) {
