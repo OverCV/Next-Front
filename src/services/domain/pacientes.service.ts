@@ -3,6 +3,7 @@ export const pacientesService = {
 		fechaNacimiento: Date
 		genero: string
 		direccion: string
+		tipoSangre: string
 		localizacion_id: number
 		usuarioId: number
 	}) => {
@@ -13,7 +14,7 @@ export const pacientesService = {
 			})
 
 			// Usar el endpoint local para evitar problemas con el token
-			const response = await fetch("/api/pacientes/perfil", {
+			const response = await fetch("/api/pacientes", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -22,6 +23,7 @@ export const pacientesService = {
 					fechaNacimiento: datos.fechaNacimiento.toISOString().split('T')[0],
 					genero: datos.genero,
 					direccion: datos.direccion,
+					tipoSangre: datos.tipoSangre,
 					localizacionId: datos.localizacion_id,
 					usuarioId: datos.usuarioId,
 					token // Pasamos el token para que el endpoint lo use

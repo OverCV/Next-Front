@@ -34,18 +34,18 @@ function ComponenteVistaEmbajador() {
     }
 
     return (
-        <Card className="mb-6 w-full">
+        <Card className="w-full mb-6">
             <CardHeader>
                 <CardTitle className="text-lg font-semibold">
                     Vista Dashboard Embajador
                 </CardTitle>
                 <div className="text-sm text-slate-500">
-                    Ruta: <code className="rounded bg-slate-100 px-2 py-1">{parametros.ruta}</code>
+                    Ruta: <code className="bg-slate-100 px-2 py-1 rounded">{parametros.ruta}</code>
                 </div>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <Input
                             placeholder="Busqueda inicial (ej: Juan)"
                             value={parametros.busquedaInicial}
@@ -101,18 +101,18 @@ function ComponenteVistaRegistroPaciente() {
     }
 
     return (
-        <Card className="mb-6 w-full">
+        <Card className="w-full mb-6">
             <CardHeader>
                 <CardTitle className="text-lg font-semibold">
                     Vista Registrar Paciente (Embajador)
                 </CardTitle>
                 <div className="text-sm text-slate-500">
-                    Ruta: <code className="rounded bg-slate-100 px-2 py-1">{parametros.ruta}</code>
+                    Ruta: <code className="bg-slate-100 px-2 py-1 rounded">{parametros.ruta}</code>
                 </div>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <Input
                             placeholder="Precargar datos (true/false)"
                             value={parametros.precargarDatos}
@@ -132,7 +132,7 @@ function ComponenteVistaRegistroPaciente() {
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <Input
                             placeholder="Nombres"
                             value={parametros.nombres}
@@ -155,141 +155,11 @@ function ComponenteVistaRegistroPaciente() {
     )
 }
 
-// Componente para probar triaje inicial
-function ComponenteVistaTriajeInicial() {
-    const router = useRouter()
-
-    const [parametros, setParametros] = useState({
-        ruta: "/dashboard/paciente/triaje-inicial",
-        pacienteId: "",
-        precargarSintomas: "false",
-        nivelUrgencia: ""
-    })
-
-    const navegarAVista = () => {
-        const queryParams = new URLSearchParams({
-            paciente_id: parametros.pacienteId,
-            precarga_sintomas: parametros.precargarSintomas,
-            urgencia: parametros.nivelUrgencia
-        })
-
-        router.push(`${parametros.ruta}?${queryParams}`)
-    }
-
-    const actualizarParametro = (campo: string, valor: string) => {
-        setParametros(prev => ({
-            ...prev,
-            [campo]: valor
-        }))
-    }
-
-    return (
-        <Card className="mb-6 w-full">
-            <CardHeader>
-                <CardTitle className="text-lg font-semibold">
-                    Vista Triaje Inicial
-                </CardTitle>
-                <div className="text-sm text-slate-500">
-                    Ruta: <code className="rounded bg-slate-100 px-2 py-1">{parametros.ruta}</code>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-                        <Input
-                            placeholder="ID Paciente"
-                            value={parametros.pacienteId}
-                            onChange={(e) => actualizarParametro("pacienteId", e.target.value)}
-                        />
-
-                        <Input
-                            placeholder="Precargar síntomas (true/false)"
-                            value={parametros.precargarSintomas}
-                            onChange={(e) => actualizarParametro("precargarSintomas", e.target.value)}
-                        />
-
-                        <Input
-                            placeholder="Nivel urgencia (ALTA, MEDIA, BAJA)"
-                            value={parametros.nivelUrgencia}
-                            onChange={(e) => actualizarParametro("nivelUrgencia", e.target.value)}
-                        />
-
-                        <Button onClick={navegarAVista} className="w-full">
-                            Probar Vista
-                        </Button>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    )
-}
-
-// Componente para probar completar perfil
-function ComponenteVistaCompletarPerfil() {
-    const router = useRouter()
-
-    const [parametros, setParametros] = useState({
-        ruta: "/dashboard/paciente/completar-perfil",
-        usuarioId: "",
-        precargarDatos: "false"
-    })
-
-    const navegarAVista = () => {
-        const queryParams = new URLSearchParams({
-            usuario_id: parametros.usuarioId,
-            precarga: parametros.precargarDatos
-        })
-
-        router.push(`${parametros.ruta}?${queryParams}`)
-    }
-
-    const actualizarParametro = (campo: string, valor: string) => {
-        setParametros(prev => ({
-            ...prev,
-            [campo]: valor
-        }))
-    }
-
-    return (
-        <Card className="mb-6 w-full">
-            <CardHeader>
-                <CardTitle className="text-lg font-semibold">
-                    Vista Completar Perfil Paciente
-                </CardTitle>
-                <div className="text-sm text-slate-500">
-                    Ruta: <code className="rounded bg-slate-100 px-2 py-1">{parametros.ruta}</code>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                        <Input
-                            placeholder="ID Usuario"
-                            value={parametros.usuarioId}
-                            onChange={(e) => actualizarParametro("usuarioId", e.target.value)}
-                        />
-
-                        <Input
-                            placeholder="Precargar datos (true/false)"
-                            value={parametros.precargarDatos}
-                            onChange={(e) => actualizarParametro("precargarDatos", e.target.value)}
-                        />
-
-                        <Button onClick={navegarAVista} className="w-full">
-                            Probar Vista
-                        </Button>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    )
-}
-
 export default function PaginaPruebas() {
     return (
-        <div className="container mx-auto space-y-6 p-6">
+        <div className="container mx-auto p-6 space-y-6">
             <div className="mb-8">
-                <h1 className="mb-2 text-3xl font-bold">Página de Pruebas de Vistas</h1>
+                <h1 className="text-3xl font-bold mb-2">Página de Pruebas de Vistas</h1>
                 <p className="text-slate-600">
                     Configura parámetros y prueba las diferentes vistas del aplicativo
                 </p>
@@ -302,14 +172,6 @@ export default function PaginaPruebas() {
                 <ComponenteVistaEmbajador />
                 <ComponenteVistaRegistroPaciente />
             </div>
-
-            {/* Sección Paciente */}
-            <div className="space-y-4">
-                <h2 className="text-2xl font-semibold text-slate-800">👤 Vistas de Paciente</h2>
-
-                <ComponenteVistaCompletarPerfil />
-                <ComponenteVistaTriajeInicial />
-            </div>
         </div>
     )
-}
+} 

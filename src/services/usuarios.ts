@@ -1,11 +1,31 @@
 // src\services\usuarios.ts
-import { UsuarioAccedido } from '../types';
+import { Usuario, UsuarioAccedido } from '../types';
 
 import apiClient from './api';
 
 
 // Servicios para manejo de usuarios
 export const usuariosService = {
+    /**
+     * Crea un nuevo usuario (requiere autenticación como embajador/admin)
+     */
+    crearUsuario: async (token: string, datosUsuario: Usuario): Promise<UsuarioAccedido> => {
+        try {
+            console.log("📤 Enviando petición para crear usuario con token:", token.substring(0, 15) + "...")
+            const response = await apiClient.post('/auth/registro', datosUsuario, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            console.log("✅ Usuario creado exitosamente:", response.data.id)
+            return response.data
+        } catch (error: any) {
+            console.error('❌ Error al crear usuario:', error)
+            console.error('❌ Respuesta del servidor:', error.response?.data)
+            throw error
+        }
+    },
+
     /**
      * Obtiene todos los usuarios
      */

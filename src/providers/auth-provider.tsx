@@ -66,7 +66,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
                             token
                         })
 
-                        // Si es paciente, verificar su estado
+                        // Solo verificar estado si es paciente Y es la primera carga
                         if (usuarioActual.rolId === ROLES.PACIENTE) {
                             verificarEstadoPaciente(usuarioActual.id, token)
                         }
@@ -135,15 +135,19 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
 
     // Registrar un nuevo usuario
     const registroUsuario = useCallback(async (datos: Usuario): Promise<UsuarioAccedido> => {
-        setCargando(true)
+        console.log("🚨 AUTH-PROVIDER: Iniciando registro de usuario")
         try {
             const respuesta = await authService.registro(datos)
+
+            // Guardar usuario en el estado del contexto SIN verificaciones automáticas
+            console.log("🚨 AUTH-PROVIDER: Usuario registrado, guardando en contexto:", respuesta.usuario.id)
+            setUsuario(respuesta.usuario)
+            console.log("🚨 AUTH-PROVIDER: Usuario guardado en contexto (sin verificaciones automáticas)")
+
             return respuesta.usuario
         } catch (error) {
-            console.error('Error al registrar usuario:', error)
+            console.error('🚨 AUTH-PROVIDER: Error al registrar usuario:', error)
             throw error
-        } finally {
-            setCargando(false)
         }
     }, [])
 

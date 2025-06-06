@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AlertCircle } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -12,12 +11,13 @@ import { Alert, AlertDescription } from "@/src/components/ui/alert"
 import { Button } from "@/src/components/ui/button"
 import { Form } from "@/src/components/ui/form"
 import { SelectItem } from "@/src/components/ui/select"
-import { ROLES, TIPOS_IDENTIFICACION_PACIENTE, OPCIONES_GENERO, TiposIdentificacionEnum } from "@/src/constants"
+import { ROLES, TIPOS_IDENTIFICACION_PACIENTE, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
-import { Usuario } from "@/src/types"
+import { usuariosService } from "@/src/services/usuarios"
+import { Usuario, UsuarioAccedido } from "@/src/types"
 
-// Esquema de validación
-const registroPacienteSchema = z.object({
+// Esquema de validación SOLO para datos de Usuario
+const registroUsuarioSchema = z.object({
     tipoIdentificacion: z.nativeEnum(TiposIdentificacionEnum, {
         required_error: "Selecciona un tipo de identificación",
     }),
@@ -30,13 +30,7 @@ const registroPacienteSchema = z.object({
     apellidos: z.string()
         .min(2, "Los apellidos deben tener al menos 2 caracteres")
         .max(50, "Los apellidos no pueden exceder 50 caracteres"),
-    fechaNacimiento: z.date({
-        required_error: "La fecha de nacimiento es requerida",
-    }),
-    genero: z.string({
-        required_error: "Selecciona un género",
-    }),
-    telefono: z.string()
+    celular: z.string()
         .min(7, "El teléfono debe tener al menos 7 dígitos")
         .max(15, "El teléfono no puede exceder 15 dígitos")
         .regex(/^\d+$/, "El teléfono debe contener solo números"),
@@ -44,78 +38,89 @@ const registroPacienteSchema = z.object({
         .email("Ingresa un correo electrónico válido")
         .optional()
         .or(z.literal('')),
-    direccion: z.string()
-        .min(5, "La dirección debe tener al menos 5 caracteres")
-        .max(100, "La dirección no puede exceder 100 caracteres"),
 })
 
-type RegistroPacienteFormValues = z.infer<typeof registroPacienteSchema>
+type RegistroUsuarioFormValues = z.infer<typeof registroUsuarioSchema>
 
-export default function RegistroUsuarioPacienteForm() {
-    const router = useRouter()
-    const { registroUsuario } = useAuth()
+interface RegistroUsuarioPacienteFormProps {
+    onUsuarioCreado?: (usuarioId: number, rolUsuario: number) => void
+}
+
+export default function RegistroUsuarioPacienteForm({ onUsuarioCreado }: RegistroUsuarioPacienteFormProps) {
+    const { usuario } = useAuth()
     const [error, setError] = useState<string | null>(null)
     const [cargando, setCargando] = useState<boolean>(false)
     const [exitoso, setExitoso] = useState<boolean>(false)
+    const [usuarioCreado, setUsuarioCreado] = useState<UsuarioAccedido | null>(null)
 
-    const form = useForm<RegistroPacienteFormValues>({
-        resolver: zodResolver(registroPacienteSchema),
+    const form = useForm<RegistroUsuarioFormValues>({
+        resolver: zodResolver(registroUsuarioSchema),
         defaultValues: {
             tipoIdentificacion: TiposIdentificacionEnum.CC,
             identificacion: "",
             nombres: "",
             apellidos: "",
-            // fechaNacimiento: undefined,
-            genero: "",
-            telefono: "",
+            celular: "",
             correo: "",
-            direccion: "",
         },
     })
 
-    const onSubmit = async (datos: RegistroPacienteFormValues): Promise<void> => {
+    const onSubmit = async (datos: RegistroUsuarioFormValues): Promise<void> => {
+        // Obtener token del usuario actual (embajador)
+        const token = usuario?.token || localStorage.getItem('token')
+
+        if (!token) {
+            setError("No hay sesión activa. Por favor, inicia sesión nuevamente.")
+            return
+        }
+
         setCargando(true)
         setError(null)
         setExitoso(false)
 
         try {
-            console.log("Datos de registro:", datos)
+            console.log("📝 Datos de registro de usuario:", datos)
 
-            // Preparar datos para enviar al endpoint de registro
+            // Preparar datos para enviar al endpoint de usuarios
             const datosRegistroUsuario: Usuario = {
                 tipoIdentificacion: datos.tipoIdentificacion,
                 identificacion: datos.identificacion,
                 nombres: datos.nombres,
                 apellidos: datos.apellidos,
                 correo: datos.correo || `${datos.identificacion}@healink.com`,
-
                 // Contraseña por defecto para los pacientes
                 clave: datos.identificacion,
-                celular: datos.telefono,
+                celular: datos.celular,
                 estaActivo: true,
                 rolId: ROLES.PACIENTE,
             }
 
-            // Llamar al mismo endpoint de registro que usamos para las entidades
-            const respuesta = await registroUsuario(datosRegistroUsuario)
-            console.log("Registro exitoso:", respuesta)
+            // Usar usuarios.service con token de autenticación
+            const respuesta = await usuariosService.crearUsuario(token, datosRegistroUsuario)
+            console.log("✅ Usuario registrado exitosamente:", respuesta)
 
-            // TODO: Si es necesario, aquí podríamos guardar los datos adicionales específicos del paciente?
-            // del paciente como fechaNacimiento, genero, dirección, etc. en la otra tabla de pacientes, así mismo ya tendríamos el usuarioId
-
+            setUsuarioCreado(respuesta)
             setExitoso(true)
 
-            // Redirigir después de 2 segundos
-            setTimeout(() => {
-                router.push('/dashboard/embajador')
-            }, 2000)
+            // Notificar al componente padre que el usuario fue creado
+            if (onUsuarioCreado && respuesta.id) {
+                console.log("🔄 Notificando usuario creado con ID:", respuesta.id)
+                onUsuarioCreado(respuesta.id, respuesta.rolId)
+            }
 
         } catch (err: any) {
-            console.error("Error al registrar paciente:", err)
-            setError(
-                err.response?.data?.mensaje ||
-                "Error al registrar el paciente. Por favor, verifica los datos e intenta nuevamente."
-            )
+            console.error("❌ Error al registrar usuario:", err)
+            let mensajeError = "Error al registrar el usuario. Por favor, verifica los datos e intenta nuevamente."
+
+            if (err.response?.status === 403) {
+                mensajeError = "No tienes permisos para registrar usuarios. Verifica tu sesión."
+            } else if (err.response?.status === 400) {
+                mensajeError = err.response?.data?.mensaje || "Datos inválidos. Verifica la información ingresada."
+            } else if (err.response?.status === 409) {
+                mensajeError = "Ya existe un usuario con esa identificación."
+            }
+
+            setError(mensajeError)
         } finally {
             setCargando(false)
         }
@@ -124,12 +129,12 @@ export default function RegistroUsuarioPacienteForm() {
     return (
         <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-md dark:border-slate-700 dark:bg-slate-900">
             <div className="mb-6">
-                <h2 className="text-xl font-semibold">Formulario de Registro</h2>
+                <h2 className="text-xl font-semibold">Registrar Usuario Paciente</h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Complete los datos del paciente para registrarlo en el sistema
+                    Datos básicos para crear el usuario en el sistema
                 </p>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Ingresa los datos del paciente. La contraseña inicial será su número de identificación.
+                    La contraseña inicial será el número de identificación.
                 </p>
             </div>
 
@@ -143,7 +148,7 @@ export default function RegistroUsuarioPacienteForm() {
             {exitoso && (
                 <Alert className="mb-6">
                     <AlertDescription>
-                        Paciente registrado exitosamente. El paciente podrá iniciar sesión usando su número de identificación como contraseña.
+                        Usuario registrado exitosamente. ID: {usuarioCreado?.id}
                     </AlertDescription>
                 </Alert>
             )}
@@ -200,37 +205,12 @@ export default function RegistroUsuarioPacienteForm() {
                         />
                     </div>
 
-                    {/* Fecha y Género */}
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <CustomFormField
-                            fieldType={FormFieldType.DATE_PICKER}
-                            control={form.control}
-                            name="fechaNacimiento"
-                            label="Fecha de Nacimiento"
-                            placeholder="Seleccione fecha"
-                        />
-
-                        <CustomFormField
-                            fieldType={FormFieldType.SELECT}
-                            control={form.control}
-                            name="genero"
-                            label="Género Biologico"
-                            placeholder="Selecciona género"
-                        >
-                            {OPCIONES_GENERO.map((opcion) => (
-                                <SelectItem key={opcion.valor} value={opcion.valor}>
-                                    {opcion.etiqueta}
-                                </SelectItem>
-                            ))}
-                        </CustomFormField>
-                    </div>
-
                     {/* Contacto */}
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <CustomFormField
                             fieldType={FormFieldType.INPUT}
                             control={form.control}
-                            name="telefono"
+                            name="celular"
                             label="Teléfono"
                             placeholder="Ej. 3101234567"
                             iconSrc="/assets/icons/celu.svg"
@@ -248,31 +228,12 @@ export default function RegistroUsuarioPacienteForm() {
                         />
                     </div>
 
-                    {/* Dirección */}
-                    <CustomFormField
-                        fieldType={FormFieldType.INPUT}
-                        control={form.control}
-                        name="direccion"
-                        label="Dirección"
-                        placeholder="Dirección completa del paciente"
-                        iconSrc="/assets/icons/map-pin.svg"
-                        iconAlt="Dirección"
-                    />
-
                     <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:justify-end">
                         <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => router.push('/dashboard/embajador')}
-                        >
-                            Cancelar
-                        </Button>
-
-                        <Button
                             type="submit"
-                            disabled={cargando}
+                            disabled={cargando || exitoso}
                         >
-                            {cargando ? "Registrando..." : "Registrar Paciente"}
+                            {cargando ? "Registrando..." : exitoso ? "Usuario Registrado ✓" : "Registrar Usuario"}
                         </Button>
                     </div>
                 </form>

@@ -55,7 +55,7 @@ export const columns: ColumnDef<Appointment>[] = [
     accessorKey: "primaryPhysician",
     header: "Doctor",
     cell: ({ row }) => {
-      const appointment = row.original;
+      // const appointment = row.original;
 
       // const doctor = Doctors.find(
       //   (doctor) => doctor.name === appointment.primaryPhysician
