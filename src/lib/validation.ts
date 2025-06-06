@@ -139,6 +139,11 @@ export const CampaignCreationSchema = z
       invalid_type_error: "Debe ser una fecha válida",
     }),
 
+    fechaLimiteInscripcion: z.date({
+      required_error: "La fecha límite de inscripción es requerida",
+      invalid_type_error: "Debe ser una fecha válida",
+    }),
+
     minParticipantes: z
       .number({
         required_error: "El mínimo de participantes es requerido",
@@ -158,17 +163,30 @@ export const CampaignCreationSchema = z
       .max(1000, "Máximo 1000 participantes"),
 
     serviciosIds: z
-      .array(z.string().uuid("ID de servicio inválido"))
+      .array(z.string())
       .min(1, "Debe seleccionar al menos un servicio"),
 
     factoresIds: z
-      .array(z.string().uuid("ID de factor inválido"))
-      .min(1, "Debe seleccionar al menos un factor"),
+      .array(z.string())
+      .min(0, "Debe seleccionar al menos un factor"),
   })
   .refine((data) => data.fechaLimite > data.fechaInicio, {
     message: "La fecha límite debe ser posterior a la fecha de inicio",
     path: ["fechaLimite"],
   })
+  .refine((data) => data.fechaLimiteInscripcion <= data.fechaLimite, {
+    message:
+      "La fecha límite de inscripción debe ser anterior o igual a la fecha límite de la campaña",
+    path: ["fechaLimiteInscripcion"],
+  })
+  .refine(
+    (data) =>
+      data.fechaLimiteInscripcion >= new Date(new Date().setHours(0, 0, 0, 0)),
+    {
+      message: "La fecha límite de inscripción no puede ser anterior a hoy",
+      path: ["fechaLimiteInscripcion"],
+    }
+  )
   .refine((data) => data.maxParticipantes >= data.minParticipantes, {
     message: "El máximo de participantes debe ser mayor o igual al mínimo",
     path: ["maxParticipantes"],
