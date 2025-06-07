@@ -29,13 +29,20 @@ export default function PacientePage() {
 
     const [cargandoTriaje, setCargandoTriaje] = useState(true);
     const [cargandoCampanas, setCargandoCampanas] = useState(true);
+    const [cargandoPaciente, setCargandoPaciente] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [mostrarTriajeForm, setMostrarTriajeForm] = useState(false);
 
     // Primero obtenemos el pacienteId
     useEffect(() => {
         const obtenerPaciente = async () => {
-            if (!usuario?.id) return;
+            if (!usuario?.id || !usuario?.token) {
+                console.log("⏳ Esperando datos del usuario...")
+                return;
+            }
+
+            setCargandoPaciente(true);
+            console.log("🔍 Obteniendo datos del paciente para usuario:", usuario.id);
 
             try {
                 const response = await apiClient.get(`/pacientes/usuario/${usuario.id}`, {
@@ -44,24 +51,32 @@ export default function PacientePage() {
                     }
                 });
 
+                console.log("✅ Paciente encontrado:", response.data.id);
                 setPacienteId(response.data.id);
             } catch (err: any) {
-                console.error("Error al obtener paciente:", err);
+                console.error("❌ Error al obtener paciente:", err);
                 if (err.response?.status === 404) {
+                    console.log("🔄 Redirigiendo a completar perfil...");
                     router.push('/dashboard/paciente/completar-perfil');
                     return;
                 }
                 setError("Error al obtener datos del paciente");
+            } finally {
+                setCargandoPaciente(false);
             }
         };
 
         obtenerPaciente();
-    }, [usuario?.id, router, usuario?.token]);
+    }, [usuario?.id, usuario?.token, router]);
 
     const cargarCampanas = async () => {
-        if (!pacienteId || !usuario?.token) return;
+        if (!pacienteId || !usuario?.token) {
+            console.log("⏳ Esperando pacienteId o token para cargar campañas...");
+            return;
+        }
 
         setCargandoCampanas(true);
+        console.log("🔍 Cargando campañas para paciente:", pacienteId);
 
         try {
             // Cargar todas las campañas disponibles
@@ -89,26 +104,34 @@ export default function PacientePage() {
                 )
             );
             setCampanas(campanasInscritas);
+            console.log("✅ Campañas cargadas:", campanasInscritas.length);
         } catch (err: any) {
-            console.error('Error al cargar campañas:', err);
+            console.error('❌ Error al cargar campañas:', err);
             setError('Error al cargar las campañas. Intente nuevamente.');
         } finally {
             setCargandoCampanas(false);
         }
     };
 
-    // Cargar campañas inicialmente
+    // Cargar campañas solo cuando tengamos pacienteId
     useEffect(() => {
-        cargarCampanas();
-    }, [pacienteId]);
+        if (pacienteId && usuario?.token && !cargandoPaciente) {
+            console.log("🔄 Iniciando carga de campañas...");
+            cargarCampanas();
+        }
+    }, [pacienteId, usuario?.token, cargandoPaciente]);
 
     // Cargar triaje inicial del paciente
     useEffect(() => {
         const cargarTriaje = async () => {
-            if (!pacienteId || !usuario?.token) return;
+            if (!pacienteId || !usuario?.token || cargandoPaciente) {
+                console.log("⏳ Esperando datos para cargar triaje...");
+                return;
+            }
 
             setCargandoTriaje(true);
             setError(null);
+            console.log("🔍 Cargando triaje para paciente:", pacienteId);
 
             try {
                 const response = await apiClient.get(`/triaje/paciente/${pacienteId}`, {
@@ -122,20 +145,26 @@ export default function PacientePage() {
                 const ultimoTriaje = triajes.length > 0 ? triajes[0] : null;
                 setTriaje(ultimoTriaje);
 
+                console.log("✅ Triaje cargado:", ultimoTriaje ? "encontrado" : "no encontrado");
+
                 // Si no hay triaje, redirigir a crearlo
                 if (!ultimoTriaje) {
+                    console.log("🔄 Redirigiendo a triaje inicial...");
                     router.push('/dashboard/paciente/triaje-inicial');
                 }
             } catch (err: any) {
-                console.error('Error al cargar triaje:', err);
+                console.error('❌ Error al cargar triaje:', err);
                 setError('No se pudo cargar la información médica. Intente nuevamente.');
             } finally {
                 setCargandoTriaje(false);
             }
         };
 
-        cargarTriaje();
-    }, [pacienteId, router, usuario?.token]);
+        if (pacienteId && usuario?.token && !cargandoPaciente) {
+            console.log("🔄 Iniciando carga de triaje...");
+            cargarTriaje();
+        }
+    }, [pacienteId, usuario?.token, cargandoPaciente, router]);
 
     // Manejar envío del formulario de triaje
     const handleTriajeSubmit = async (datosTriaje: any) => {
@@ -183,11 +212,16 @@ export default function PacientePage() {
         );
     }
 
-    // Si está cargando, mostrar indicador
-    if (cargandoTriaje) {
+    // Si está cargando datos iniciales, mostrar indicador
+    if (cargandoPaciente || (cargandoTriaje && !error)) {
         return (
             <div className="flex h-[50vh] items-center justify-center">
-                <RefreshCw className="size-8 animate-spin text-slate-400" />
+                <div className="text-center">
+                    <RefreshCw className="mx-auto size-8 animate-spin text-slate-400" />
+                    <p className="mt-2 text-slate-500">
+                        {cargandoPaciente ? "Cargando perfil..." : "Cargando información médica..."}
+                    </p>
+                </div>
             </div>
         );
     }

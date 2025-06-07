@@ -97,11 +97,9 @@ export default function RegistrarPacientePage() {
             // Ya no se pasa el token aquí, el interceptor lo maneja
             try {
                 console.log("🌍 Cargando localizaciones desde la página...")
-                const data = await localizacionesService.obtenerLocalizaciones(
-                    usuario?.token || localStorage.getItem('token') || ""
-                )
-                setLocalizaciones(data)
-                if (data.length > 0) {
+                const data = await localizacionesService.obtenerLocalizaciones()
+                setLocalizaciones(data || [])
+                if (data && data.length > 0) {
                     console.log("🌍 Localizaciones cargadas en página:", data.length)
                 } else {
                     console.warn("🌍 No se cargaron localizaciones o el array está vacío.")
@@ -115,7 +113,7 @@ export default function RegistrarPacientePage() {
     }, []) // Ya no depende de usuario?.token, el interceptor se encarga
 
     const onSubmit = async (datos: RegistroCompletoFormValues): Promise<void> => {
-        const token = usuario?.token || localStorage.getItem('token')
+        const token = usuario?.token || localStorage.getItem('authToken')
 
         if (!token) {
             setError("No hay sesión activa. Por favor, inicia sesión nuevamente.")

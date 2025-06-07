@@ -25,14 +25,3 @@ export const ADMIN_PASSKEY = process.env.NEXT_PUBLIC_ADMIN_PASSKEY || '111111';
 
 // Configuración de Sentry
 export const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN || '';
-
-// URLs base de backend - para endpoints específicos
-export const API_ENDPOINTS = {
-    // Autenticación
-    AUTH: `${API_URL}/auth`,
-    USUARIOS: `${API_URL}/usuarios`,
-    LOCALIZACIONES: `${API_URL}/localizaciones`,
-    PACIENTES: `${API_URL}/pacientes`,
-    EMBAJADORES: `${API_URL}/embajadores`,
-    NOTIFICACIONES: `${API_URL}/notificaciones`,
-};

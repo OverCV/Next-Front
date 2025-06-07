@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo, useCallback } from 'react'
 
 import { ROLES } from '../constants'
-import { authService } from '../services/auth'
+import { authService } from '../services/auth/auth.service'
+import { pacientesService } from '../services/domain/pacientes.service'
 import { DatosAcceso, Usuario, UsuarioAccedido } from '../types'
 
 
@@ -18,9 +19,7 @@ interface AuthContextType {
     iniciarSesion: (credenciales: DatosAcceso) => Promise<UsuarioAccedido>
     cerrarSesion: () => Promise<void>
     tieneRol: (rolId: number) => boolean
-    necesitaCompletarPerfil: boolean
     necesitaTriajeInicial: boolean
-    setNecesitaCompletarPerfil: (valor: boolean) => void
     setNecesitaTriajeInicial: (valor: boolean) => void
 }
 
@@ -37,7 +36,6 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     const [cargando, setCargando] = useState<boolean>(true)
     const [inicializado, setInicializado] = useState<boolean>(false)
 
-    const [necesitaCompletarPerfil, setNecesitaCompletarPerfil] = useState<boolean>(false)
     const [necesitaTriajeInicial, setNecesitaTriajeInicial] = useState<boolean>(false)
     const router = useRouter()
 
@@ -47,14 +45,14 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
             const verificarAuth = () => {
                 try {
                     // Intentar obtener el usuario y el token
-                    const usuarioActual = authService.getUsuarioActual()
-                    const token = authService.getToken()
+                    const usuarioActual = authService.obtenerUsuarioActual()
+                    const token = authService.obtenerToken()
 
                     console.log('token actual:', token ? token.substring(0, 15) + "..." : "no disponible")
 
                     if (usuarioActual && !token) {
                         console.warn("⚠️ Usuario encontrado pero sin token, cerrando sesión...")
-                        authService.salir()
+                        authService.limpiarSesion()
                         setUsuario(null)
                     } else if (usuarioActual && token) {
                         console.log("✅ Sesión restaurada:", {
@@ -68,12 +66,12 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
 
                         // Solo verificar estado si es paciente Y es la primera carga
                         if (usuarioActual.rolId === ROLES.PACIENTE) {
-                            verificarEstadoPaciente(usuarioActual.id, token)
+                            verificarTriajePaciente(usuarioActual.id, token)
                         }
                     }
                 } catch (error) {
                     console.error("❌ Error al verificar autenticación:", error)
-                    authService.salir()
+                    authService.limpiarSesion()
                     setUsuario(null)
                 } finally {
                     setCargando(false)
@@ -85,51 +83,42 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         }
     }, [inicializado])
 
-    // Verificar si el usuario necesita completar su perfil o triaje inicial
-    const verificarEstadoPaciente = async (usuarioId: number, token: string) => {
+    // Verificar solo el triaje del paciente (el perfil siempre existe)
+    const verificarTriajePaciente = async (usuarioId: number, token: string) => {
         try {
-            console.log("🔍 Verificando estado del paciente:", usuarioId)
+            console.log("🔍 Verificando triaje del paciente, usuarioId:", usuarioId)
 
-            // Verificar si tiene perfil
-            const perfilResponse = await fetch(`/api/pacientes/perfil?usuarioId=${usuarioId}&token=${token}`);
-            const perfilData = await perfilResponse.json();
+            // 1. Primero obtener el perfil del paciente para conseguir su ID
+            const perfilData = await pacientesService.obtenerPerfilPorUsuarioId(usuarioId)
 
-            const tienePerfil = perfilData.existe === true;
-            console.log("✅ Tiene perfil:", tienePerfil, perfilData);
-
-            setNecesitaCompletarPerfil(!tienePerfil);
-
-            // Si no tiene perfil, no necesitamos verificar el triaje
-            if (!tienePerfil) {
-                setNecesitaTriajeInicial(false);
-                return { tienePerfil, tieneTriaje: false, perfilData };
+            if (perfilData.existe === false || !perfilData.id) {
+                console.error("❌ Error crítico: Paciente sin perfil (esto no debería pasar)")
+                setNecesitaTriajeInicial(true)
+                return { tieneTriaje: false }
             }
 
-            // Verificar si tiene triaje (usando el ID del paciente del perfil)
-            const pacienteId = perfilData.id;
-            console.log("🔍 ID del paciente para verificar triaje:", pacienteId);
+            const pacienteId = perfilData.id
+            console.log("✅ Perfil encontrado, pacienteId:", pacienteId)
 
-            if (!pacienteId) {
-                console.warn("⚠️ No se encontró ID de paciente en los datos del perfil");
-                setNecesitaTriajeInicial(true);
-                return { tienePerfil, tieneTriaje: false, perfilData };
+            // 2. Ahora verificar triaje usando el PACIENTE_ID correcto
+            try {
+                const triajeData = await pacientesService.verificarTriaje(pacienteId)
+
+                const tieneTriaje = triajeData.existe === true
+                console.log("✅ Verificación de triaje completada:", { pacienteId, tieneTriaje })
+
+                setNecesitaTriajeInicial(!tieneTriaje)
+                return { tieneTriaje }
+            } catch (triajeError) {
+                console.warn("⚠️ Error al verificar triaje, asumiendo que no tiene:", triajeError)
+                setNecesitaTriajeInicial(true)
+                return { tieneTriaje: false }
             }
 
-            const triajeResponse = await fetch(`/api/pacientes/triaje?pacienteId=${pacienteId}&token=${token}`);
-            const triajeData = await triajeResponse.json();
-
-            const tieneTriaje = triajeData.existe === true;
-            console.log("✅ Tiene triaje:", tieneTriaje, triajeData);
-
-            setNecesitaTriajeInicial(!tieneTriaje);
-
-            return { tienePerfil, tieneTriaje, perfilData, triajeData };
         } catch (error) {
-            console.error("❌ Error al verificar estado del paciente:", error);
-            // Por defecto, asumimos que necesita completar perfil y triaje
-            setNecesitaCompletarPerfil(true);
-            setNecesitaTriajeInicial(true);
-            return { tienePerfil: false, tieneTriaje: false };
+            console.error("❌ Error al verificar estado del paciente:", error)
+            setNecesitaTriajeInicial(true)
+            return { tieneTriaje: false }
         }
     }
 
@@ -160,24 +149,21 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
 
             if (respuesta.usuario.rolId === ROLES.PACIENTE) {
                 const token = respuesta.usuario.token || ""
-                const { tienePerfil, tieneTriaje } = await verificarEstadoPaciente(
+                const { tieneTriaje } = await verificarTriajePaciente(
                     respuesta.usuario.id,
                     token
                 )
 
                 // Usar setTimeout para asegurar que la redirección ocurra después de que se actualice el estado
                 setTimeout(() => {
-                    if (!tienePerfil) {
-                        console.log("🔄 Redirigiendo a completar perfil")
-                        router.push('/dashboard/paciente/completar-perfil')
-                    } else if (!tieneTriaje) {
+                    if (!tieneTriaje) {
                         console.log("🔄 Redirigiendo a triaje inicial")
                         router.push('/dashboard/paciente/triaje-inicial')
                     } else {
                         console.log("✅ Usuario con perfil y triaje completos")
                         router.push('/dashboard/paciente')
                     }
-                }, 300)
+                }, 100)
             }
 
             return respuesta.usuario
@@ -217,14 +203,11 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         iniciarSesion,
         cerrarSesion,
         tieneRol,
-        necesitaCompletarPerfil,
         necesitaTriajeInicial,
-        setNecesitaCompletarPerfil,
         setNecesitaTriajeInicial
     }), [
         usuario,
         cargando,
-        necesitaCompletarPerfil,
         necesitaTriajeInicial,
         registroUsuario,
         iniciarSesion,

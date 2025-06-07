@@ -167,7 +167,7 @@ export default function AccesoForm(): JSX.Element {
 							className="w-full"
 							disabled={cargando}
 						>
-							{cargando ? "Ingresando..." : "Iniciar Sesión"}
+							{cargando ? "Accediendo..." : "Iniciar Sesión"}
 						</Button>
 					</form>
 				</Form>

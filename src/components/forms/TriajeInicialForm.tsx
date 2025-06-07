@@ -13,7 +13,6 @@ import { Button } from "@/src/components/ui/button";
 import { Form } from "@/src/components/ui/form";
 import { useAuth } from "@/src/providers/auth-provider";
 import { pacientesService } from "@/src/services/domain/pacientes.service";
-import { checkTokenStatus } from "@/src/utils/debug";
 
 // Esquema de validación para el triaje
 const triajeSchema = z.object({
@@ -154,14 +153,6 @@ export default function TriajeInicialForm() {
     const onSubmit = async (datos: TriajeFormValues) => {
         setFormErrors([]);
 
-        // Obtener token de cualquier lugar disponible
-        const token = usuario?.token || localStorage.getItem('token') || document.cookie.match(/token=([^;]+)/)?.[1] || "";
-
-        if (!token) {
-            setError("No hay sesión activa. Por favor, inicia sesión nuevamente.");
-            return;
-        }
-
         if (!pacienteId) {
             setError("No se pudo obtener tu ID de paciente. Por favor, intenta nuevamente.");
             return;
@@ -185,13 +176,10 @@ export default function TriajeInicialForm() {
             });
 
             // Crear el triaje usando el servicio
-            await pacientesService.crearTriaje(
-                token,
-                {
-                    ...datos,
-                    pacienteId
-                }
-            );
+            await pacientesService.crearTriaje({
+                ...datos,
+                pacienteId
+            });
 
             console.log("✅ Triaje creado correctamente");
             setNecesitaTriajeInicial(false);
@@ -257,7 +245,7 @@ export default function TriajeInicialForm() {
                                     name="edad"
                                     label="Edad"
                                     placeholder="Ingresa tu edad"
-                                    inputType="number"
+                                    type="number"
                                 />
                                 <div className="sm:col-span-1"></div> {/* Espacio vacío para alinear */}
                             </div>
@@ -272,7 +260,7 @@ export default function TriajeInicialForm() {
                                     name="presionSistolica"
                                     label="Presión Sistólica (mmHg)"
                                     placeholder="Ej: 120"
-                                    inputType="number"
+                                    type="number"
                                 />
                                 <CustomFormField
                                     fieldType={FormFieldType.INPUT}
@@ -280,7 +268,7 @@ export default function TriajeInicialForm() {
                                     name="presionDiastolica"
                                     label="Presión Diastólica (mmHg)"
                                     placeholder="Ej: 80"
-                                    inputType="number"
+                                    type="number"
                                 />
                             </div>
                         </div>
@@ -294,7 +282,7 @@ export default function TriajeInicialForm() {
                                     name="colesterolTotal"
                                     label="Colesterol Total (mg/dL)"
                                     placeholder="Ej: 200"
-                                    inputType="number"
+                                    type="number"
                                 />
                                 <CustomFormField
                                     fieldType={FormFieldType.INPUT}
@@ -302,7 +290,7 @@ export default function TriajeInicialForm() {
                                     name="hdl"
                                     label="HDL (mg/dL)"
                                     placeholder="Ej: 60"
-                                    inputType="number"
+                                    type="number"
                                 />
                             </div>
                         </div>
@@ -340,7 +328,7 @@ export default function TriajeInicialForm() {
                                     name="peso"
                                     label="Peso (kg)"
                                     placeholder="Ej: 70"
-                                    inputType="number"
+                                    type="number"
                                 />
                                 <CustomFormField
                                     fieldType={FormFieldType.INPUT}
@@ -348,7 +336,7 @@ export default function TriajeInicialForm() {
                                     name="talla"
                                     label="Estatura (cm)"
                                     placeholder="Ej: 170"
-                                    inputType="number"
+                                    type="number"
                                 />
                             </div>
                         </div>

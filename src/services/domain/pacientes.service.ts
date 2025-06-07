@@ -1,61 +1,59 @@
+import { API_ENDPOINTS } from "../../config/api-endpoints"
+import apiClient from "../api"
+
 export const pacientesService = {
-	crearPerfil: async (token: string, datos: {
+	crearPerfil: async (datos: {
 		fechaNacimiento: Date
 		genero: string
 		direccion: string
 		tipoSangre: string
-		localizacion_id: number
+		localizacionId: number
 		usuarioId: number
 	}) => {
 		try {
-			console.log("📝 Creando perfil de paciente:", {
+			console.log("📝 PACIENTES-SERVICE: Creando perfil de paciente:", {
 				...datos,
 				fechaNacimiento: datos.fechaNacimiento.toISOString().split('T')[0]
 			})
 
-			// Usar el endpoint local para evitar problemas con el token
-			const response = await fetch("/api/pacientes", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					fechaNacimiento: datos.fechaNacimiento.toISOString().split('T')[0],
-					genero: datos.genero,
-					direccion: datos.direccion,
-					tipoSangre: datos.tipoSangre,
-					localizacionId: datos.localizacion_id,
-					usuarioId: datos.usuarioId,
-					token // Pasamos el token para que el endpoint lo use
-				})
+			const response = await apiClient.post(API_ENDPOINTS.PACIENTES, {
+				fechaNacimiento: datos.fechaNacimiento.toISOString().split('T')[0],
+				genero: datos.genero,
+				direccion: datos.direccion,
+				tipoSangre: datos.tipoSangre,
+				localizacionId: datos.localizacionId,
+				usuarioId: datos.usuarioId
 			})
 
-			const data = await response.json()
-			console.log("✅ Perfil creado:", data)
-			return data
+			console.log("✅ PACIENTES-SERVICE: Perfil creado:", response.data)
+			return response.data
 		} catch (error) {
-			console.error("❌ Error al crear perfil:", error)
+			console.error("❌ PACIENTES-SERVICE: Error al crear perfil:", error)
 			throw error
 		}
 	},
 
 	obtenerPerfilPorUsuarioId: async (usuarioId: number) => {
 		try {
-			console.log("🔍 Obteniendo perfil de paciente para usuario:", usuarioId)
+			console.log("🔍 PACIENTES-SERVICE: Obteniendo perfil para usuario:", usuarioId)
 
-			// Usar el endpoint local para evitar problemas con el token
-			const response = await fetch(`/api/pacientes/perfil?usuarioId=${usuarioId}`)
-			const data = await response.json()
+			const response = await apiClient.get(`${API_ENDPOINTS.PACIENTES}/usuario/${usuarioId}`)
 
-			console.log("✅ Perfil obtenido:", data)
-			return data
-		} catch (error) {
-			console.error("❌ Error al obtener perfil:", error)
+			console.log("✅ PACIENTES-SERVICE: Perfil obtenido:", response.data)
+			return response.data
+		} catch (error: any) {
+			console.error("❌ PACIENTES-SERVICE: Error al obtener perfil:", error)
+
+			// Si es 404, significa que no existe el perfil
+			if (error.response?.status === 404) {
+				return { existe: false }
+			}
+
 			throw error
 		}
 	},
 
-	crearTriaje: async (token: string, datos: {
+	crearTriaje: async (datos: {
 		pacienteId: number
 		edad: number
 		presionSistolica: number
@@ -75,32 +73,52 @@ export const pacientesService = {
 		descripcion?: string
 	}) => {
 		try {
-			console.log("📝 Creando triaje para paciente:", datos.pacienteId)
+			console.log("📝 PACIENTES-SERVICE: Creando triaje para paciente:", datos.pacienteId)
 
 			// Calcular IMC automáticamente
 			const talla = datos.talla / 100 // convertir cm a metros
 			const imc = Math.round((datos.peso / (talla * talla)) * 10) / 10 // IMC con 1 decimal
 
-			// Usar el endpoint local para evitar problemas con el token
-			const response = await fetch("/api/pacientes/triaje", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					...datos,
-					fechaTriaje: new Date().toISOString().split('T')[0],
-					imc,
-					nivelPrioridad: "MEDIA", // Por defecto asignamos prioridad MEDIA
-					token // Pasamos el token para que el endpoint lo use
-				})
+			const response = await apiClient.post(API_ENDPOINTS.TRIAJE, {
+				...datos,
+				fechaTriaje: new Date().toISOString().split('T')[0],
+				imc,
+				nivelPrioridad: "MEDIA" // Por defecto asignamos prioridad MEDIA
 			})
 
-			const data = await response.json()
-			console.log("✅ Triaje creado:", data)
-			return data
+			console.log("✅ PACIENTES-SERVICE: Triaje creado:", response.data)
+			return response.data
 		} catch (error) {
-			console.error("❌ Error al crear triaje:", error)
+			console.error("❌ PACIENTES-SERVICE: Error al crear triaje:", error)
+			throw error
+		}
+	},
+
+	verificarTriaje: async (pacienteId: number) => {
+		try {
+			console.log("🔍 PACIENTES-SERVICE: Verificando triaje para paciente:", pacienteId)
+
+			const response = await apiClient.get(`${API_ENDPOINTS.TRIAJE}/paciente/${pacienteId}`)
+
+			// El backend retorna un array de triajes, verificamos si tiene elementos
+			const triajes = response.data
+			const tieneTriaje = Array.isArray(triajes) && triajes.length > 0
+
+			console.log("✅ PACIENTES-SERVICE: Triaje verificado:", { pacienteId, tieneTriaje, triajes: triajes.length })
+
+			return {
+				existe: tieneTriaje,
+				triajes,
+				ultimoTriaje: tieneTriaje ? triajes[0] : null
+			}
+		} catch (error: any) {
+			console.error("❌ PACIENTES-SERVICE: Error al verificar triaje:", error)
+
+			// Si es 404, significa que no tiene triajes
+			if (error.response?.status === 404) {
+				return { existe: false, triajes: [], ultimoTriaje: null }
+			}
+
 			throw error
 		}
 	}

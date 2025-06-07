@@ -1,8 +1,8 @@
 import axios, {
-  AxiosInstance,
-  AxiosResponse,
-  AxiosError,
-  InternalAxiosRequestConfig,
+    AxiosInstance,
+    AxiosResponse,
+    AxiosError,
+    InternalAxiosRequestConfig,
 } from "axios";
 import Cookies from "js-cookie";
 
@@ -23,13 +23,13 @@ console.log("🔵 apiClient.ts: Instancia de Axios creada. BaseURL:", apiClient.
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
         console.log(`🔵 apiClient INTERCEPTOR REQ (${config.method?.toUpperCase()} ${config.url}): Ejecutando...`)
-        let token: string | undefined = Cookies.get('token')
+        let token: string | undefined = Cookies.get('authToken')
 
         if (token) {
             console.log(`🔵 apiClient INTERCEPTOR REQ (${config.url}): Token encontrado en COOKIES.`)
         } else {
             console.log(`🔵 apiClient INTERCEPTOR REQ (${config.url}): Token NO encontrado en cookies. Intentando localStorage...`)
-            const localStorageToken = localStorage.getItem('token')
+            const localStorageToken = localStorage.getItem('authToken')
             if (localStorageToken) {
                 token = localStorageToken
                 console.log(`🔵 apiClient INTERCEPTOR REQ (${config.url}): Token SÍ encontrado en localStorage.`)
@@ -67,8 +67,8 @@ apiClient.interceptors.response.use(
         console.error(`🔴 apiClient INTERCEPTOR RES (Petición a ${error.config?.url}): Error en la respuesta. Status: ${error.response?.status}`, error)
         if (error.response?.status === 401) {
             console.warn("🚫 apiClient INTERCEPTOR RES: Error 401. Limpiando sesión...")
-            Cookies.remove('token')
-            localStorage.removeItem('token')
+            Cookies.remove('authToken')
+            localStorage.removeItem('authToken')
             localStorage.removeItem('usuario')
         }
         return Promise.reject(error)
