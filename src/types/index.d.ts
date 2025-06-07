@@ -127,6 +127,13 @@ export interface UsuarioAccedido extends Usuario {
   token?: string
 }
 
+export interface EntidadSalud {
+  razonSocial: string;
+  direccion: string;
+  telefono: string;
+  correo: string;
+  usuarioId: number;
+}
 
 export interface RespuestaAuth {
   usuario: UsuarioAccedido
