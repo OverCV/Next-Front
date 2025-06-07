@@ -14,7 +14,8 @@ import { Button } from "@/src/components/ui/button";
 import { Form } from "@/src/components/ui/form";
 import { ROLES, TiposIdentificacionEnum } from "@/src/constants";
 import { useAuth } from "@/src/providers/auth-provider";
-import { DatosRegistro } from "@/src/types";
+import { DatosRegistro, EntidadSalud } from "@/src/types";
+import { entidadSaludService } from "@/src/services/EntidadSaludService";
 
 // Esquema de validación
 const registroEntidadSchema = z.object({
@@ -87,6 +88,17 @@ export default function RegistroEntidadForm(): JSX.Element {
             // Llamar a la API para registrar
             const respuesta = await registroUsuario(datosRegistro);
             console.log("Registro exitoso:", respuesta);
+
+            const datosEntidad: EntidadSalud = {
+                usuarioId: respuesta.id,
+                razonSocial: datos.razonSocial,
+                direccion: datos.direccion,
+                telefono: datos.telefono,
+                correo: datos.correo,
+            };
+
+            const respuestaEntidad = await entidadSaludService.crearEntidadSalud(datosEntidad);
+            console.log("Registro entidad exitoso:", respuestaEntidad);
 
             // Marcar como exitoso
             setExitoso(true);
