@@ -150,12 +150,12 @@ export default function RegistrarPacientePage() {
                 genero: datos.genero,
                 direccion: datos.direccion,
                 tipoSangre: datos.tipoSangre,
-                localizacion_id: datos.localizacion_id,
+                localizacionId: datos.localizacion_id,
                 usuarioId: usuarioCreado.id
             }
 
             console.log("🔸 PASO 2: Creando paciente...")
-            const pacienteCreado = await pacientesService.crearPerfil(token, datosPaciente)
+            const pacienteCreado = await pacientesService.crearPerfil(datosPaciente)
             console.log("✅ Paciente creado ID:", pacienteCreado.id)
 
             setExitoso(true)
