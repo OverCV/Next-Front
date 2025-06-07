@@ -1,0 +1,184 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Instrucciones para Cursor - Aprovechando MCPs al Máximo
+
+## 🚀 Capacidades Disponibles
+
+### 1. **Base de Datos NeonDB PostgreSQL**
+```sql
+-- Cursor puede ejecutar queries directamente:
+-- "Muéstrame todas las tablas en la base de datos"
+-- "Crea una tabla de usuarios con id, email, nombre"
+-- "Analiza el esquema actual y sugiere mejoras"
+```
+
+### 2. **APIs Locales**
+- **Spring Boot API** (http://localhost:8090/)
+- **FastAPI** (http://localhost:8000/)
+
+```javascript
+// Cursor puede hacer requests a tus APIs:
+// "Haz un GET a /api/users en el backend de Spring"
+// "Prueba el endpoint de autenticación en FastAPI"
+// "Genera un componente React que consuma el endpoint X"
+```
+
+### 3. **Análisis y Refactoring Inteligente**
+```
+// Comandos útiles para Cursor:
+- "Analiza todos mis componentes y encuentra duplicados"
+- "Refactoriza este componente para usar los componentes existentes en /components"
+- "Simplifica este código manteniendo la misma funcionalidad"
+- "Encuentra todos los lugares donde se usa este componente"
+```
+
+### 4. **Browser Debugging en Tiempo Real**
+```
+// Con browser-tools activo:
+- "Captura un screenshot de la página actual"
+- "Muéstrame los logs de consola"
+- "Analiza el performance de esta página"
+- "Revisa la accesibilidad de mi aplicación"
+```
+
+## 📋 Prompts Efectivos para Cursor
+
+### Para Comprensión del Proyecto:
+```
+"Analiza la estructura completa del proyecto y dame un resumen de:
+- Componentes principales
+- Patrones de diseño utilizados
+- Dependencias entre módulos
+- Archivos más importantes"
+```
+
+### Para Refactoring:
+```
+"Revisa el componente [ComponentName] y:
+1. Busca si ya existen componentes similares
+2. Sugiere cómo simplificarlo usando componentes existentes
+3. Aplica las reglas de ESLint y Prettier
+4. Mantén la funcionalidad exacta"
+```
+
+### Para Trabajo con Base de Datos:
+```
+"Conecta a la base de datos NeonDB y:
+1. Lista todas las tablas
+2. Genera los tipos TypeScript para las tablas
+3. Crea hooks de React para las operaciones CRUD
+4. Sugiere índices para mejorar el rendimiento"
+```
+
+### Para Integración con APIs:
+```
+"Para el endpoint [endpoint] en [Spring/FastAPI]:
+1. Prueba la respuesta actual
+2. Genera el tipo TypeScript correspondiente
+3. Crea un custom hook para consumirlo
+4. Añade manejo de errores y loading states"
+```
+
+### Para Testing:
+```
+"Usando Playwright:
+1. Crea tests E2E para el flujo de [feature]
+2. Incluye casos de éxito y error
+3. Verifica la integración con las APIs
+4. Añade screenshots en puntos clave"
+```
+
+## 🛠️ Configuración de Entorno
+
+### Variables de Entorno Recomendadas (.env.local):
+```env
+# Database
+DATABASE_URL=postgresql://neondb_owner:npg_Mzt0n8kBubmp@ep-super-feather-a8qoti0s-pooler.eastus2.azure.neon.tech/neondb?sslmode=require
+
+# APIs
+NEXT_PUBLIC_SPRING_API_URL=http://localhost:8090
+NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000
+
+# Development
+NEXT_PUBLIC_ENV=development
+```
+
+Al momento no están el el .env pero es importante que conozcas las rutas base en local.
+
+## 🚨 Solución de Problemas Comunes
+
+### Si Cursor no encuentra componentes existentes:
+```
+"Usa ripgrep para buscar todos los componentes que contengan [pattern]"
+"Analiza la carpeta /components y lista todos los componentes disponibles"
+"Muestra el árbol de dependencias del componente [name]"
+```
+
+### Si hay problemas con las APIs:
+```
+"Verifica que el servidor Spring esté corriendo en puerto 8090"
+"Haz un health check a ambas APIs"
+"Muestra los logs de red del browser para debuggear"
+```
+
+### Si hay problemas con la DB:
+```
+"Verifica la conexión a NeonDB"
+"Lista las tablas disponibles"
+"Ejecuta un query simple de prueba"
+```
+
+## 💡 Tips Avanzados
+
+1. **Usa Sequential Thinking para problemas complejos**:
+   ```
+   "Usa sequential thinking para planear la migración de [feature] a la nueva arquitectura"
+   ```
+
+2. **Combina múltiples MCPs**:
+   ```
+   "Analiza el código con code-analyzer, luego usa git para ver los cambios recientes, y finalmente sugiere refactoring basado en ambos"
+   ```
+
+3. **Automatiza tareas repetitivas**:
+   ```
+   "Crea un script que use los MCPs para:
+   1. Analizar nuevos componentes
+   2. Verificar que no hay duplicados
+   3. Aplicar formato automáticamente
+   4. Crear tests básicos"
+   ```
+
+## 🔄 Workflow Recomendado
+
+1. **Inicio de sesión**:
+   - Verifica que todos los servicios estén corriendo
+   - Haz un análisis inicial del proyecto
+   - Carga el contexto en memory MCP
+
+2. **Durante el desarrollo**:
+   - Usa browser-tools para debugging en tiempo real
+   - Consulta la DB cuando necesites datos
+   - Valida contra las APIs antes de hacer cambios
+
+3. **Antes de commit**:
+   - Ejecuta análisis de código
+   - Aplica refactoring automático
+   - Verifica que no hay componentes duplicados
+   - Corre los tests
+
+## 📝 Notas Importantes
+
+- **Seguridad**: Las credenciales de la DB están en el archivo de configuración. Considera usar variables de entorno en producción.
+- **Performance**: Los MCPs pueden usar recursos. Desactiva los que no uses.
+- **Sincronización**: Browser-tools requiere que tengas Chrome abierto con la extensión.
+- **APIs**: Asegúrate de que tus servicios backend estén corriendo antes de usarlos.
+
+---
+
+
+
+Con esta configuración, Cursor tiene acceso completo a tu stack y puede ayudarte de manera mucho más efectiva. ¡No dudes en pedirle que use estas capacidades!
