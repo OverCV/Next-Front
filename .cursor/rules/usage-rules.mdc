@@ -91,22 +91,6 @@ alwaysApply: true
 4. Añade screenshots en puntos clave"
 ```
 
-## 🛠️ Configuración de Entorno
-
-### Variables de Entorno Recomendadas (.env.local):
-```env
-# Database
-DATABASE_URL=postgresql://neondb_owner:npg_Mzt0n8kBubmp@ep-super-feather-a8qoti0s-pooler.eastus2.azure.neon.tech/neondb?sslmode=require
-
-# APIs
-NEXT_PUBLIC_SPRING_API_URL=http://localhost:8090
-NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000
-
-# Development
-NEXT_PUBLIC_ENV=development
-```
-
-Al momento no están el el .env pero es importante que conozcas las rutas base en local.
 
 ## 🚨 Solución de Problemas Comunes
 
