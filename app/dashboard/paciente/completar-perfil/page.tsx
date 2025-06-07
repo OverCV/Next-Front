@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
-import CompletarPacienteForm from "@/src/components/forms/CompletarPacienteForm"
+import RegistrarPacienteForm from "@/src/components/forms/CompletarPacienteForm"
 import { Button } from "@/src/components/ui/button"
 import { ROLES, RUTAS_POR_ROL } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
@@ -53,7 +53,7 @@ export default function CompletarPerfilPacientePage() {
                 <h1 className="mb-8 text-center text-2xl font-bold">
                     Completa tu Perfil
                 </h1>
-                <CompletarPacienteForm />
+                <RegistrarPacienteForm />
 
                 <div className="mt-8 text-center">
                     <Button

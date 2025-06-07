@@ -20,13 +20,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/ta
 import { CAMPANAS_MOCK, ROLES } from '@/src/constants';
 // import { useAuth } from '@/src/providers/auth-provider';
 import { usuariosService } from '@/src/services/usuarios';
-import { Usuario } from '@/src/types';
+import { UsuarioAccedido } from '@/src/types';
 
 export default function EntidadPage() {
     const router = useRouter();
     // const { usuario } = useAuth();
     const [busqueda, setBusqueda] = useState('');
-    const [embajadores, setEmbajadores] = useState<Usuario[]>([]);
+    const [embajadores, setEmbajadores] = useState<UsuarioAccedido[]>([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState<string | null>(null);
 

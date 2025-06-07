@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
+import TriajeInicialForm from "@/src/components/forms/TriajeInicialForm"
 import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert"
 import { Button } from "@/src/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card"
@@ -66,59 +67,27 @@ export default function TriajeInicialPage() {
                     Triaje Inicial
                 </h1>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Triaje Inicial del Paciente</CardTitle>
-                        <CardDescription>
-                            Completa este cuestionario para que podamos conocer tu estado de salud
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Alert className="mb-6">
-                            <AlertTitle>En construcción</AlertTitle>
-                            <AlertDescription>
-                                Esta funcionalidad está en desarrollo. Pronto podrás completar tu triaje inicial.
-                            </AlertDescription>
-                        </Alert>
+                <TriajeInicialForm />
 
-                        <div className="flex flex-col space-y-4">
-                            <div className="flex justify-center space-x-4">
-                                <Button
-                                    onClick={() => router.push("/dashboard/paciente")}
-                                    variant="outline"
-                                >
-                                    Volver al inicio
-                                </Button>
+                <div className="mt-8 flex justify-center">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={ejecutarDiagnostico}
+                        className="text-xs"
+                    >
+                        🔍 Diagnosticar Estado
+                    </Button>
+                </div>
 
-                                <Button
-                                    onClick={simularTriajeCompletado}
-                                >
-                                    Simular triaje completado
-                                </Button>
-                            </div>
-
-                            <div className="mt-6 flex justify-center">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={ejecutarDiagnostico}
-                                    className="text-xs"
-                                >
-                                    🔍 Diagnosticar Estado
-                                </Button>
-                            </div>
-
-                            {debug && debugInfo && (
-                                <div className="mt-4 rounded-md bg-gray-100 p-4 text-left text-xs">
-                                    <h4 className="mb-2 font-bold">Resultado del diagnóstico:</h4>
-                                    <pre className="overflow-auto text-xs">
-                                        {JSON.stringify(debugInfo, null, 2)}
-                                    </pre>
-                                </div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
+                {debug && debugInfo && (
+                    <div className="mt-4 rounded-md bg-gray-100 p-4 text-left text-xs">
+                        <h4 className="mb-2 font-bold">Resultado del diagnóstico:</h4>
+                        <pre className="overflow-auto text-xs">
+                            {JSON.stringify(debugInfo, null, 2)}
+                        </pre>
+                    </div>
+                )}
             </div>
         </div>
     )
