@@ -41,11 +41,8 @@ export const campanasService = {
    * Obtiene todas las campañas de una entidad
    */
   obtenerCampanasPorEntidad: async (entidadId: number): Promise<Campana[]> => {
-    console.log("Entidad ID:", entidadId);
-    console.log("API URL:", `${API_URL}/campana/entidad/${entidadId}`);
     const response = await httpGet(`${API_URL}/campana/entidad/${entidadId}`);
     if (response !== undefined) {
-      console.log("Respuesta:", response);
       return response;
     }
     return [];

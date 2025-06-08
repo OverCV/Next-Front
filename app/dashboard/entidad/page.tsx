@@ -41,11 +41,11 @@ export default function EntidadPage() {
         try {
             // Obtener usuarios con rol de embajador (rolId: 7)
             const user = JSON.parse(localStorage.getItem("usuario") || "{}");
-            console.log("Usuario:", user, "id:", user["id"]);
+            
             const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user["id"]);
-            console.log("Entidad:", entidad);
+            
             const embajadoresData = await EmbajadorService.obtenerEmbajadoresPorEntidad(entidad.id);
-            console.log("Embajadores:", embajadoresData);
+            
             setEmbajadores(embajadoresData);
         } catch (err: any) {
             console.error('Error al cargar embajadores:', err);
@@ -61,9 +61,7 @@ export default function EntidadPage() {
         try {
             const user = JSON.parse(localStorage.getItem("usuario") || "{}");
             const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user["id"]);
-            console.log("Entidad:", entidad);
             const campanasData = await campanasService.obtenerCampanasPorEntidad(entidad.id);
-            console.log("Campanas obtenidas:", campanasData);
             if (campanasData.length > 0) {
                 setCampanas(campanasData);
             }

@@ -11,7 +11,6 @@ export const usuariosService = {
      */
     crearUsuario: async (token: string, datosUsuario: Usuario): Promise<UsuarioAccedido> => {
         try {
-            console.log("📤 Enviando petición para crear usuario con token:", token.substring(0, 15) + "...")
             const response = await apiClient.post('/auth/registro', datosUsuario, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -45,7 +44,6 @@ export const usuariosService = {
     obtenerUsuariosPorRol: async (rolId: number): Promise<UsuarioAccedido[]> => {
         try {
             const response = await apiClient.get(`/usuarios`);
-            console.log("Usuario:", localStorage.getItem("usuario"));
             // Filtrar por rol:npm run d
             const usuariosFiltrados = response.data.filter((usuario: UsuarioAccedido) => usuario.rolId === rolId);
             return usuariosFiltrados;

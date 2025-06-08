@@ -95,11 +95,9 @@ export default function RegistroEmbajadorForm() {
             };
 
             const user = JSON.parse(sessionStorage.getItem("user") || "{}");
-            console.log("Usuario:", user);
 
             // Llamar al mismo endpoint de registro que usamos para las entidades y pacientes
             const respuesta = await registroUsuario(datosRegistro);
-            console.log("Registro exitoso:", respuesta);
 
             const datosEmbajador: Embajador = {
                 id: 0,
@@ -113,7 +111,6 @@ export default function RegistroEmbajadorForm() {
             };
 
             const respuestaEmbajador = await EmbajadorService.crearEmbajador(datosEmbajador);
-            console.log("Registro embajador exitoso:", respuestaEmbajador);
 
             setExitoso(true);
 
