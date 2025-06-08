@@ -24,6 +24,7 @@ import { Campana, Embajador, EntidadSalud, UsuarioAccedido } from '@/src/types';
 import EmbajadorService from '@/src/services/EmbajadorService';
 import { entidadSaludService } from '@/src/services/EntidadSaludService';
 import campanasService from '@/src/services/CampanaService';
+import EmbajadorEntidadService from '@/src/services/EmbajadorEntidadService';
 
 export default function EntidadPage() {
     const router = useRouter();
@@ -41,11 +42,13 @@ export default function EntidadPage() {
         try {
             // Obtener usuarios con rol de embajador (rolId: 7)
             const user = JSON.parse(localStorage.getItem("usuario") || "{}");
-            
+
             const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user["id"]);
-            
-            const embajadoresData = await EmbajadorService.obtenerEmbajadoresPorEntidad(entidad.id);
-            
+
+            const embajadoresEntidadData = await EmbajadorEntidadService.obtenerEmbajadoresPorEntidadId(entidad.id);
+
+            const embajadoresData = embajadoresEntidadData.map(emb => emb.embajador).filter((emb): emb is Embajador => emb !== null);
+
             setEmbajadores(embajadoresData);
         } catch (err: any) {
             console.error('Error al cargar embajadores:', err);
@@ -309,12 +312,11 @@ export default function EntidadPage() {
                                                     })}
                                                 </td>
                                                 <td className="py-4">
-                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                        campana.estado.toLowerCase() === 'postulada' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${campana.estado.toLowerCase() === 'postulada' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
                                                         campana.estado.toLowerCase() === 'ejecucion' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                                                        campana.estado.toLowerCase() === 'finalizada' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                                                        'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                                    }`}>
+                                                            campana.estado.toLowerCase() === 'finalizada' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                                                                'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                                                        }`}>
                                                         {campana.estado}
                                                     </span>
                                                 </td>

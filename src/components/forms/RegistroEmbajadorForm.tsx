@@ -14,8 +14,10 @@ import { Form } from "@/src/components/ui/form";
 import { SelectItem } from "@/src/components/ui/select";
 import { ROLES, TIPOS_IDENTIFICACION, TiposIdentificacionEnum } from "@/src/constants";
 import { useAuth } from "@/src/providers/auth-provider";
-import { Embajador, Usuario } from "@/src/types";
+import { Embajador, EmbajadorEntidad, Usuario } from "@/src/types";
 import { EmbajadorService } from "@/src/services/EmbajadorService";
+import entidadSaludService from "@/src/services/EntidadSaludService";
+import EmbajadorEntidadService from "@/src/services/EmbajadorEntidadService";
 
 // Esquema de validación
 const registroEmbajadorSchema = z.object({
@@ -94,7 +96,7 @@ export default function RegistroEmbajadorForm() {
                 rolId: ROLES.EMBAJADOR, // Id 7: Rol de embajador
             };
 
-            const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+            const user = JSON.parse(localStorage.getItem("usuario") || "{}");
 
             // Llamar al mismo endpoint de registro que usamos para las entidades y pacientes
             const respuesta = await registroUsuario(datosRegistro);
@@ -102,7 +104,6 @@ export default function RegistroEmbajadorForm() {
             const datosEmbajador: Embajador = {
                 id: 0,
                 usuarioId: respuesta.id,
-                entidadId: 1,
                 nombreCompleto: `${datos.nombres} ${datos.apellidos}`,
                 telefono: datos.telefono,
                 localidad: datos.localidad,
@@ -111,6 +112,18 @@ export default function RegistroEmbajadorForm() {
             };
 
             const respuestaEmbajador = await EmbajadorService.crearEmbajador(datosEmbajador);
+
+            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user["id"]);
+
+            const datosEmbajadorEntidad: EmbajadorEntidad = {
+                id: 0,
+                entidadId: entidad.id,
+                embajadorId: respuestaEmbajador.id,
+                entidad: null,
+                embajador: null,
+            };
+
+            const respuestaEmbajadorEntidad = await EmbajadorEntidadService.crearEmbajadorEntidad(datosEmbajadorEntidad);
 
             setExitoso(true);
 
