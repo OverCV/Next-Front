@@ -14,7 +14,7 @@ import { Button } from "@/src/components/ui/button";
 import { Form } from "@/src/components/ui/form";
 import { ROLES, TiposIdentificacionEnum } from "@/src/constants";
 import { useAuth } from "@/src/providers/auth-provider";
-import { DatosRegistro, EntidadSalud } from "@/src/types";
+import { EntidadSalud, Usuario } from "@/src/types";
 import { entidadSaludService } from "@/src/services/EntidadSaludService";
 
 // Esquema de validación
