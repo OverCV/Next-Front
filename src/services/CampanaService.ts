@@ -40,16 +40,12 @@ export const campanasService = {
   /**
    * Obtiene todas las campañas de una entidad
    */
-  obtenerCampanasPorEntidad: async (entidadId: number) => {
-    await httpGet(`/campanas/${entidadId}`)
-      .then((response) => {
-        if (response !== undefined) {
-          return response;
-        }
-      })
-      .then((err) => {
-        console.log("error obteniendo una entidad");
-      });
+  obtenerCampanasPorEntidad: async (entidadId: number): Promise<Campana[]> => {
+    const response = await httpGet(`${API_URL}/campana/entidad/${entidadId}`);
+    if (response !== undefined) {
+      return response;
+    }
+    return [];
   },
 
   /**
@@ -57,7 +53,7 @@ export const campanasService = {
    */
   obtenerCampanaPorId: async (campanaId: number): Promise<Campana> => {
     try {
-      const response = await apiClient.get(`${API_URL}/campanas/${campanaId}`);
+      const response = await apiClient.get(`${API_URL}/campana/${campanaId}`);
       return response.data;
     } catch (error) {
       console.error("Error al obtener campaña por ID:", error);
@@ -67,7 +63,7 @@ export const campanasService = {
         throw new Error("Campaña no encontrada");
       }
       // Cast estatus to the correct type
-      return { ...campaña, estatus: campaña.estatus as Campana["estatus"] };
+      return { ...campaña, estatus: campaña.estatus as Campana["estatus"], estado: campaña.estado as Campana["estado"] };
     }
   },
 

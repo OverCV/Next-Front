@@ -84,6 +84,7 @@ export interface Campana {
   maxParticipantes: number
   entidadId: number
   estatus: Estatus
+  estado: string
   fechaCreacion: string
   pacientes?: number // Número de pacientes inscritos
   fecha?: string // Formato legible de fecha
@@ -104,6 +105,17 @@ export interface Citacion {
   prediccionAsistencia?: number // 0-100%
   prioridad: number // 1-5
   notas?: string
+}
+
+export interface Embajador {
+  id: number
+  nombreCompleto: string
+  telefono: string
+  entidadId: number
+  usuarioId: number
+  localidad: string
+  identificacion: string
+  correo: string
 }
 
 // Interfaces autenticación y usuario

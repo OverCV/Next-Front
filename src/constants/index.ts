@@ -151,6 +151,7 @@ export const CAMPANAS_MOCK = [
     maxParticipantes: 50,
     entidadId: 1,
     estatus: "postulada",
+    estado: "postulada",
     fechaCreacion: "2025-03-01T00:00:00",
     pacientes: 18,
     fecha: "15 de abril, 2025",
