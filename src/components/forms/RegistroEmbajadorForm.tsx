@@ -14,7 +14,8 @@ import { Form } from "@/src/components/ui/form";
 import { SelectItem } from "@/src/components/ui/select";
 import { ROLES, TIPOS_IDENTIFICACION, TiposIdentificacionEnum } from "@/src/constants";
 import { useAuth } from "@/src/providers/auth-provider";
-import { Usuario } from "@/src/types";
+import { Embajador, Usuario } from "@/src/types";
+import { EmbajadorService } from "@/src/services/EmbajadorService";
 
 // Esquema de validación
 const registroEmbajadorSchema = z.object({
@@ -93,12 +94,26 @@ export default function RegistroEmbajadorForm() {
                 rolId: ROLES.EMBAJADOR, // Id 7: Rol de embajador
             };
 
+            const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+            console.log("Usuario:", user);
+
             // Llamar al mismo endpoint de registro que usamos para las entidades y pacientes
             const respuesta = await registroUsuario(datosRegistro);
             console.log("Registro exitoso:", respuesta);
 
-            // TODO: Aquí podríamos guardar datos adicionales específicos
-            // como la localidad asignada y la relación con la entidad de salud
+            const datosEmbajador: Embajador = {
+                id: 0,
+                usuarioId: respuesta.id,
+                entidadId: 1,
+                nombreCompleto: `${datos.nombres} ${datos.apellidos}`,
+                telefono: datos.telefono,
+                localidad: datos.localidad,
+                identificacion: "",
+                correo: "",
+            };
+
+            const respuestaEmbajador = await EmbajadorService.crearEmbajador(datosEmbajador);
+            console.log("Registro embajador exitoso:", respuestaEmbajador);
 
             setExitoso(true);
 

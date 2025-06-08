@@ -45,7 +45,7 @@ export const usuariosService = {
     obtenerUsuariosPorRol: async (rolId: number): Promise<UsuarioAccedido[]> => {
         try {
             const response = await apiClient.get(`/usuarios`);
-
+            console.log("Usuario:", localStorage.getItem("usuario"));
             // Filtrar por rol:npm run d
             const usuariosFiltrados = response.data.filter((usuario: UsuarioAccedido) => usuario.rolId === rolId);
             return usuariosFiltrados;

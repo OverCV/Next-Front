@@ -30,7 +30,19 @@ export const entidadSaludService = {
     }
   },
 
-  
+  obtenerEntidadPorId: async (id: number): Promise<EntidadSalud> => {
+    const response = await httpGet(`${API_URL}/entidades-salud/${id}`);
+    return response.data;
+  },
+
+  obtenerEntidadPorUsuarioId: async (usuarioId: number): Promise<EntidadSalud> => {
+    console.log("Usuario ID:", usuarioId);
+    console.log("API URL:", `${API_URL}/entidades-salud/usuario/${usuarioId}`);
+    const response = await httpGet(`${API_URL}/entidades-salud/usuario/${usuarioId}`);
+    console.log("Respuesta Entidad:", response);
+    return response;
+  },
+
 };
 
 export default entidadSaludService;
