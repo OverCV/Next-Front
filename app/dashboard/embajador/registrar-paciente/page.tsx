@@ -155,7 +155,7 @@ export default function RegistrarPacientePage() {
             }
 
             console.log("🔸 PASO 2: Creando paciente...")
-            const pacienteCreado = await pacientesService.crearPerfil(datosPaciente)
+            const pacienteCreado = await pacientesService.crearPaciente(datosPaciente)
             console.log("✅ Paciente creado ID:", pacienteCreado.id)
 
             setExitoso(true)
@@ -217,7 +217,7 @@ export default function RegistrarPacientePage() {
 
                         {/* SECCIÓN USUARIO */}
                         <div>
-                            <h3 className="mb-4 text-lg font-semibold">Datos del Usuario</h3>
+                            <h3 className="mb-4 text-lg font-semibold">Datos como Usuario</h3>
 
                             {/* Identificación */}
                             <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">

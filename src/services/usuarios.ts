@@ -16,8 +16,9 @@ export const usuariosService = {
                     'Authorization': `Bearer ${token}`
                 }
             })
-            console.log("✅ Usuario creado exitosamente:", response.data.id)
-            return response.data
+            console.log("✅ Usuario creado exitosamente:", response.data.usuario)
+
+            return response.data.usuario
         } catch (error: any) {
             console.error('❌ Error al crear usuario:', error)
             console.error('❌ Respuesta del servidor:', error.response?.data)

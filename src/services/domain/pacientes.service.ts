@@ -2,7 +2,7 @@ import { API_ENDPOINTS } from "../../config/api-endpoints"
 import apiClient from "../api"
 
 export const pacientesService = {
-	crearPerfil: async (datos: {
+	crearPaciente: async (datos: {
 		fechaNacimiento: Date
 		genero: string
 		direccion: string
@@ -11,7 +11,7 @@ export const pacientesService = {
 		usuarioId: number
 	}) => {
 		try {
-			console.log("📝 PACIENTES-SERVICE: Creando perfil de paciente:", {
+			console.log("📝 PACIENTES-SERVICE: Creando paciente:", {
 				...datos,
 				fechaNacimiento: datos.fechaNacimiento.toISOString().split('T')[0]
 			})
@@ -25,26 +25,26 @@ export const pacientesService = {
 				usuarioId: datos.usuarioId
 			})
 
-			console.log("✅ PACIENTES-SERVICE: Perfil creado:", response.data)
+			console.log("✅ PACIENTES-SERVICE: Paciente creado:", response.data)
 			return response.data
 		} catch (error) {
-			console.error("❌ PACIENTES-SERVICE: Error al crear perfil:", error)
+			console.error("❌ PACIENTES-SERVICE: Error al crear paciente:", error)
 			throw error
 		}
 	},
 
-	obtenerPerfilPorUsuarioId: async (usuarioId: number) => {
+	obtenerPacientePorUsuarioId: async (usuarioId: number) => {
 		try {
-			console.log("🔍 PACIENTES-SERVICE: Obteniendo perfil para usuario:", usuarioId)
+			console.log("🔍 PACIENTES-SERVICE: Obteniendo para usuario:", usuarioId)
 
 			const response = await apiClient.get(`${API_ENDPOINTS.PACIENTES}/usuario/${usuarioId}`)
 
-			console.log("✅ PACIENTES-SERVICE: Perfil obtenido:", response.data)
+			console.log("✅ PACIENTES-SERVICE: Paciente obtenido:", response.data)
 			return response.data
 		} catch (error: any) {
-			console.error("❌ PACIENTES-SERVICE: Error al obtener perfil:", error)
+			console.error("❌ PACIENTES-SERVICE: Error al obtener paciente:", error)
 
-			// Si es 404, significa que no existe el perfil
+			// Si es 404, significa que no existe el paciente
 			if (error.response?.status === 404) {
 				return { existe: false }
 			}

@@ -1,82 +1,82 @@
-"use client";
+"use client"
 
-import { Calendar, AlertCircle, RefreshCw } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { Calendar, AlertCircle, RefreshCw } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
-import TriajeForm from '@/src/components/forms/TriajeForm';
-import { StatCard } from '@/src/components/StatCard';
-import { Alert, AlertDescription } from '@/src/components/ui/alert';
-import { Button } from '@/src/components/ui/button';
-import { useAuth } from '@/src/providers/auth-provider';
-import apiClient from '@/src/services/api';
-import { Triaje, Campana } from '@/src/types';
+import TriajeForm from '@/src/components/forms/TriajeForm'
+import { StatCard } from '@/src/components/StatCard'
+import { Alert, AlertDescription } from '@/src/components/ui/alert'
+import { Button } from '@/src/components/ui/button'
+import { useAuth } from '@/src/providers/auth-provider'
+import apiClient from '@/src/services/api'
+import { Triaje, Campana } from '@/src/types'
 
-// import TriajeForm from '@/src/components/forms/TriajeForm';
-// import { campanasService } from '@/src/services/campanas';
-// import { triajeService } from '@/src/services/triaje';
+// import TriajeForm from '@/src/components/forms/TriajeForm'
+// import { campanasService } from '@/src/services/campanas'
+// import { triajeService } from '@/src/services/triaje'
 
-// import CampanaCard from '@/src/components/CampanaCard';
-// import { Triaje, Campana } from '@/src/types';
+// import CampanaCard from '@/src/components/CampanaCard'
+// import { Triaje, Campana } from '@/src/types'
 
 export default function PacientePage() {
-    const router = useRouter();
-    const { usuario } = useAuth();
-    const [triaje, setTriaje] = useState<Triaje | null>(null);
-    const [campanas, setCampanas] = useState<Campana[]>([]);
-    const [campanasDisponibles, setCampanasDisponibles] = useState<Campana[]>([]);
-    const [pacienteId, setPacienteId] = useState<number | null>(null);
+    const router = useRouter()
+    const { usuario } = useAuth()
+    const [triaje, setTriaje] = useState<Triaje | null>(null)
+    const [campanas, setCampanas] = useState<Campana[]>([])
+    const [campanasDisponibles, setCampanasDisponibles] = useState<Campana[]>([])
+    const [pacienteId, setPacienteId] = useState<number | null>(null)
 
-    const [cargandoTriaje, setCargandoTriaje] = useState(true);
-    const [cargandoCampanas, setCargandoCampanas] = useState(true);
-    const [cargandoPaciente, setCargandoPaciente] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [mostrarTriajeForm, setMostrarTriajeForm] = useState(false);
+    const [cargandoTriaje, setCargandoTriaje] = useState(true)
+    const [cargandoCampanas, setCargandoCampanas] = useState(true)
+    const [cargandoPaciente, setCargandoPaciente] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const [mostrarTriajeForm, setMostrarTriajeForm] = useState(false)
 
     // Primero obtenemos el pacienteId
     useEffect(() => {
         const obtenerPaciente = async () => {
             if (!usuario?.id || !usuario?.token) {
                 console.log("⏳ Esperando datos del usuario...")
-                return;
+                return
             }
 
-            setCargandoPaciente(true);
-            console.log("🔍 Obteniendo datos del paciente para usuario:", usuario.id);
+            setCargandoPaciente(true)
+            console.log("🔍 Obteniendo datos del paciente para usuario:", usuario.id)
 
             try {
                 const response = await apiClient.get(`/pacientes/usuario/${usuario.id}`, {
                     headers: {
                         'Authorization': `Bearer ${usuario.token}`
                     }
-                });
+                })
 
-                console.log("✅ Paciente encontrado:", response.data.id);
-                setPacienteId(response.data.id);
+                console.log("✅ Paciente encontrado:", response.data.id)
+                setPacienteId(response.data.id)
             } catch (err: any) {
-                console.error("❌ Error al obtener paciente:", err);
+                console.error("❌ Error al obtener paciente:", err)
                 if (err.response?.status === 404) {
-                    console.log("🔄 Redirigiendo a completar perfil...");
-                    router.push('/dashboard/paciente/completar-perfil');
-                    return;
+                    console.log("🔄 Redirigiendo al acceso pues no existe el registro de paciente...")
+                    router.push('/acceso')
+                    return
                 }
-                setError("Error al obtener datos del paciente");
+                setError("Error al obtener datos del paciente")
             } finally {
-                setCargandoPaciente(false);
+                setCargandoPaciente(false)
             }
-        };
+        }
 
-        obtenerPaciente();
-    }, [usuario?.id, usuario?.token, router]);
+        obtenerPaciente()
+    }, [usuario?.id, usuario?.token, router])
 
     const cargarCampanas = async () => {
         if (!pacienteId || !usuario?.token) {
-            console.log("⏳ Esperando pacienteId o token para cargar campañas...");
-            return;
+            console.log("⏳ Esperando pacienteId o token para cargar campañas...")
+            return
         }
 
-        setCargandoCampanas(true);
-        console.log("🔍 Cargando campañas para paciente:", pacienteId);
+        setCargandoCampanas(true)
+        console.log("🔍 Cargando campañas para paciente:", pacienteId)
 
         try {
             // Cargar todas las campañas disponibles
@@ -84,17 +84,17 @@ export default function PacientePage() {
                 headers: {
                     'Authorization': `Bearer ${usuario.token}`
                 }
-            });
-            const todasCampanas = responseCampanas.data;
-            setCampanasDisponibles(todasCampanas);
+            })
+            const todasCampanas = responseCampanas.data
+            setCampanasDisponibles(todasCampanas)
 
             // Cargar inscripciones del paciente
             const responseInscripciones = await apiClient.get(`/inscripciones-campana/paciente/${pacienteId}`, {
                 headers: {
                     'Authorization': `Bearer ${usuario.token}`
                 }
-            });
-            const inscripciones = responseInscripciones.data;
+            })
+            const inscripciones = responseInscripciones.data
 
             // Filtrar las campañas en las que está inscrito
             const campanasInscritas = todasCampanas.filter((campana: Campana) =>
@@ -102,73 +102,73 @@ export default function PacientePage() {
                     inscripcion.campanaId === campana.id &&
                     inscripcion.estado === 'INSCRITO'
                 )
-            );
-            setCampanas(campanasInscritas);
-            console.log("✅ Campañas cargadas:", campanasInscritas.length);
+            )
+            setCampanas(campanasInscritas)
+            console.log("✅ Campañas cargadas:", campanasInscritas.length)
         } catch (err: any) {
-            console.error('❌ Error al cargar campañas:', err);
-            setError('Error al cargar las campañas. Intente nuevamente.');
+            console.error('❌ Error al cargar campañas:', err)
+            setError('Error al cargar las campañas. Intente nuevamente.')
         } finally {
-            setCargandoCampanas(false);
+            setCargandoCampanas(false)
         }
-    };
+    }
 
     // Cargar campañas solo cuando tengamos pacienteId
     useEffect(() => {
         if (pacienteId && usuario?.token && !cargandoPaciente) {
-            console.log("🔄 Iniciando carga de campañas...");
-            cargarCampanas();
+            console.log("🔄 Iniciando carga de campañas...")
+            cargarCampanas()
         }
-    }, [pacienteId, usuario?.token, cargandoPaciente]);
+    }, [pacienteId, usuario?.token, cargandoPaciente])
 
     // Cargar triaje inicial del paciente
     useEffect(() => {
         const cargarTriaje = async () => {
             if (!pacienteId || !usuario?.token || cargandoPaciente) {
-                console.log("⏳ Esperando datos para cargar triaje...");
-                return;
+                console.log("⏳ Esperando datos para cargar triaje...")
+                return
             }
 
-            setCargandoTriaje(true);
-            setError(null);
-            console.log("🔍 Cargando triaje para paciente:", pacienteId);
+            setCargandoTriaje(true)
+            setError(null)
+            console.log("🔍 Cargando triaje para paciente:", pacienteId)
 
             try {
                 const response = await apiClient.get(`/triaje/paciente/${pacienteId}`, {
                     headers: {
                         'Authorization': `Bearer ${usuario.token}`
                     }
-                });
+                })
 
-                const triajes = response.data;
+                const triajes = response.data
                 // Tomamos el triaje más reciente
-                const ultimoTriaje = triajes.length > 0 ? triajes[0] : null;
-                setTriaje(ultimoTriaje);
+                const ultimoTriaje = triajes.length > 0 ? triajes[0] : null
+                setTriaje(ultimoTriaje)
 
-                console.log("✅ Triaje cargado:", ultimoTriaje ? "encontrado" : "no encontrado");
+                console.log("✅ Triaje cargado:", ultimoTriaje ? "encontrado" : "no encontrado")
 
                 // Si no hay triaje, redirigir a crearlo
                 if (!ultimoTriaje) {
-                    console.log("🔄 Redirigiendo a triaje inicial...");
-                    router.push('/dashboard/paciente/triaje-inicial');
+                    console.log("🔄 Redirigiendo a triaje inicial...")
+                    router.push('/dashboard/paciente/triaje-inicial')
                 }
             } catch (err: any) {
-                console.error('❌ Error al cargar triaje:', err);
-                setError('No se pudo cargar la información médica. Intente nuevamente.');
+                console.error('❌ Error al cargar triaje:', err)
+                setError('No se pudo cargar la información médica. Intente nuevamente.')
             } finally {
-                setCargandoTriaje(false);
+                setCargandoTriaje(false)
             }
-        };
+        }
 
         if (pacienteId && usuario?.token && !cargandoPaciente) {
-            console.log("🔄 Iniciando carga de triaje...");
-            cargarTriaje();
+            console.log("🔄 Iniciando carga de triaje...")
+            cargarTriaje()
         }
-    }, [pacienteId, usuario?.token, cargandoPaciente, router]);
+    }, [pacienteId, usuario?.token, cargandoPaciente, router])
 
     // Manejar envío del formulario de triaje
     const handleTriajeSubmit = async (datosTriaje: any) => {
-        if (!pacienteId || !usuario?.token) return;
+        if (!pacienteId || !usuario?.token) return
 
         try {
             const response = await apiClient.post('/triaje', {
@@ -179,16 +179,16 @@ export default function PacientePage() {
                 headers: {
                     'Authorization': `Bearer ${usuario.token}`
                 }
-            });
+            })
 
-            const nuevoTriaje = response.data;
-            setTriaje(nuevoTriaje);
-            setMostrarTriajeForm(false);
+            const nuevoTriaje = response.data
+            setTriaje(nuevoTriaje)
+            setMostrarTriajeForm(false)
         } catch (err: any) {
-            console.error('Error al guardar triaje:', err);
-            setError('Error al guardar la información médica. Intente nuevamente.');
+            console.error('Error al guardar triaje:', err)
+            setError('Error al guardar la información médica. Intente nuevamente.')
         }
-    };
+    }
 
     // Si el usuario aún no tiene triaje, mostrar el formulario
     if (mostrarTriajeForm) {
@@ -209,7 +209,7 @@ export default function PacientePage() {
                     <TriajeForm onSubmit={handleTriajeSubmit} />
                 </div>
             </div>
-        );
+        )
     }
 
     // Si está cargando datos iniciales, mostrar indicador
@@ -219,11 +219,11 @@ export default function PacientePage() {
                 <div className="text-center">
                     <RefreshCw className="mx-auto size-8 animate-spin text-slate-400" />
                     <p className="mt-2 text-slate-500">
-                        {cargandoPaciente ? "Cargando perfil..." : "Cargando información médica..."}
+                        {cargandoPaciente ? "Cargando datos..." : "Cargando información médica..."}
                     </p>
                 </div>
             </div>
-        );
+        )
     }
 
     return (
@@ -309,5 +309,5 @@ export default function PacientePage() {
                 )}
             </div>
         </div>
-    );
+    )
 }

@@ -9,7 +9,6 @@ export const ENDPOINTS = {
 		REGISTRO: `${API_URL}/auth/registro`,
 		ACCESO: `${API_URL}/auth/acceso`,
 		SALIR: `${API_URL}/auth/salir`,
-		PERFIL: `${API_URL}/auth/perfil`
 	},
 
 	// Usuarios

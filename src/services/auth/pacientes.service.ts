@@ -6,19 +6,19 @@ import apiClient from "../api"
  */
 export const pacientesAuthService = {
   /**
-   * Verifica si existe el perfil del paciente
+   * Verifica si existe el paciente del paciente
    */
-  verificarPerfil: async (usuarioId: number): Promise<{ existe: boolean; id?: number; datos?: any }> => {
+  verificarPaciente: async (usuarioId: number): Promise<{ existe: boolean; id?: number; datos?: any }> => {
     try {
-      console.log("🔍 PACIENTES-AUTH-SERVICE: Verificando perfil para usuario:", usuarioId)
+      console.log("🔍 PACIENTES-AUTH-SERVICE: Verificando paciente para usuario:", usuarioId)
 
       const response = await apiClient.get(`${API_ENDPOINTS.PACIENTES}/usuario/${usuarioId}`)
 
-      console.log("✅ PACIENTES-AUTH-SERVICE: Perfil encontrado:", response.data)
+      console.log("✅ PACIENTES-AUTH-SERVICE: Paciente encontrado:", response.data)
       return { existe: true, id: response.data.id, datos: response.data }
 
     } catch (error: any) {
-      console.error("❌ PACIENTES-AUTH-SERVICE: Error al verificar perfil:", error)
+      console.error("❌ PACIENTES-AUTH-SERVICE: Error al verificar paciente:", error)
 
       // Si es 404, significa que no existe
       if (error.response?.status === 404) {
@@ -63,58 +63,58 @@ export const pacientesAuthService = {
    * Verifica el estado completo del paciente (perfil + triaje)
    */
   verificarEstadoCompleto: async (usuarioId: number): Promise<{
-    tienePerfil: boolean
+    tienePaciente: boolean
     tieneTriaje: boolean
-    perfilData?: any
+    pacienteData?: any
     triajeData?: any
     pacienteId?: number
   }> => {
     try {
       console.log("🔍 PACIENTES-AUTH-SERVICE: Verificando estado completo para usuario:", usuarioId)
 
-      // Verificar perfil
-      const { existe: tienePerfil, id: pacienteId, datos: perfilData } = await pacientesAuthService.verificarPerfil(usuarioId)
+      // Verificar paciente
+      const { existe: tienePaciente, id: pacienteId, datos: pacienteData } = await pacientesAuthService.verificarPaciente(usuarioId)
 
-      if (!tienePerfil) {
-        console.log("❌ PACIENTES-AUTH-SERVICE: Usuario sin perfil")
+      if (!tienePaciente) {
+        console.log("❌ PACIENTES-AUTH-SERVICE: Usuario sin paciente")
         return {
-          tienePerfil: false,
+          tienePaciente: false,
           tieneTriaje: false,
-          perfilData
+          pacienteData
         }
       }
 
       // Si tiene perfil, verificar triaje
       if (!pacienteId) {
-        console.warn("⚠️ PACIENTES-AUTH-SERVICE: Perfil sin ID de paciente")
+        console.warn("⚠️ PACIENTES-AUTH-SERVICE: Paciente sin ID de paciente")
         return {
-          tienePerfil: true,
+          tienePaciente: true,
           tieneTriaje: false,
-          perfilData
+          pacienteData
         }
       }
 
       const { existe: tieneTriaje, datos: triajeData } = await pacientesAuthService.verificarTriaje(pacienteId)
 
       console.log("✅ PACIENTES-AUTH-SERVICE: Estado completo verificado:", {
-        tienePerfil,
+        tienePaciente,
         tieneTriaje,
         pacienteId
       })
 
       return {
-        tienePerfil,
+        tienePaciente,
         tieneTriaje,
-        perfilData,
+        pacienteData,
         triajeData,
         pacienteId
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ PACIENTES-AUTH-SERVICE: Error al verificar estado completo:", error)
 
       // En caso de error, asumir que necesita completar todo
       return {
-        tienePerfil: false,
+        tienePaciente: false,
         tieneTriaje: false
       }
     }
