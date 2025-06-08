@@ -8,10 +8,7 @@ export const EmbajadorService = {
     const response = await httpGet("/embajadores");
     return response.data;
   },
-  obtenerEmbajadoresPorEntidad: async (entidadId: number): Promise<Embajador[]> => {
-    const response = await httpGet(`/embajadores/entidad/${entidadId}`);
-    return response;
-  },
+  
   crearEmbajador: async (embajador: Embajador): Promise<Embajador> => {
     try {
       const response = await httpPost("/embajadores", embajador);
@@ -25,6 +22,11 @@ export const EmbajadorService = {
       }
       throw new Error("Error al crear la campaña");
     }
+  },
+
+  obtenerEmbajadoresPorIds: async (ids: number[]): Promise<Embajador[]> => {
+    const response = await httpGet(`/embajadores/ids?ids=${ids.join(',')}`);
+    return response.data;
   },
 };
 
