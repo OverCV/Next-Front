@@ -16,6 +16,7 @@ import { ROLES, TIPOS_IDENTIFICACION, TiposIdentificacionEnum } from "@/src/cons
 import { useAuth } from "@/src/providers/auth-provider";
 import { Embajador, Usuario } from "@/src/types";
 import { EmbajadorService } from "@/src/services/EmbajadorService";
+import entidadSaludService from "@/src/services/EntidadSaludService";
 
 // Esquema de validación
 const registroEmbajadorSchema = z.object({
@@ -94,15 +95,17 @@ export default function RegistroEmbajadorForm() {
                 rolId: ROLES.EMBAJADOR, // Id 7: Rol de embajador
             };
 
-            const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+            const user = JSON.parse(localStorage.getItem("usuario") || "{}");
 
             // Llamar al mismo endpoint de registro que usamos para las entidades y pacientes
             const respuesta = await registroUsuario(datosRegistro);
 
+            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user["id"]);
+
             const datosEmbajador: Embajador = {
                 id: 0,
                 usuarioId: respuesta.id,
-                entidadId: 1,
+                entidadId: (entidad !== null) ? entidad.id : 1,
                 nombreCompleto: `${datos.nombres} ${datos.apellidos}`,
                 telefono: datos.telefono,
                 localidad: datos.localidad,

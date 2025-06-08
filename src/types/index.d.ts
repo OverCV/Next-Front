@@ -140,6 +140,7 @@ export interface UsuarioAccedido extends Usuario {
 }
 
 export interface EntidadSalud {
+  id: number;
   razonSocial: string;
   direccion: string;
   telefono: string;
