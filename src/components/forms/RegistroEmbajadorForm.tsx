@@ -14,9 +14,10 @@ import { Form } from "@/src/components/ui/form";
 import { SelectItem } from "@/src/components/ui/select";
 import { ROLES, TIPOS_IDENTIFICACION, TiposIdentificacionEnum } from "@/src/constants";
 import { useAuth } from "@/src/providers/auth-provider";
-import { Embajador, Usuario } from "@/src/types";
+import { Embajador, EmbajadorEntidad, Usuario } from "@/src/types";
 import { EmbajadorService } from "@/src/services/EmbajadorService";
 import entidadSaludService from "@/src/services/EntidadSaludService";
+import EmbajadorEntidadService from "@/src/services/EmbajadorEntidadService";
 
 // Esquema de validación
 const registroEmbajadorSchema = z.object({
@@ -105,7 +106,6 @@ export default function RegistroEmbajadorForm() {
             const datosEmbajador: Embajador = {
                 id: 0,
                 usuarioId: respuesta.id,
-                entidadId: (entidad !== null) ? entidad.id : 1,
                 nombreCompleto: `${datos.nombres} ${datos.apellidos}`,
                 telefono: datos.telefono,
                 localidad: datos.localidad,
@@ -114,6 +114,18 @@ export default function RegistroEmbajadorForm() {
             };
 
             const respuestaEmbajador = await EmbajadorService.crearEmbajador(datosEmbajador);
+
+            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user["id"]);
+
+            const datosEmbajadorEntidad: EmbajadorEntidad = {
+                id: 0,
+                entidadId: entidad.id,
+                embajadorId: respuestaEmbajador.id,
+                entidad: null,
+                embajador: null,
+            };
+
+            const respuestaEmbajadorEntidad = await EmbajadorEntidadService.crearEmbajadorEntidad(datosEmbajadorEntidad);
 
             setExitoso(true);
 

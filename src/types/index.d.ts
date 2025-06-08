@@ -107,11 +107,18 @@ export interface Citacion {
   notas?: string
 }
 
+export interface EmbajadorEntidad {
+  id: number;
+  entidadId: number;
+  embajadorId: number;
+  entidad: EntidadSalud | null;
+  embajador: Embajador | null;
+}
+
 export interface Embajador {
   id: number
   nombreCompleto: string
   telefono: string
-  entidadId: number
   usuarioId: number
   localidad: string
   identificacion: string
