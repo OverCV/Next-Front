@@ -56,40 +56,50 @@ export const pacientesService = {
 	crearTriaje: async (datos: {
 		pacienteId: number
 		edad: number
-		presionSistolica: number
-		presionDiastolica: number
-		colesterolTotal: number
-		hdl: number
+		peso: number
+		estatura: number
 		tabaquismo: boolean
 		alcoholismo: boolean
 		diabetes: boolean
-		peso: number
-		talla: number
+		actividadFisica: boolean
+		hipertension: boolean
 		dolorPecho: boolean
 		dolorIrradiado: boolean
 		sudoracion: boolean
 		nauseas: boolean
 		antecedentesCardiacos: boolean
+		fechaTriaje: string
 		descripcion?: string
 	}) => {
 		try {
 			console.log("📝 PACIENTES-SERVICE: Creando triaje para paciente:", datos.pacienteId)
 
-			// Calcular IMC automáticamente
-			const talla = datos.talla / 100 // convertir cm a metros
-			const imc = Math.round((datos.peso / (talla * talla)) * 10) / 10 // IMC con 1 decimal
-
 			const response = await apiClient.post(API_ENDPOINTS.TRIAJE, {
-				...datos,
-				fechaTriaje: new Date().toISOString().split('T')[0],
-				imc,
-				nivelPrioridad: "MEDIA" // Por defecto asignamos prioridad MEDIA
+				pacienteId: datos.pacienteId,
+				edad: datos.edad,
+				peso: datos.peso,
+				estatura: datos.estatura,
+				tabaquismo: datos.tabaquismo,
+				alcoholismo: datos.alcoholismo,
+				diabetes: datos.diabetes,
+				actividadFisica: datos.actividadFisica,
+				hipertension: datos.hipertension,
+				dolorPecho: datos.dolorPecho,
+				dolorIrradiado: datos.dolorIrradiado,
+				sudoracion: datos.sudoracion,
+				nauseas: datos.nauseas,
+				antecedentesCardiacos: datos.antecedentesCardiacos,
+				fechaTriaje: datos.fechaTriaje,
+				descripcion: datos.descripcion || ""
 			})
 
 			console.log("✅ PACIENTES-SERVICE: Triaje creado:", response.data)
 			return response.data
-		} catch (error) {
+		} catch (error: any) {
 			console.error("❌ PACIENTES-SERVICE: Error al crear triaje:", error)
+			console.error("❌ PACIENTES-SERVICE: Respuesta del servidor:", error.response?.data)
+			console.error("❌ PACIENTES-SERVICE: Status:", error.response?.status)
+			console.error("❌ PACIENTES-SERVICE: Headers:", error.response?.headers)
 			throw error
 		}
 	},

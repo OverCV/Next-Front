@@ -29,12 +29,18 @@ apiClient.interceptors.request.use(
             console.log(`🔵 apiClient InteREQ (${config.url}): Token encontrado en COOKIES.`)
         } else {
             console.log(`🔵 apiClient InteREQ (${config.url}): Token NO encontrado en cookies. Intentando localStorage...`)
-            const localStorageToken = localStorage.getItem('authToken')
-            if (localStorageToken) {
-                token = localStorageToken
-                console.log(`🔵 apiClient InteREQ (${config.url}): Token SÍ encontrado en localStorage.`)
+
+            // Verificar si estamos en el cliente antes de usar localStorage
+            if (typeof window !== 'undefined') {
+                const localStorageToken = localStorage.getItem('authToken')
+                if (localStorageToken) {
+                    token = localStorageToken
+                    console.log(`🔵 apiClient InteREQ (${config.url}): Token SÍ encontrado en localStorage.`)
+                } else {
+                    console.log(`🔵 apiClient InteREQ (${config.url}): Token NO encontrado en localStorage.`)
+                }
             } else {
-                console.log(`🔵 apiClient InteREQ (${config.url}): Token NO encontrado ni en cookies NI en localStorage.`)
+                console.log(`🔵 apiClient InteREQ (${config.url}): Ejecutándose en servidor, saltando localStorage.`)
             }
         }
 
@@ -68,8 +74,12 @@ apiClient.interceptors.response.use(
         if (error.response?.status === 401) {
             console.warn("🚫 apiClient InteRES: Error 401. Limpiando sesión...")
             Cookies.remove('authToken')
-            localStorage.removeItem('authToken')
-            localStorage.removeItem('usuario')
+
+            // Solo limpiar localStorage si estamos en el cliente
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('authToken')
+                localStorage.removeItem('usuario')
+            }
         }
         return Promise.reject(error)
     }

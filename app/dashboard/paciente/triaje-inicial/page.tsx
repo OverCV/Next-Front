@@ -112,7 +112,7 @@ export default function TriajeInicialPage() {
 
                 <TriajeInicialForm />
 
-                <div className="mt-8 flex justify-center">
+                {/* <div className="mt-8 flex justify-center">
                     <Button
                         variant="outline"
                         size="sm"
@@ -121,7 +121,7 @@ export default function TriajeInicialPage() {
                     >
                         🔍 Diagnosticar Estado
                     </Button>
-                </div>
+                </div> */}
 
                 {debug && debugInfo && (
                     <div className="mt-4 rounded-md bg-gray-100 p-4 text-left text-xs">
