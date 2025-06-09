@@ -92,6 +92,21 @@ export interface Campana {
   factores?: FactorRiesgo[]
 }
 
+// Interfaz para campañas desde la API (estructura diferente al mock)
+export interface CampanaAPI {
+  id: number
+  nombre: string
+  descripcion: string
+  localizacionId: number
+  fechaLimiteInscripcion: string
+  fechaInicio: string
+  fechaLimite: string | null
+  minParticipantes: number
+  maxParticipantes: number
+  entidadId: number
+  estado: 'POSTULADA' | 'EJECUCION' | 'FINALIZADA' | 'CANCELADA'
+}
+
 // Interfaz para citaciones
 export interface Citacion {
   id: number
@@ -105,6 +120,22 @@ export interface Citacion {
   prediccionAsistencia?: number // 0-100%
   prioridad: number // 1-5
   notas?: string
+}
+
+// Interfaz para inscripciones a campañas
+export interface InscripcionCampana {
+  id: number
+  pacienteId: number
+  campanaId: number
+  fechaInscripcion: string
+  estado: 'INSCRITO' | 'RETIRADO' | 'COMPLETADO'
+  motivoRetiro?: string
+}
+
+// Datos para crear inscripción
+export interface CrearInscripcionCampana {
+  usuarioId: number
+  campanaId: number
 }
 
 export interface EmbajadorEntidad {

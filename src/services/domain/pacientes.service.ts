@@ -1,5 +1,6 @@
-import { API_ENDPOINTS } from "../../config/api-endpoints"
+import { ENDPOINTS } from "../auth/endpoints"
 import apiClient from "../api"
+import { CrearInscripcionCampana, InscripcionCampana } from "@/src/types"
 
 export const pacientesService = {
 	crearPaciente: async (datos: {
@@ -11,12 +12,7 @@ export const pacientesService = {
 		usuarioId: number
 	}) => {
 		try {
-			console.log("📝 PACIENTES-SERVICE: Creando paciente:", {
-				...datos,
-				fechaNacimiento: datos.fechaNacimiento.toISOString().split('T')[0]
-			})
-
-			const response = await apiClient.post(API_ENDPOINTS.PACIENTES, {
+			const response = await apiClient.post(ENDPOINTS.PACIENTES.BASE, {
 				fechaNacimiento: datos.fechaNacimiento.toISOString().split('T')[0],
 				genero: datos.genero,
 				direccion: datos.direccion,
@@ -25,26 +21,40 @@ export const pacientesService = {
 				usuarioId: datos.usuarioId
 			})
 
-			console.log("✅ PACIENTES-SERVICE: Paciente creado:", response.data)
 			return response.data
 		} catch (error) {
-			console.error("❌ PACIENTES-SERVICE: Error al crear paciente:", error)
+			console.error("❌ Error al crear paciente:", error)
 			throw error
 		}
 	},
 
 	obtenerPacientePorUsuarioId: async (usuarioId: number) => {
 		try {
-			console.log("🔍 PACIENTES-SERVICE: Obteniendo para usuario:", usuarioId)
-
-			const response = await apiClient.get(`${API_ENDPOINTS.PACIENTES}/usuario/${usuarioId}`)
-
-			console.log("✅ PACIENTES-SERVICE: Paciente obtenido:", response.data)
+			const response = await apiClient.get(ENDPOINTS.PACIENTES.PERFIL(usuarioId))
 			return response.data
 		} catch (error: any) {
-			console.error("❌ PACIENTES-SERVICE: Error al obtener paciente:", error)
-
 			// Si es 404, significa que no existe el paciente
+			if (error.response?.status === 404) {
+				return { existe: false }
+			}
+			throw error
+		}
+	},
+
+	// Función para verificar si existe un paciente (consolidada desde auth)
+	verificarPaciente: async (usuarioId: number): Promise<{ existe: boolean; id?: number; datos?: any }> => {
+		try {
+			console.log("🔍 PACIENTES-SERVICE: Verificando paciente para usuario:", usuarioId)
+
+			const response = await apiClient.get(ENDPOINTS.PACIENTES.PERFIL(usuarioId))
+
+			console.log("✅ PACIENTES-SERVICE: Paciente encontrado:", response.data)
+			return { existe: true, id: response.data.id, datos: response.data }
+
+		} catch (error: any) {
+			console.error("❌ PACIENTES-SERVICE: Error al verificar paciente:", error)
+
+			// Si es 404, significa que no existe
 			if (error.response?.status === 404) {
 				return { existe: false }
 			}
@@ -72,9 +82,7 @@ export const pacientesService = {
 		descripcion?: string
 	}) => {
 		try {
-			console.log("📝 PACIENTES-SERVICE: Creando triaje para paciente:", datos.pacienteId)
-
-			const response = await apiClient.post(API_ENDPOINTS.TRIAJE, {
+			const response = await apiClient.post(ENDPOINTS.PACIENTES.CREAR_TRIAJE, {
 				pacienteId: datos.pacienteId,
 				edad: datos.edad,
 				peso: datos.peso,
@@ -93,28 +101,20 @@ export const pacientesService = {
 				descripcion: datos.descripcion || ""
 			})
 
-			console.log("✅ PACIENTES-SERVICE: Triaje creado:", response.data)
 			return response.data
 		} catch (error: any) {
-			console.error("❌ PACIENTES-SERVICE: Error al crear triaje:", error)
-			console.error("❌ PACIENTES-SERVICE: Respuesta del servidor:", error.response?.data)
-			console.error("❌ PACIENTES-SERVICE: Status:", error.response?.status)
-			console.error("❌ PACIENTES-SERVICE: Headers:", error.response?.headers)
+			console.error("❌ Error al crear triaje:", error)
 			throw error
 		}
 	},
 
 	verificarTriaje: async (pacienteId: number) => {
 		try {
-			console.log("🔍 PACIENTES-SERVICE: Verificando triaje para paciente:", pacienteId)
-
-			const response = await apiClient.get(`${API_ENDPOINTS.TRIAJE}/paciente/${pacienteId}`)
+			const response = await apiClient.get(ENDPOINTS.TRIAJES.POR_PACIENTE(pacienteId))
 
 			// El backend retorna un array de triajes, verificamos si tiene elementos
 			const triajes = response.data
 			const tieneTriaje = Array.isArray(triajes) && triajes.length > 0
-
-			console.log("✅ PACIENTES-SERVICE: Triaje verificado:", { pacienteId, tieneTriaje, triajes: triajes.length })
 
 			return {
 				existe: tieneTriaje,
@@ -122,13 +122,88 @@ export const pacientesService = {
 				ultimoTriaje: tieneTriaje ? triajes[0] : null
 			}
 		} catch (error: any) {
-			console.error("❌ PACIENTES-SERVICE: Error al verificar triaje:", error)
-
 			// Si es 404, significa que no tiene triajes
 			if (error.response?.status === 404) {
 				return { existe: false, triajes: [], ultimoTriaje: null }
 			}
+			throw error
+		}
+	},
 
+	// Función para verificar estado completo del paciente (consolidada desde auth)
+	verificarEstadoCompleto: async (usuarioId: number): Promise<{
+		tienePaciente: boolean
+		tieneTriaje: boolean
+		pacienteData?: any
+		triajeData?: any
+		pacienteId?: number
+	}> => {
+		try {
+			console.log("🔍 PACIENTES-SERVICE: Verificando estado completo para usuario:", usuarioId)
+
+			// Verificar paciente
+			const { existe: tienePaciente, id: pacienteId, datos: pacienteData } = await pacientesService.verificarPaciente(usuarioId)
+
+			if (!tienePaciente) {
+				console.log("❌ PACIENTES-SERVICE: Usuario sin paciente")
+				return {
+					tienePaciente: false,
+					tieneTriaje: false,
+					pacienteData
+				}
+			}
+
+			// Si tiene perfil, verificar triaje
+			if (!pacienteId) {
+				console.warn("⚠️ PACIENTES-SERVICE: Paciente sin ID")
+				return {
+					tienePaciente: true,
+					tieneTriaje: false,
+					pacienteData
+				}
+			}
+
+			const { existe: tieneTriaje, ultimoTriaje: triajeData } = await pacientesService.verificarTriaje(pacienteId)
+
+			console.log("✅ PACIENTES-SERVICE: Estado completo verificado:", {
+				tienePaciente,
+				tieneTriaje,
+				pacienteId
+			})
+
+			return {
+				tienePaciente,
+				tieneTriaje,
+				pacienteData,
+				triajeData,
+				pacienteId
+			}
+		} catch (error: any) {
+			console.error("❌ PACIENTES-SERVICE: Error al verificar estado completo:", error)
+
+			// En caso de error, asumir que necesita completar todo
+			return {
+				tienePaciente: false,
+				tieneTriaje: false
+			}
+		}
+	},
+
+	// Función para inscribir paciente a campaña
+	inscribirPacienteCampana: async (datos: CrearInscripcionCampana): Promise<InscripcionCampana> => {
+		try {
+			console.log("📝 Inscribiendo paciente a campaña:", datos)
+
+			const response = await apiClient.post(
+				ENDPOINTS.CAMPANAS.INSCRIPCIONES.CREAR, {
+				usuarioId: datos.usuarioId,
+				campanaId: datos.campanaId,
+			})
+
+			console.log("✅ Paciente inscrito a campaña:", response.data)
+			return response.data
+		} catch (error: any) {
+			console.error("❌ Error al inscribir paciente a campaña:", error)
 			throw error
 		}
 	}

@@ -12,14 +12,13 @@ import { Alert, AlertDescription } from "@/src/components/ui/alert"
 import { Button } from "@/src/components/ui/button"
 import { Form } from "@/src/components/ui/form"
 import { SelectItem } from "@/src/components/ui/select"
-import { ROLES, TIPOS_IDENTIFICACION_PACIENTE, TiposIdentificacionEnum, OPCIONES_GENERO, TIPOS_SANGRE, GeneroBiologicoEnum, TipoSangreEnum } from "@/src/constants"
+import { TIPOS_IDENTIFICACION_PACIENTE, TiposIdentificacionEnum, OPCIONES_GENERO, TIPOS_SANGRE, GeneroBiologicoEnum, TipoSangreEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
 import { localizacionesService } from "@/src/services/domain/localizaciones.service"
-import { pacientesService } from "@/src/services/domain/pacientes.service"
-import { usuariosService } from "@/src/services/usuarios"
-import { Usuario, Localizacion } from "@/src/types"
+import { useRegistroPaciente, DatosRegistroCompleto } from "@/src/lib/hooks/useRegistroPaciente"
+import { Localizacion } from "@/src/types"
 
-// Esquema completo - Usuario + Paciente en UNO
+// Esquema completo - Usuario + Paciente + Campaña (opcional)
 const registroCompletoSchema = z.object({
     // Datos del Usuario
     tipoIdentificacion: z.nativeEnum(TiposIdentificacionEnum, {
@@ -45,7 +44,7 @@ const registroCompletoSchema = z.object({
 
     // Datos del Paciente
     fechaNacimiento: z.date({
-        required_error: "La fecha de nacim  iento es requerida",
+        required_error: "La fecha de nacimiento es requerida",
     }),
     genero: z.nativeEnum(GeneroBiologicoEnum, {
         required_error: "Selecciona un género",
@@ -62,6 +61,14 @@ const registroCompletoSchema = z.object({
             z.number()
                 .min(1, "Selecciona una localización")
         ),
+
+    // Datos de Campaña (opcional)
+    campanaId: z.string()
+        .optional()
+        .transform((val) => {
+            if (!val || val === "sin_campana") return undefined
+            return parseInt(val, 10)
+        })
 })
 
 type RegistroCompletoFormValues = z.infer<typeof registroCompletoSchema>
@@ -69,10 +76,19 @@ type RegistroCompletoFormValues = z.infer<typeof registroCompletoSchema>
 export default function RegistrarPacientePage() {
     const router = useRouter()
     const { usuario } = useAuth()
-    const [error, setError] = useState<string | null>(null)
-    const [cargando, setCargando] = useState<boolean>(false)
-    const [exitoso, setExitoso] = useState<boolean>(false)
     const [localizaciones, setLocalizaciones] = useState<Localizacion[]>([])
+
+    // Usar el hook personalizado
+    const {
+        registrarPacienteCompleto,
+        cargarCampanasDisponibles,
+        campanasDisponibles,
+        cargandoCampanas,
+        cargando,
+        error,
+        exitoso,
+        limpiarEstado
+    } = useRegistroPaciente()
 
     const form = useForm<RegistroCompletoFormValues>({
         resolver: zodResolver(registroCompletoSchema),
@@ -88,77 +104,61 @@ export default function RegistrarPacientePage() {
             direccion: "",
             tipoSangre: undefined,
             localizacion_id: undefined,
+            campanaId: undefined,
         },
     })
 
-    // Cargar localizaciones al inicio
+    // Cargar datos iniciales
     useEffect(() => {
-        const cargarLocalizaciones = async () => {
-            // Ya no se pasa el token aquí, el interceptor lo maneja
+        const cargarDatos = async () => {
             try {
-                console.log("🌍 Cargando localizaciones desde la página...")
-                const data = await localizacionesService.obtenerLocalizaciones()
-                setLocalizaciones(data || [])
-                if (data && data.length > 0) {
-                    console.log("🌍 Localizaciones cargadas en página:", data.length)
-                } else {
-                    console.warn("🌍 No se cargaron localizaciones o el array está vacío.")
-                }
+                console.log("🌍 Cargando localizaciones...")
+                const dataLocalizaciones = await localizacionesService.obtenerLocalizaciones()
+                setLocalizaciones(dataLocalizaciones || [])
+
+                console.log("📋 Cargando campañas disponibles...")
+                await cargarCampanasDisponibles()
+
             } catch (err) {
-                console.error("❌ Error fatal al cargar localizaciones en página:", err)
-                setLocalizaciones([]) // Asegurar que localizaciones sea un array vacío en caso de error
+                console.error("❌ Error al cargar datos:", err)
+                setLocalizaciones([])
             }
         }
-        cargarLocalizaciones()
-    }, []) // Ya no depende de usuario?.token, el interceptor se encarga
+        cargarDatos()
+    }, [cargarCampanasDisponibles]) // Solo depende de la función memoizada
 
     const onSubmit = async (datos: RegistroCompletoFormValues): Promise<void> => {
         const token = usuario?.token || localStorage.getItem('authToken')
 
         if (!token) {
-            setError("No hay sesión activa. Por favor, inicia sesión nuevamente.")
+            console.error("No hay token disponible")
             return
         }
 
-        setCargando(true)
-        setError(null)
-        setExitoso(false)
+        limpiarEstado()
 
         try {
-            console.log("📝 Datos completos del formulario:", datos)
-
-            // 1. Crear Usuario PRIMERO
-            const datosUsuario: Usuario = {
+            const datosCompletos: DatosRegistroCompleto = {
+                // Datos del Usuario
                 tipoIdentificacion: datos.tipoIdentificacion,
                 identificacion: datos.identificacion,
                 nombres: datos.nombres,
                 apellidos: datos.apellidos,
-                correo: datos.correo || `${datos.identificacion}@healink.com`,
-                clave: datos.identificacion, // Contraseña = identificación
                 celular: datos.celular,
-                estaActivo: true,
-                rolId: ROLES.PACIENTE,
-            }
+                correo: datos.correo,
 
-            console.log("🔸 PASO 1: Creando usuario...")
-            const usuarioCreado = await usuariosService.crearUsuario(token, datosUsuario)
-            console.log("✅ Usuario creado ID:", usuarioCreado.id)
-
-            // 2. Crear Paciente con el usuarioId
-            const datosPaciente = {
+                // Datos del Paciente
                 fechaNacimiento: datos.fechaNacimiento,
                 genero: datos.genero,
                 direccion: datos.direccion,
                 tipoSangre: datos.tipoSangre,
-                localizacionId: datos.localizacion_id,
-                usuarioId: usuarioCreado.id
+                localizacion_id: datos.localizacion_id,
+
+                // Datos de Campaña (opcional)
+                campanaId: datos.campanaId
             }
 
-            console.log("🔸 PASO 2: Creando paciente...")
-            const pacienteCreado = await pacientesService.crearPaciente(datosPaciente)
-            console.log("✅ Paciente creado ID:", pacienteCreado.id)
-
-            setExitoso(true)
+            await registrarPacienteCompleto(datosCompletos, token)
 
             // Redirigir después de éxito
             setTimeout(() => {
@@ -167,19 +167,7 @@ export default function RegistrarPacientePage() {
 
         } catch (err: any) {
             console.error("❌ Error en el registro:", err)
-            let mensajeError = "Error al registrar el paciente. Por favor, verifica los datos."
-
-            if (err.response?.status === 403) {
-                mensajeError = "No tienes permisos para registrar pacientes. Verifica tu sesión."
-            } else if (err.response?.status === 400) {
-                mensajeError = err.response?.data?.mensaje || "Datos inválidos. Revisa la información."
-            } else if (err.response?.status === 409) {
-                mensajeError = "Ya existe un usuario con esa identificación."
-            }
-
-            setError(mensajeError)
-        } finally {
-            setCargando(false)
+            // El error ya se maneja en el hook
         }
     }
 
@@ -369,6 +357,36 @@ export default function RegistrarPacientePage() {
                                             key={loc.id}
                                             value={loc.id.toString()}>
                                             {`${loc.municipio}, ${loc.vereda || loc.localidad || 'Centro'} - ${loc.departamento}`}
+                                        </SelectItem>
+                                    ))}
+                                </CustomFormField>
+                            </div>
+                        </div>
+
+                        {/* SEPARADOR */}
+                        <div className="border-t border-slate-200"></div>
+
+                        {/* SECCIÓN CAMPAÑA */}
+                        <div>
+                            <h3 className="mb-4 text-lg font-semibold">Inscripción a Campaña</h3>
+                            <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
+                                Puedes inscribir al paciente directamente a una campaña de salud disponible.
+                            </p>
+
+                            <div className="mb-6">
+                                <CustomFormField
+                                    fieldType={FormFieldType.SELECT}
+                                    control={form.control}
+                                    name="campanaId"
+                                    label="Campaña de Salud"
+                                    placeholder={cargandoCampanas ? "Cargando campañas..." : "Selecciona una campaña"}
+                                    disabled={cargandoCampanas}
+                                >
+                                    {campanasDisponibles.map((campana) => (
+                                        <SelectItem
+                                            key={campana.id}
+                                            value={campana.id.toString()}>
+                                            {`${campana.nombre} - ${campana.estado} (${campana.minParticipantes}-${campana.maxParticipantes} participantes)`}
                                         </SelectItem>
                                     ))}
                                 </CustomFormField>

@@ -9,8 +9,8 @@ import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { Button } from '@/src/components/ui/button'
 import { useAuth } from '@/src/providers/auth-provider'
 import apiClient from '@/src/services/api'
+import { ENDPOINTS } from '@/src/services/auth/endpoints'
 import { Triaje, Campana } from '@/src/types'
-import { type } from 'os'
 
 // import TriajeForm from '@/src/components/forms/TriajeForm'
 // import { campanasService } from '@/src/services/campanas'
@@ -46,8 +46,8 @@ export default function PacientePage() {
             console.log("🔍 Obteniendo datos del paciente para usuario:", usuario.id)
 
             try {
-                // apiClient maneja automáticamente el token
-                const response = await apiClient.get(`/pacientes/usuario/${usuario.id}`)
+                // Usar endpoint centralizado
+                const response = await apiClient.get(ENDPOINTS.PACIENTES.PERFIL(usuario.id))
 
                 console.log("✅ Paciente encontrado:", response.data.id)
                 setPacienteId(response.data.id)
@@ -77,13 +77,13 @@ export default function PacientePage() {
         console.log("🔍 Cargando campañas para paciente:", pacienteId)
 
         try {
-            // Cargar todas las campañas disponibles - apiClient maneja automáticamente el token
-            const responseCampanas = await apiClient.get(`/inscripciones-campana/paciente/${pacienteId}`)
+            // Usar endpoint centralizado para inscripciones
+            const responseCampanas = await apiClient.get(ENDPOINTS.CAMPANAS.INSCRIPCIONES.POR_PACIENTE(pacienteId))
             const todasCampanas = responseCampanas.data
             setCampanasDisponibles(todasCampanas)
 
-            // Cargar inscripciones del paciente - apiClient maneja automáticamente el token
-            const responseInscripciones = await apiClient.get(`/inscripciones-campana/paciente/${pacienteId}`)
+            // Cargar inscripciones del paciente usando el mismo endpoint
+            const responseInscripciones = await apiClient.get(ENDPOINTS.CAMPANAS.INSCRIPCIONES.POR_PACIENTE(pacienteId))
             const inscripciones = responseInscripciones.data
 
             // Filtrar las campañas en las que está inscrito
@@ -124,8 +124,8 @@ export default function PacientePage() {
             console.log("🔍 Cargando triaje para paciente:", pacienteId)
 
             try {
-                // apiClient maneja automáticamente el token
-                const response = await apiClient.get(`/triaje/paciente/${pacienteId}`)
+                // Usar endpoint centralizado para triajes
+                const response = await apiClient.get(ENDPOINTS.TRIAJES.POR_PACIENTE(pacienteId))
 
                 const triajes = response.data
                 // Tomamos el triaje más reciente

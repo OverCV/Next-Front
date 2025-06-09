@@ -2,7 +2,7 @@
 
 // Servicios principales
 export { authService } from './auth.service'
-export { pacientesAuthService } from './pacientes.service'
+export { pacientesAuthService } from './pacientes.auth'
 
 // Configuración
 export { ENDPOINTS } from './endpoints'

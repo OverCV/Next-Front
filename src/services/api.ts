@@ -22,41 +22,26 @@ console.log("🔵 apiClient.ts: Instancia de Axios creada. BaseURL:", apiClient.
 // Interceptor para añadir el token a todas las peticiones
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-        console.log(`🔵 apiClient InteREQ (${config.method?.toUpperCase()} ${config.url}): Ejecutando...`)
+        const metodo = config.method?.toUpperCase()
+        const ruta = config.url
+
         let token: string | undefined = Cookies.get('authToken')
 
-        if (token) {
-            console.log(`🔵 apiClient InteREQ (${config.url}): Token encontrado en COOKIES.`)
-        } else {
-            console.log(`🔵 apiClient InteREQ (${config.url}): Token NO encontrado en cookies. Intentando localStorage...`)
-
-            // Verificar si estamos en el cliente antes de usar localStorage
-            if (typeof window !== 'undefined') {
-                const localStorageToken = localStorage.getItem('authToken')
-                if (localStorageToken) {
-                    token = localStorageToken
-                    console.log(`🔵 apiClient InteREQ (${config.url}): Token SÍ encontrado en localStorage.`)
-                } else {
-                    console.log(`🔵 apiClient InteREQ (${config.url}): Token NO encontrado en localStorage.`)
-                }
-            } else {
-                console.log(`🔵 apiClient InteREQ (${config.url}): Ejecutándose en servidor, saltando localStorage.`)
-            }
+        if (!token && typeof window !== 'undefined') {
+            token = localStorage.getItem('authToken') || undefined
         }
 
         if (token && config.headers) {
-            console.log(`🔵 apiClient InteREQ (${config.url}): Adjuntando 'Authorization: Bearer ${token.substring(0, 15)}...'`)
             config.headers.Authorization = `Bearer ${token}`
-        } else {
-            console.log(`🔵 apiClient InteREQ (${config.url}): NO se adjuntará token (token=${token}, config.headers=${!!config.headers}).`)
         }
 
-        // Log para ver todos los headers que se van a enviar
-        console.log(`🔵 apiClient InteREQ (${config.url}): Headers FINALES:`, JSON.stringify(config.headers, null, 2))
+        // Log simplificado sin exponer información sensible
+        console.log(`📡 ${metodo} ${ruta} - Token: ${token ? '✅' : '❌'}`)
+
         return config
     },
     (error: AxiosError): Promise<never> => {
-        console.error("🔴 apiClient InteREQ: Error en la configuración de la petición:", error)
+        console.error("❌ Error en configuración de petición:", error.message)
         return Promise.reject(error)
     }
 )
@@ -66,21 +51,30 @@ console.log("🔵 apiClient.ts: Interceptor de REQUEST configurado.")
 // Interceptor para manejar errores comunes
 apiClient.interceptors.response.use(
     (response: AxiosResponse): AxiosResponse => {
-        console.log(`🔵 apiClient InteRES (${response.config.method?.toUpperCase()} ${response.config.url}): Respuesta recibida, status ${response.status}`)
+        const metodo = response.config.method?.toUpperCase()
+        const ruta = response.config.url
+        const status = response.status
+
+        console.log(`✅ ${metodo} ${ruta} - ${status}`)
         return response
     },
     (error: AxiosError): Promise<AxiosError> => {
-        console.error(`🔴 apiClient InteRES (Petición a ${error.config?.url}): Error en la respuesta. Status: ${error.response?.status}`, error)
-        if (error.response?.status === 401) {
-            console.warn("🚫 apiClient InteRES: Error 401. Limpiando sesión...")
+        const metodo = error.config?.method?.toUpperCase()
+        const ruta = error.config?.url
+        const status = error.response?.status
+
+        console.error(`❌ ${metodo} ${ruta} - ${status}`)
+
+        if (status === 401) {
+            console.warn("🚫 Sesión expirada - Limpiando tokens...")
             Cookies.remove('authToken')
 
-            // Solo limpiar localStorage si estamos en el cliente
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('authToken')
                 localStorage.removeItem('usuario')
             }
         }
+
         return Promise.reject(error)
     }
 )
