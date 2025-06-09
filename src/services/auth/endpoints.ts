@@ -16,7 +16,7 @@ export const ENDPOINTS = {
 		BASE: `${API_URL}/usuarios`,
 		PERFIL: (id: number) => `${API_URL}/usuarios/${id}`
 	},
-
+api
 	// Pacientes
 	PACIENTES: {
 		BASE: `${API_URL}/pacientes`,

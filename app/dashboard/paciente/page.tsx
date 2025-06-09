@@ -67,9 +67,9 @@ export default function PacientePage() {
         obtenerPaciente()
     }, [usuario?.id, router])
 
-    const cargarCampanas = async () => {
-        if (!pacienteId || !usuario?.token) {
-            console.log("⏳ Esperando pacienteId o token para cargar campañas...")
+    const cargarMisCampanas = async () => {
+        if (!pacienteId) {
+            console.log("⏳ Esperando pacienteId para cargar campañas...")
             return
         }
 
@@ -77,21 +77,13 @@ export default function PacientePage() {
         console.log("🔍 Cargando campañas para paciente:", pacienteId)
 
         try {
-            // Cargar todas las campañas disponibles
-            const responseCampanas = await apiClient.get('/campanas', {
-                headers: {
-                    'Authorization': `Bearer ${usuario.token}`
-                }
-            })
+            // Cargar todas las campañas disponibles - apiClient maneja automáticamente el token
+            const responseCampanas = await apiClient.get(`/inscripciones-campana/paciente/${pacienteId}`)
             const todasCampanas = responseCampanas.data
             setCampanasDisponibles(todasCampanas)
 
-            // Cargar inscripciones del paciente
-            const responseInscripciones = await apiClient.get(`/inscripciones-campana/paciente/${pacienteId}`, {
-                headers: {
-                    'Authorization': `Bearer ${usuario.token}`
-                }
-            })
+            // Cargar inscripciones del paciente - apiClient maneja automáticamente el token
+            const responseInscripciones = await apiClient.get(`/inscripciones-campana/paciente/${pacienteId}`)
             const inscripciones = responseInscripciones.data
 
             // Filtrar las campañas en las que está inscrito
@@ -113,16 +105,16 @@ export default function PacientePage() {
 
     // Cargar campañas solo cuando tengamos pacienteId
     useEffect(() => {
-        if (pacienteId && usuario?.token && !cargandoPaciente) {
+        if (pacienteId && !cargandoPaciente) {
             console.log("🔄 Iniciando carga de campañas...")
-            cargarCampanas()
+            cargarMisCampanas()
         }
-    }, [pacienteId, usuario?.token, cargandoPaciente])
+    }, [pacienteId, cargandoPaciente])
 
     // Cargar triaje inicial del paciente
     useEffect(() => {
         const cargarTriaje = async () => {
-            if (!pacienteId || !usuario?.token || cargandoPaciente) {
+            if (!pacienteId || cargandoPaciente) {
                 console.log("⏳ Esperando datos para cargar triaje...")
                 return
             }
@@ -132,11 +124,8 @@ export default function PacientePage() {
             console.log("🔍 Cargando triaje para paciente:", pacienteId)
 
             try {
-                const response = await apiClient.get(`/triaje/paciente/${pacienteId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${usuario.token}`
-                    }
-                })
+                // apiClient maneja automáticamente el token
+                const response = await apiClient.get(`/triaje/paciente/${pacienteId}`)
 
                 const triajes = response.data
                 // Tomamos el triaje más reciente
@@ -158,11 +147,11 @@ export default function PacientePage() {
             }
         }
 
-        if (pacienteId && usuario?.token && !cargandoPaciente) {
+        if (pacienteId && !cargandoPaciente) {
             console.log("🔄 Iniciando carga de triaje...")
             cargarTriaje()
         }
-    }, [pacienteId, usuario?.token, cargandoPaciente, router])
+    }, [pacienteId, cargandoPaciente, router])
 
     // Si está cargando datos iniciales, mostrar indicador
     if (cargandoPaciente || (cargandoTriaje && !error)) {
@@ -224,7 +213,7 @@ export default function PacientePage() {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={cargarCampanas}
+                        onClick={cargarMisCampanas}
                         disabled={cargandoCampanas}
                         className="h-8 gap-2"
                     >
