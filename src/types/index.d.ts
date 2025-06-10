@@ -24,15 +24,15 @@ export interface Triaje {
   antecedentesCardiacos: boolean;
   resultadoRiesgoCv: number; // 0-1
   descripcion?: string;
-  nivelPrioridad: 'ALTA' | 'MEDIA' | 'BAJA';
+  nivelPrioridad: "ALTA" | "MEDIA" | "BAJA";
 }
 
 // Interfaz para factores de riesgo
-export interface FactorRiesgo {
+export interface FactorRiesgoModel {
   id: number;
   nombre: string;
   descripcion: string;
-  tipo: 'SOCIAL' | 'AMBIENTAL' | 'RACIAL';
+  tipo: "SOCIAL" | "AMBIENTAL" | "RACIAL";
 }
 
 // Interfaz para datos clínicos
@@ -64,7 +64,7 @@ export interface Localizacion {
 }
 
 // Interfaz para servicios médicos
-export interface ServicioMedico {
+export interface ServicioMedicoModel {
   id: number;
   nombre: string;
   descripcion: string;
@@ -73,20 +73,20 @@ export interface ServicioMedico {
 declare type Estatus = "postulada" | "ejecucion" | "finalizada" | "cancelada";
 
 // Interfaz para campañas de salud
-export interface Campana {
+export interface CampanaModel {
   id: number;
   nombre: string;
   descripcion: string;
   localizacion?: Localizacion;
   fechaInicio: string;
   fechaLimite: string;
+  fechaLimiteInscripcion: string;
   minParticipantes: number;
   maxParticipantes: number;
   entidadId: number;
   estatus: Estatus;
   fechaCreacion: string;
   pacientes?: number; // Número de pacientes inscritos
-  fecha?: string; // Formato legible de fecha
   servicios?: ServicioMedico[];
   factores?: FactorRiesgo[];
 }
@@ -100,12 +100,11 @@ export interface Citacion {
   horaProgramada: string;
   horaAtencion?: string;
   duracionEstimada: number; // en minutos
-  estado: 'AGENDADA' | 'ATENDIDA' | 'CANCELADA';
+  estado: "AGENDADA" | "ATENDIDA" | "CANCELADA";
   prediccionAsistencia?: number; // 0-100%
   prioridad: number; // 1-5
   notas?: string;
 }
-
 
 // Interfaces autenticación y usuario
 export interface DatosAcceso {
@@ -143,7 +142,6 @@ export interface RespuestaAuth {
   usuario: Usuario;
   token: string;
 }
-
 
 // Viejo:
 
