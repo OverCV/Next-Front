@@ -129,18 +129,18 @@ export default function TriajeInicialForm() {
                     return;
                 }
 
-                // Obtener el perfil del paciente para conocer su ID
-                const perfilResponse = await fetch(`/api/pacientes/perfil?usuarioId=${usuario.id}`);
-                const perfilData = await perfilResponse.json();
+                // Obtener los datos del paciente para conocer su ID
+                const pacienteResponse = await fetch(`/api/pacientes/paciente?usuarioId=${usuario.id}`);
+                const pacienteData = await pacienteResponse.json();
 
-                if (!perfilData.existe || !perfilData.id) {
-                    console.error("❌ No se encontró el perfil del paciente");
-                    setError("No se pudo obtener tu perfil. Por favor, completa tu perfil primero.");
+                if (!pacienteData.existe || !pacienteData.id) {
+                    console.error("❌ No se encontró el paciente");
+                    setError("No se pudo obtener tu información de paciente. Por favor, contacta al administrador.");
                     return;
                 }
 
-                console.log("✅ Perfil del paciente obtenido:", perfilData);
-                setPacienteId(perfilData.id);
+                console.log("✅ Datos del paciente obtenidos:", pacienteData);
+                setPacienteId(pacienteData.id);
             } catch (err) {
                 console.error("❌ Error al obtener paciente:", err);
                 setError("Error al obtener datos del paciente");
@@ -151,50 +151,42 @@ export default function TriajeInicialForm() {
     }, [usuario?.id]);
 
     const onSubmit = async (datos: TriajeFormValues) => {
-        setFormErrors([]);
+        setFormErrors([])
 
         if (!pacienteId) {
-            setError("No se pudo obtener tu ID de paciente. Por favor, intenta nuevamente.");
-            return;
-        }
-
-        if (!form.formState.isValid) {
-            const errors = Object.entries(form.formState.errors).map(([_, error]) => {
-                return `${error.message}`;
-            });
-            setFormErrors(errors);
-            return;
+            setError("No se pudo obtener tu ID de paciente. Por favor, intenta nuevamente.")
+            return
         }
 
         try {
-            setCargando(true);
-            setError(null);
+            setCargando(true)
+            setError(null)
 
             console.log("📝 Datos del triaje a enviar:", {
                 ...datos,
                 pacienteId
-            });
+            })
 
             // Crear el triaje usando el servicio
             await pacientesService.crearTriaje({
                 ...datos,
                 pacienteId
-            });
+            })
 
-            console.log("✅ Triaje creado correctamente");
-            setNecesitaTriajeInicial(false);
+            console.log("✅ Triaje creado correctamente")
+            setNecesitaTriajeInicial(false)
 
             // Redirigir al usuario después de un breve retraso
             setTimeout(() => {
-                router.push("/dashboard/paciente");
-            }, 500);
+                router.push("/dashboard/paciente")
+            }, 500)
         } catch (err: any) {
-            console.error("❌ Error al guardar triaje:", err);
-            setError(err.response?.data?.message || "Error al guardar el triaje. Por favor intenta nuevamente.");
+            console.error("❌ Error al guardar triaje:", err)
+            setError(err.response?.data?.message || "Error al guardar el triaje. Por favor intenta nuevamente.")
         } finally {
-            setCargando(false);
+            setCargando(false)
         }
-    };
+    }
 
     return (
         <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-md dark:border-slate-700 dark:bg-slate-900">

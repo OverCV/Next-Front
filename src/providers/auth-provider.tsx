@@ -83,22 +83,22 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         }
     }, [inicializado])
 
-    // Verificar solo el triaje del paciente (el perfil siempre existe)
+    // Verificar solo el triaje del paciente (el paciente siempre existe)
     const verificarTriajePaciente = async (usuarioId: number, token: string) => {
         try {
             console.log("🔍 Verificando triaje del paciente, usuarioId:", usuarioId)
 
-            // 1. Primero obtener el perfil del paciente para conseguir su ID
-            const perfilData = await pacientesService.obtenerPerfilPorUsuarioId(usuarioId)
+            // 1. Primero obtener los datos del paciente para conseguir su ID
+            const pacienteData = await pacientesService.obtenerPacientePorUsuarioId(usuarioId)
 
-            if (perfilData.existe === false || !perfilData.id) {
-                console.error("❌ Error crítico: Paciente sin perfil (esto no debería pasar)")
+            if (pacienteData.existe === false || !pacienteData.id) {
+                console.error("❌ Error crítico: Usuario sin paciente (esto no debería pasar)")
                 setNecesitaTriajeInicial(true)
                 return { tieneTriaje: false }
             }
 
-            const pacienteId = perfilData.id
-            console.log("✅ Perfil encontrado, pacienteId:", pacienteId)
+            const pacienteId = pacienteData.id
+            console.log("✅ Paciente encontrado, pacienteId:", pacienteId)
 
             // 2. Ahora verificar triaje usando el PACIENTE_ID correcto
             try {
@@ -160,7 +160,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
                         console.log("🔄 Redirigiendo a triaje inicial")
                         router.push('/dashboard/paciente/triaje-inicial')
                     } else {
-                        console.log("✅ Usuario con perfil y triaje completos")
+                        console.log("✅ Usuario con paciente y triaje completos")
                         router.push('/dashboard/paciente')
                     }
                 }, 100)

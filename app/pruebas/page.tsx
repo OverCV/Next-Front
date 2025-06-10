@@ -224,66 +224,6 @@ function ComponenteVistaTriajeInicial() {
     )
 }
 
-// Componente para probar completar perfil
-function ComponenteVistaCompletarPerfil() {
-    const router = useRouter()
-
-    const [parametros, setParametros] = useState({
-        ruta: "/dashboard/paciente/completar-perfil",
-        usuarioId: "",
-        precargarDatos: "false"
-    })
-
-    const navegarAVista = () => {
-        const queryParams = new URLSearchParams({
-            usuario_id: parametros.usuarioId,
-            precarga: parametros.precargarDatos
-        })
-
-        router.push(`${parametros.ruta}?${queryParams}`)
-    }
-
-    const actualizarParametro = (campo: string, valor: string) => {
-        setParametros(prev => ({
-            ...prev,
-            [campo]: valor
-        }))
-    }
-
-    return (
-        <Card className="mb-6 w-full">
-            <CardHeader>
-                <CardTitle className="text-lg font-semibold">
-                    Vista Completar Perfil Paciente
-                </CardTitle>
-                <div className="text-sm text-slate-500">
-                    Ruta: <code className="rounded bg-slate-100 px-2 py-1">{parametros.ruta}</code>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                        <Input
-                            placeholder="ID Usuario"
-                            value={parametros.usuarioId}
-                            onChange={(e) => actualizarParametro("usuarioId", e.target.value)}
-                        />
-
-                        <Input
-                            placeholder="Precargar datos (true/false)"
-                            value={parametros.precargarDatos}
-                            onChange={(e) => actualizarParametro("precargarDatos", e.target.value)}
-                        />
-
-                        <Button onClick={navegarAVista} className="w-full">
-                            Probar Vista
-                        </Button>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    )
-}
 
 export default function PaginaPruebas() {
     return (
@@ -307,7 +247,6 @@ export default function PaginaPruebas() {
             <div className="space-y-4">
                 <h2 className="text-2xl font-semibold text-slate-800">👤 Vistas de Paciente</h2>
 
-                <ComponenteVistaCompletarPerfil />
                 <ComponenteVistaTriajeInicial />
             </div>
         </div>
