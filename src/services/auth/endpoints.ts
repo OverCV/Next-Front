@@ -54,5 +54,21 @@ export const ENDPOINTS = {
 	NOTIFICACIONES: {
 		EMAIL: `${API_URL}/notificaciones/email`,
 		SMS: `${API_URL}/notificaciones/sms`
+	},
+
+	// Citaciones Médicas
+	CITACIONES: {
+		BASE: `${API_URL}/citaciones-medicas`,
+		POR_MEDICO: (medicoId: number) => `${API_URL}/citaciones-medicas/medico/${medicoId}`,
+		POR_CAMPANA: (campanaId: number) => `${API_URL}/citaciones-medicas/campana/${campanaId}`,
+		ACTUALIZAR_ESTADO: (citacionId: number) => `${API_URL}/citaciones-medicas/${citacionId}/estado`
+	},
+
+	// Datos Clínicos
+	DATOS_CLINICOS: {
+		BASE: `${API_URL}/datos-clinicos`,
+		POR_PACIENTE: (pacienteId: number) => `${API_URL}/datos-clinicos/paciente/${pacienteId}`,
+		CREAR: `${API_URL}/datos-clinicos`,
+		ACTUALIZAR: (id: number) => `${API_URL}/datos-clinicos/${id}`
 	}
 } 

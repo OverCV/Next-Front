@@ -1,108 +1,120 @@
-"use client";
+"use client"
 
 import {
     UserPlus,
-    // Calendar,
     RefreshCw,
     Search,
     AlertCircle,
     PlusCircle
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+} from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
-import { StatCard } from '@/src/components/StatCard';
-import { StatusBadge } from '@/src/components/StatusBadge';
-import { Alert, AlertDescription } from '@/src/components/ui/alert';
-import { Button } from '@/src/components/ui/button';
-import { Input } from '@/src/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs';
-import { CAMPANAS_MOCK, ROLES } from '@/src/constants';
-// import { useAuth } from '@/src/providers/auth-provider';
-import { usuariosService } from '@/src/services/usuarios';
-import { Campana, Embajador, EntidadSalud, UsuarioAccedido } from '@/src/types';
-import EmbajadorService from '@/src/services/EmbajadorService';
-import { entidadSaludService } from '@/src/services/EntidadSaludService';
-import campanasService from '@/src/services/CampanaService';
-import EmbajadorEntidadService from '@/src/services/EmbajadorEntidadService';
+import { StatCard } from '@/src/components/StatCard'
+import { Alert, AlertDescription } from '@/src/components/ui/alert'
+import { Button } from '@/src/components/ui/button'
+import { Input } from '@/src/components/ui/input'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
+import campanasService from '@/src/services/CampanaService'
+import EmbajadorEntidadService from '@/src/services/EmbajadorEntidadService'
+import { entidadSaludService } from '@/src/services/EntidadSaludService'
+import { Campana, Embajador, UsuarioAccedido } from '@/src/types'
 
 export default function EntidadPage() {
-    const router = useRouter();
-    // const { usuario } = useAuth();
-    const [busqueda, setBusqueda] = useState('');
-    const [embajadores, setEmbajadores] = useState<Embajador[]>([]);
-    const [campanas, setCampanas] = useState<Campana[]>([]);
-    const [cargando, setCargando] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const router = useRouter()
+    // const { usuario } = useAuth()
+    const [busqueda, setBusqueda] = useState('')
+    const [embajadores, setEmbajadores] = useState<Embajador[]>([])
+    const [campanas, setCampanas] = useState<Campana[]>([])
+    const [cargando, setCargando] = useState(true)
+    const [error, setError] = useState<string | null>(null)
 
     // Cargar embajadores desde la API
     const cargarEmbajadores = async () => {
-        setCargando(true);
-        setError(null);
+        setCargando(true)
+        setError(null)
         try {
             // Obtener usuarios con rol de embajador (rolId: 7)
-            const user = JSON.parse(localStorage.getItem("usuario") || "{}");
+            const user: UsuarioAccedido = JSON.parse(localStorage.getItem("usuario") || "{}")
 
-            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user["id"]);
+            if (user.id === undefined) {
+                setError('No se encontró el usuario.')
+                setCargando(false)
+                return
+            }
 
-            const embajadoresEntidadData = await EmbajadorEntidadService.obtenerEmbajadoresPorEntidadId(entidad.id);
+            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user.id)
 
-            const embajadoresData = embajadoresEntidadData.map(emb => emb.embajador).filter((emb): emb is Embajador => emb !== null);
+            if (entidad.id === undefined) {
+                setError('No se encontró la entidad para el usuario.')
+                setCargando(false)
+                return
+            }
 
-            setEmbajadores(embajadoresData);
+            const embajadoresEntidadData = await EmbajadorEntidadService.obtenerEmbajadoresPorEntidadId(entidad.id)
+
+            const embajadoresData = embajadoresEntidadData.map(emb => emb.embajador).filter((emb): emb is Embajador => emb !== null)
+
+            setEmbajadores(embajadoresData)
         } catch (err: any) {
-            console.error('Error al cargar embajadores:', err);
-            setError('No se pudieron cargar los embajadores. Por favor, intente de nuevo.');
+            console.error('Error al cargar embajadores:', err)
+            setError('No se pudieron cargar los embajadores. Por favor, intente de nuevo.')
         } finally {
-            setCargando(false);
+            setCargando(false)
         }
-    };
+    }
 
     const cargarCampanas = async () => {
-        setCargando(true);
-        setError(null);
+        setCargando(true)
+        setError(null)
         try {
-            const user = JSON.parse(localStorage.getItem("usuario") || "{}");
-            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user["id"]);
-            const campanasData = await campanasService.obtenerCampanasPorEntidad(entidad.id);
+            const user: UsuarioAccedido = JSON.parse(localStorage.getItem("usuario") || "{}")
+            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user.id)
+
+            if (entidad.id === undefined) {
+                setError('No se encontró la entidad para el usuario.')
+                setCargando(false)
+                return
+            }
+            const campanasData = await campanasService.obtenerCampanasPorEntidad(entidad.id)
             if (campanasData.length > 0) {
-                setCampanas(campanasData);
+                setCampanas(campanasData)
             }
         } catch (err: any) {
-            console.error('Error al cargar campañas:', err);
-            setError('No se pudieron cargar las campañas. Por favor, intente de nuevo.');
+            console.error('Error al cargar campañas:', err)
+            setError('No se pudieron cargar las campañas. Por favor, intente de nuevo.')
         } finally {
-            setCargando(false);
+            setCargando(false)
         }
-    };
+    }
 
     // Cargar datos al iniciar
     useEffect(() => {
-        cargarEmbajadores();
-        cargarCampanas();
-    }, []);
+        cargarEmbajadores()
+        cargarCampanas()
+    }, [])
 
     // Filtrar embajadores según búsqueda
     const embajadoresFiltrados = embajadores.filter(
         e =>
             e.nombreCompleto.toLowerCase().includes(busqueda.toLowerCase()) ||
             e.telefono.includes(busqueda)
-    );
+    )
 
     // Funciones de navegación
     const irARegistroEmbajador = () => {
-        router.push('/dashboard/entidad/registrar-embajador');
-    };
+        router.push('/dashboard/entidad/registrar-embajador')
+    }
 
     const irAPostularCampana = () => {
-        router.push('/dashboard/entidad/postular-campana');
-    };
+        router.push('/dashboard/entidad/postular-campana')
+    }
 
     // Función para recargar datos
     const recargarDatos = () => {
-        cargarEmbajadores();
-        cargarCampanas();
-    };
+        cargarEmbajadores()
+        cargarCampanas()
+    }
 
     return (
         <div className="space-y-8">
@@ -347,6 +359,6 @@ export default function EntidadPage() {
                 </TabsContent>
             </Tabs>
         </div>
-    );
+    )
 }
 

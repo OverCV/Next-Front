@@ -122,6 +122,37 @@ export interface Citacion {
   notas?: string
 }
 
+// Interfaz para citaciones médicas (para médicos)
+export interface CitacionMedica {
+  id: number
+  pacienteId: number
+  campanaId: number
+  medicoId: number
+  horaProgramada: string
+  horaAtencion?: string
+  duracionEstimada: number
+  estado: 'PROGRAMADA' | 'ATENDIDA' | 'CANCELADA' | 'NO_ASISTIO'
+  prediccionAsistencia: number
+  codigoTicket: string
+  notas?: string
+}
+
+// Interfaz para datos clínicos (para médicos)
+export interface DatoClinicoMedico {
+  id?: number
+  pacienteId: number
+  presionSistolica: number
+  presionDiastolica: number
+  frecuenciaCardiacaMin: number
+  frecuenciaCardiacaMax: number
+  saturacionOxigeno: number
+  temperatura: number
+  colesterolTotal: number
+  hdl: number
+  observaciones?: string
+  fechaMedicion: string
+}
+
 // Interfaz para inscripciones a campañas
 export interface InscripcionCampana {
   id: number

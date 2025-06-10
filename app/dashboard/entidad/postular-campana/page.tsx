@@ -1,16 +1,18 @@
-"use client";
+"use client"
 
-import { useState, useCallback, Suspense, lazy, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, Check, Megaphone, Loader2 } from 'lucide-react';
+import { ArrowLeft, Check, Megaphone, Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState, useCallback, Suspense, lazy, useMemo } from 'react'
 
-import { Alert, AlertDescription } from '@/src/components/ui/alert';
-import { Button } from '@/src/components/ui/button';
+import { Alert, AlertDescription } from '@/src/components/ui/alert'
+import { Button } from '@/src/components/ui/button'
+
+
 
 // Lazy load the CampaignCreationForm component
 const CampaignCreationForm = lazy(() =>
   import('@/src/components/forms/CampaignCreationForm')
-);
+)
 
 // Loading component for Suspense fallback
 const FormSkeleton = () => (
@@ -37,31 +39,31 @@ const FormSkeleton = () => (
       <div className="h-9 w-32 rounded bg-slate-200 dark:bg-slate-700"></div>
     </div>
   </div>
-);
+)
 
 export default function PostularCampanaPage() {
-  const router = useRouter();
-  const [success, setSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter()
+  const [success, setSuccess] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   // Manejar navegación de regreso al dashboard
   const handleBack = useCallback(() => {
     if (!isLoading) {
-      router.push('/dashboard/entidad');
+      router.push('/dashboard/entidad')
     }
-  }, [router, isLoading]);
+  }, [router, isLoading])
 
   // Manejar éxito en la creación de campaña
   const handleSuccess = useCallback(() => {
     // Mostrar mensaje de éxito
-    setSuccess(true);
-    setIsLoading(true);
+    setSuccess(true)
+    setIsLoading(true)
 
     // Redireccionar después de 2 segundos
     setTimeout(() => {
-      router.push('/dashboard/entidad');
-    }, 2000);
-  }, [router]);
+      router.push('/dashboard/entidad')
+    }, 2000)
+  }, [router])
 
   // Memoize the header content to prevent unnecessary re-renders
   const headerContent = useMemo(() => (
@@ -84,7 +86,7 @@ export default function PostularCampanaPage() {
         <span>Complete el formulario para postular una nueva campaña de salud</span>
       </div>
     </div>
-  ), [handleBack, isLoading]);
+  ), [handleBack, isLoading])
 
   // Memoize the information section
   const informationSection = useMemo(() => (
@@ -92,12 +94,12 @@ export default function PostularCampanaPage() {
       <h3 className="font-medium">Información importante</h3>
       <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-slate-500 dark:text-slate-400">
         <li>Las campañas postuladas serán revisadas por el equipo administrativo antes de ser aprobadas.</li>
-        <li>Una vez aprobada, la campaña pasará al estado "En Ejecución".</li>
+        <li>Una vez aprobada, la campaña pasará al estado &quotEn Ejecución&quot.</li>
         <li>Podrá monitorear el estado de su campaña desde el dashboard de entidad.</li>
         <li>Para modificar una campaña después de postulada, deberá contactar al soporte técnico.</li>
       </ul>
     </div>
-  ), []);
+  ), [])
 
   return (
     <div className="space-y-6">
@@ -136,6 +138,6 @@ export default function PostularCampanaPage() {
       {/* Información adicional (memoizada) */}
       {informationSection}
     </div>
-  );
+  )
 }
 

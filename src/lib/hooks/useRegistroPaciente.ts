@@ -76,8 +76,8 @@ export const useRegistroPaciente = () => {
 
 			// Fallback a mock en caso de error
 			try {
-				const { CAMPANAS_MOCK } = await import("@/src/constants")
-				setCampanasDisponibles(CAMPANAS_MOCK.filter(c => c.estatus === 'postulada' || c.estatus === 'ejecucion') as Campana[])
+				// const { CAMPANAS_MOCK } = await import("@/src/constants")
+				// setCampanasDisponibles(CAMPANAS_MOCK.filter(c => c.estatus === 'postulada' || c.estatus === 'ejecucion') as Campana[])
 			} catch (mockErr) {
 				console.error("❌ Error incluso con mock:", mockErr)
 				setCampanasDisponibles([])
