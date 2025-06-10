@@ -35,9 +35,10 @@ export const ENDPOINTS = {
 	CAMPANAS: {
 		BASE: `${API_URL}/campanas`,
 		TODAS: `${API_URL}/campana`,
+		POR_ID: (campanaId: number) => `${API_URL}/campana/${campanaId}`,
 		INSCRIPCIONES: {
 			BASE: `${API_URL}/inscripciones-campana`,
-			POR_PACIENTE: (pacienteId: number) => `${API_URL}/inscripciones-campana/paciente/${pacienteId}`,
+			POR_USUARIO: (usuarioId: number) => `${API_URL}/inscripciones-campana/usuario/${usuarioId}`,
 			CREAR: `${API_URL}/inscripciones-campana`
 		}
 	},
