@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@/src/components/ui/button";
 
-export function RegistroButton() {
+export function RegistroEntidadSaludButton() {
     const router = useRouter();
 
     const navegarARegistro = () => {

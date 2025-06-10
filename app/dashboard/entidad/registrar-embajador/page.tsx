@@ -23,7 +23,7 @@ export default function RegistrarEmbajadorPage() {
 
         if (!tieneRol(ROLES.ENTIDAD_SALUD)) {
             // Solo las entidades de salud pueden registrar embajadores
-            router.push('/dashboard');
+            router.push('/dashboard/entidad');
         }
     }, [estaAutenticado, tieneRol, router]);
 

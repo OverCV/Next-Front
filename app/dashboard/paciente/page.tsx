@@ -4,12 +4,12 @@ import { Calendar, AlertCircle, RefreshCw } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
-import TriajeForm from '@/src/components/forms/TriajeForm'
 import { StatCard } from '@/src/components/StatCard'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { Button } from '@/src/components/ui/button'
 import { useAuth } from '@/src/providers/auth-provider'
 import apiClient from '@/src/services/api'
+import { ENDPOINTS } from '@/src/services/auth/endpoints'
 import { Triaje, Campana } from '@/src/types'
 
 // import TriajeForm from '@/src/components/forms/TriajeForm'
@@ -31,12 +31,13 @@ export default function PacientePage() {
     const [cargandoCampanas, setCargandoCampanas] = useState(true)
     const [cargandoPaciente, setCargandoPaciente] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const [mostrarTriajeForm, setMostrarTriajeForm] = useState(false)
 
     // Primero obtenemos el pacienteId
     useEffect(() => {
         const obtenerPaciente = async () => {
-            if (!usuario?.id || !usuario?.token) {
+            console.log("Datos usuario:", usuario)
+
+            if (!usuario?.id) {
                 console.log("⏳ Esperando datos del usuario...")
                 return
             }
@@ -45,11 +46,8 @@ export default function PacientePage() {
             console.log("🔍 Obteniendo datos del paciente para usuario:", usuario.id)
 
             try {
-                const response = await apiClient.get(`/pacientes/usuario/${usuario.id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${usuario.token}`
-                    }
-                })
+                // Usar endpoint centralizado
+                const response = await apiClient.get(ENDPOINTS.PACIENTES.PERFIL(usuario.id))
 
                 console.log("✅ Paciente encontrado:", response.data.id)
                 setPacienteId(response.data.id)
@@ -67,11 +65,11 @@ export default function PacientePage() {
         }
 
         obtenerPaciente()
-    }, [usuario?.id, usuario?.token, router])
+    }, [usuario?.id, router])
 
-    const cargarCampanas = async () => {
-        if (!pacienteId || !usuario?.token) {
-            console.log("⏳ Esperando pacienteId o token para cargar campañas...")
+    const cargarMisCampanas = async () => {
+        if (!pacienteId) {
+            console.log("⏳ Esperando pacienteId para cargar campañas...")
             return
         }
 
@@ -79,21 +77,13 @@ export default function PacientePage() {
         console.log("🔍 Cargando campañas para paciente:", pacienteId)
 
         try {
-            // Cargar todas las campañas disponibles
-            const responseCampanas = await apiClient.get('/campanas', {
-                headers: {
-                    'Authorization': `Bearer ${usuario.token}`
-                }
-            })
+            // Usar endpoint centralizado para inscripciones
+            const responseCampanas = await apiClient.get(ENDPOINTS.CAMPANAS.INSCRIPCIONES.POR_PACIENTE(pacienteId))
             const todasCampanas = responseCampanas.data
             setCampanasDisponibles(todasCampanas)
 
-            // Cargar inscripciones del paciente
-            const responseInscripciones = await apiClient.get(`/inscripciones-campana/paciente/${pacienteId}`, {
-                headers: {
-                    'Authorization': `Bearer ${usuario.token}`
-                }
-            })
+            // Cargar inscripciones del paciente usando el mismo endpoint
+            const responseInscripciones = await apiClient.get(ENDPOINTS.CAMPANAS.INSCRIPCIONES.POR_PACIENTE(pacienteId))
             const inscripciones = responseInscripciones.data
 
             // Filtrar las campañas en las que está inscrito
@@ -107,7 +97,7 @@ export default function PacientePage() {
             console.log("✅ Campañas cargadas:", campanasInscritas.length)
         } catch (err: any) {
             console.error('❌ Error al cargar campañas:', err)
-            setError('Error al cargar las campañas. Intente nuevamente.')
+            // setError('Error al cargar las campañas. Intente nuevamente.')
         } finally {
             setCargandoCampanas(false)
         }
@@ -115,16 +105,16 @@ export default function PacientePage() {
 
     // Cargar campañas solo cuando tengamos pacienteId
     useEffect(() => {
-        if (pacienteId && usuario?.token && !cargandoPaciente) {
+        if (pacienteId && !cargandoPaciente) {
             console.log("🔄 Iniciando carga de campañas...")
-            cargarCampanas()
+            cargarMisCampanas()
         }
-    }, [pacienteId, usuario?.token, cargandoPaciente])
+    }, [pacienteId, cargandoPaciente])
 
     // Cargar triaje inicial del paciente
     useEffect(() => {
         const cargarTriaje = async () => {
-            if (!pacienteId || !usuario?.token || cargandoPaciente) {
+            if (!pacienteId || cargandoPaciente) {
                 console.log("⏳ Esperando datos para cargar triaje...")
                 return
             }
@@ -134,11 +124,8 @@ export default function PacientePage() {
             console.log("🔍 Cargando triaje para paciente:", pacienteId)
 
             try {
-                const response = await apiClient.get(`/triaje/paciente/${pacienteId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${usuario.token}`
-                    }
-                })
+                // Usar endpoint centralizado para triajes
+                const response = await apiClient.get(ENDPOINTS.TRIAJES.POR_PACIENTE(pacienteId))
 
                 const triajes = response.data
                 // Tomamos el triaje más reciente
@@ -160,57 +147,11 @@ export default function PacientePage() {
             }
         }
 
-        if (pacienteId && usuario?.token && !cargandoPaciente) {
+        if (pacienteId && !cargandoPaciente) {
             console.log("🔄 Iniciando carga de triaje...")
             cargarTriaje()
         }
-    }, [pacienteId, usuario?.token, cargandoPaciente, router])
-
-    // Manejar envío del formulario de triaje
-    const handleTriajeSubmit = async (datosTriaje: any) => {
-        if (!pacienteId || !usuario?.token) return
-
-        try {
-            const response = await apiClient.post('/triaje', {
-                ...datosTriaje,
-                pacienteId,
-                fechaTriaje: new Date()
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${usuario.token}`
-                }
-            })
-
-            const nuevoTriaje = response.data
-            setTriaje(nuevoTriaje)
-            setMostrarTriajeForm(false)
-        } catch (err: any) {
-            console.error('Error al guardar triaje:', err)
-            setError('Error al guardar la información médica. Intente nuevamente.')
-        }
-    }
-
-    // Si el usuario aún no tiene triaje, mostrar el formulario
-    if (mostrarTriajeForm) {
-        return (
-            <div className="space-y-6">
-                <div className="bg-card rounded-lg border p-6 shadow-sm">
-                    <h2 className="mb-4 text-xl font-semibold">Evaluación Inicial de Salud</h2>
-                    <p className="text-muted-foreground mb-6">
-                        Antes de continuar, necesitamos recopilar información básica sobre su salud
-                        para brindarle la mejor atención posible.
-                    </p>
-                    {error && (
-                        <Alert variant="destructive" className="mb-6">
-                            <AlertCircle className="size-4" />
-                            <AlertDescription>{error}</AlertDescription>
-                        </Alert>
-                    )}
-                    <TriajeForm onSubmit={handleTriajeSubmit} />
-                </div>
-            </div>
-        )
-    }
+    }, [pacienteId, cargandoPaciente, router])
 
     // Si está cargando datos iniciales, mostrar indicador
     if (cargandoPaciente || (cargandoTriaje && !error)) {
@@ -272,7 +213,7 @@ export default function PacientePage() {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={cargarCampanas}
+                        onClick={cargarMisCampanas}
                         disabled={cargandoCampanas}
                         className="h-8 gap-2"
                     >

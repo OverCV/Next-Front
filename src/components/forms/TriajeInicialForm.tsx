@@ -1,82 +1,52 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { AlertCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
-import CustomFormField, { FormFieldType } from "@/src/components/CustomFormField";
-import { Alert, AlertDescription } from "@/src/components/ui/alert";
-import { Button } from "@/src/components/ui/button";
-import { Form } from "@/src/components/ui/form";
-import { useAuth } from "@/src/providers/auth-provider";
-import { pacientesService } from "@/src/services/domain/pacientes.service";
+import CustomFormField, { FormFieldType } from "@/src/components/CustomFormField"
+import { Alert, AlertDescription } from "@/src/components/ui/alert"
+import { Button } from "@/src/components/ui/button"
+import { Form } from "@/src/components/ui/form"
+import { useAuth } from "@/src/providers/auth-provider"
+import { pacientesService } from "@/src/services/domain/pacientes.service"
 
-// Esquema de validación para el triaje
+// Esquema de validación para el triaje - ACTUALIZADO según backend
 const triajeSchema = z.object({
     // Datos básicos
     edad: z.preprocess(
-        (val) => (val === "" ? undefined : Number(val)),
+        (val) => (val === "" || val === undefined ? undefined : Number(val)),
         z.number({
             required_error: "La edad es requerida",
             invalid_type_error: "Debe ser un número"
         }).min(1, "La edad debe ser mayor a 0").max(120, "La edad debe ser menor a 120")
     ),
 
-    // Presión arterial
-    presionSistolica: z.preprocess(
-        (val) => (val === "" ? undefined : Number(val)),
+    // Medidas corporales
+    peso: z.preprocess(
+        (val) => (val === "" || val === undefined ? undefined : Number(val)),
         z.number({
-            required_error: "La presión sistólica es requerida",
+            required_error: "El peso es requerido",
             invalid_type_error: "Debe ser un número"
-        }).min(60, "Valor muy bajo").max(250, "Valor muy alto")
+        }).min(20, "Valor muy bajo").max(500, "Valor muy alto")
     ),
-    presionDiastolica: z.preprocess(
-        (val) => (val === "" ? undefined : Number(val)),
+    estatura: z.preprocess(
+        (val) => (val === "" || val === undefined ? undefined : Number(val)),
         z.number({
-            required_error: "La presión diastólica es requerida",
+            required_error: "La estatura es requerida",
             invalid_type_error: "Debe ser un número"
-        }).min(40, "Valor muy bajo").max(150, "Valor muy alto")
-    ),
-
-    // Colesterol
-    colesterolTotal: z.preprocess(
-        (val) => (val === "" ? undefined : Number(val)),
-        z.number({
-            required_error: "El colesterol total es requerido",
-            invalid_type_error: "Debe ser un número"
-        }).min(50, "Valor muy bajo").max(500, "Valor muy alto")
-    ),
-    hdl: z.preprocess(
-        (val) => (val === "" ? undefined : Number(val)),
-        z.number({
-            required_error: "El HDL es requerido",
-            invalid_type_error: "Debe ser un número"
-        }).min(10, "Valor muy bajo").max(120, "Valor muy alto")
+        }).min(50, "Valor muy bajo").max(250, "Valor muy alto")
     ),
 
     // Factores de riesgo (checkboxes)
     tabaquismo: z.boolean().default(false),
     alcoholismo: z.boolean().default(false),
     diabetes: z.boolean().default(false),
-
-    // Medidas corporales
-    peso: z.preprocess(
-        (val) => (val === "" ? undefined : Number(val)),
-        z.number({
-            required_error: "El peso es requerido",
-            invalid_type_error: "Debe ser un número"
-        }).min(20, "Valor muy bajo").max(300, "Valor muy alto")
-    ),
-    talla: z.preprocess(
-        (val) => (val === "" ? undefined : Number(val)),
-        z.number({
-            required_error: "La talla es requerida",
-            invalid_type_error: "Debe ser un número"
-        }).min(50, "Valor muy bajo").max(250, "Valor muy alto")
-    ),
+    actividadFisica: z.boolean().default(false),
+    hipertension: z.boolean().default(false),
 
     // Síntomas (checkboxes)
     dolorPecho: z.boolean().default(false),
@@ -87,31 +57,45 @@ const triajeSchema = z.object({
 
     // Campo para observaciones adicionales
     descripcion: z.string().optional(),
-});
+})
 
-type TriajeFormValues = z.infer<typeof triajeSchema>;
+// Tipo intermedio para el formulario (acepta strings)
+type TriajeFormValues = {
+    edad: string | number
+    peso: string | number
+    estatura: string | number
+    tabaquismo: boolean
+    alcoholismo: boolean
+    diabetes: boolean
+    actividadFisica: boolean
+    hipertension: boolean
+    dolorPecho: boolean
+    dolorIrradiado: boolean
+    sudoracion: boolean
+    nauseas: boolean
+    antecedentesCardiacos: boolean
+    descripcion?: string
+}
 
 export default function TriajeInicialForm() {
-    const router = useRouter();
-    const { usuario, setNecesitaTriajeInicial } = useAuth();
-    const [error, setError] = useState<string | null>(null);
-    const [cargando, setCargando] = useState<boolean>(false);
-    const [formErrors, setFormErrors] = useState<string[]>([]);
-    const [pacienteId, setPacienteId] = useState<number | null>(null);
+    const router = useRouter()
+    const { usuario, setNecesitaTriajeInicial } = useAuth()
+    const [error, setError] = useState<string | null>(null)
+    const [cargando, setCargando] = useState<boolean>(false)
+    const [formErrors, setFormErrors] = useState<string[]>([])
+    const [pacienteId, setPacienteId] = useState<number | null>(null)
 
     const form = useForm<TriajeFormValues>({
         resolver: zodResolver(triajeSchema),
         defaultValues: {
-            edad: undefined,
-            presionSistolica: undefined,
-            presionDiastolica: undefined,
-            colesterolTotal: undefined,
-            hdl: undefined,
+            edad: "",
+            peso: "",
+            estatura: "",
             tabaquismo: false,
             alcoholismo: false,
             diabetes: false,
-            peso: undefined,
-            talla: undefined,
+            actividadFisica: false,
+            hipertension: false,
             dolorPecho: false,
             dolorIrradiado: false,
             sudoracion: false,
@@ -119,36 +103,40 @@ export default function TriajeInicialForm() {
             antecedentesCardiacos: false,
             descripcion: "",
         },
-    });
+    })
 
     useEffect(() => {
         const obtenerPaciente = async () => {
             try {
                 if (!usuario?.id) {
-                    console.warn("⚠️ No hay usuario para obtener paciente");
-                    return;
+                    console.warn("⚠️ No hay usuario para obtener paciente")
+                    return
                 }
 
                 // Obtener los datos del paciente para conocer su ID
-                const pacienteResponse = await fetch(`/api/pacientes/paciente?usuarioId=${usuario.id}`);
-                const pacienteData = await pacienteResponse.json();
+                const pacienteResponse = await fetch(`/api/pacientes/paciente?usuarioId=${usuario.id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                })
+                const pacienteData = await pacienteResponse.json()
 
                 if (!pacienteData.existe || !pacienteData.id) {
-                    console.error("❌ No se encontró el paciente");
-                    setError("No se pudo obtener tu información de paciente. Por favor, contacta al administrador.");
-                    return;
+                    console.error("❌ No se encontró el paciente")
+                    setError("Por favor completa la siguiente información para continuar")
+                    return
                 }
 
-                console.log("✅ Datos del paciente obtenidos:", pacienteData);
-                setPacienteId(pacienteData.id);
+                console.log("✅ Datos del paciente obtenidos:", pacienteData)
+                setPacienteId(pacienteData.id)
             } catch (err) {
-                console.error("❌ Error al obtener paciente:", err);
-                setError("Error al obtener datos del paciente");
+                console.error("❌ Error al obtener paciente:", err)
+                setError("Error al obtener datos del paciente")
             }
-        };
+        }
 
-        obtenerPaciente();
-    }, [usuario?.id]);
+        obtenerPaciente()
+    }, [usuario?.id])
 
     const onSubmit = async (datos: TriajeFormValues) => {
         setFormErrors([])
@@ -162,16 +150,30 @@ export default function TriajeInicialForm() {
             setCargando(true)
             setError(null)
 
-            console.log("📝 Datos del triaje a enviar:", {
-                ...datos,
-                pacienteId
-            })
+            // Mapear los datos al formato que espera el backend
+            const datosTriaje = {
+                pacienteId,
+                edad: typeof datos.edad === 'string' ? parseInt(datos.edad) : datos.edad,
+                peso: typeof datos.peso === 'string' ? parseFloat(datos.peso) : datos.peso,
+                estatura: typeof datos.estatura === 'string' ? parseFloat(datos.estatura) : datos.estatura,
+                tabaquismo: datos.tabaquismo,
+                alcoholismo: datos.alcoholismo,
+                diabetes: datos.diabetes,
+                actividadFisica: datos.actividadFisica,
+                hipertension: datos.hipertension,
+                dolorPecho: datos.dolorPecho,
+                dolorIrradiado: datos.dolorIrradiado,
+                sudoracion: datos.sudoracion,
+                nauseas: datos.nauseas,
+                antecedentesCardiacos: datos.antecedentesCardiacos,
+                fechaTriaje: new Date().toISOString().split('T')[0],
+                descripcion: datos.descripcion || ""
+            }
+
+            console.log("📝 Datos del triaje a enviar:", datosTriaje)
 
             // Crear el triaje usando el servicio
-            await pacientesService.crearTriaje({
-                ...datos,
-                pacienteId
-            })
+            await pacientesService.crearTriaje(datosTriaje)
 
             console.log("✅ Triaje creado correctamente")
             setNecesitaTriajeInicial(false)
@@ -182,7 +184,15 @@ export default function TriajeInicialForm() {
             }, 500)
         } catch (err: any) {
             console.error("❌ Error al guardar triaje:", err)
-            setError(err.response?.data?.message || "Error al guardar el triaje. Por favor intenta nuevamente.")
+            console.error("❌ Respuesta del servidor:", err.response?.data)
+            console.error("❌ Status:", err.response?.status)
+
+            const mensajeError = err.response?.data?.message ||
+                err.response?.data?.error ||
+                err.message ||
+                "Error al guardar el triaje. Por favor intenta nuevamente."
+
+            setError(mensajeError)
         } finally {
             setCargando(false)
         }
@@ -191,7 +201,7 @@ export default function TriajeInicialForm() {
     return (
         <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-md dark:border-slate-700 dark:bg-slate-900">
             <div className="mb-6">
-                <h2 className="text-xl font-semibold">Triaje Inicial</h2>
+                <h2 className="text-xl font-semibold">Formulario de Triaje Inicial</h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                     Estos datos nos ayudarán a evaluar tu estado de salud cardiovascular
                 </p>
@@ -230,7 +240,7 @@ export default function TriajeInicialForm() {
                     >
                         <div className="space-y-4">
                             <h3 className="text-lg font-medium">Datos Básicos</h3>
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2">
                                 <CustomFormField
                                     fieldType={FormFieldType.INPUT}
                                     control={form.control}
@@ -239,49 +249,27 @@ export default function TriajeInicialForm() {
                                     placeholder="Ingresa tu edad"
                                     type="number"
                                 />
-                                <div className="sm:col-span-1"></div> {/* Espacio vacío para alinear */}
+                                <div className="sm:col-span-1"></div>
                             </div>
                         </div>
 
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Presión Arterial</h3>
+                            <h3 className="text-lg font-medium">Medidas Corporales</h3>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <CustomFormField
                                     fieldType={FormFieldType.INPUT}
                                     control={form.control}
-                                    name="presionSistolica"
-                                    label="Presión Sistólica (mmHg)"
-                                    placeholder="Ej: 120"
+                                    name="peso"
+                                    label="Peso (kg)"
+                                    placeholder="Ej: 70"
                                     type="number"
                                 />
                                 <CustomFormField
                                     fieldType={FormFieldType.INPUT}
                                     control={form.control}
-                                    name="presionDiastolica"
-                                    label="Presión Diastólica (mmHg)"
-                                    placeholder="Ej: 80"
-                                    type="number"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Colesterol</h3>
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <CustomFormField
-                                    fieldType={FormFieldType.INPUT}
-                                    control={form.control}
-                                    name="colesterolTotal"
-                                    label="Colesterol Total (mg/dL)"
-                                    placeholder="Ej: 200"
-                                    type="number"
-                                />
-                                <CustomFormField
-                                    fieldType={FormFieldType.INPUT}
-                                    control={form.control}
-                                    name="hdl"
-                                    label="HDL (mg/dL)"
-                                    placeholder="Ej: 60"
+                                    name="estatura"
+                                    label="Estatura (cm)"
+                                    placeholder="Ej: 170"
                                     type="number"
                                 />
                             </div>
@@ -308,27 +296,17 @@ export default function TriajeInicialForm() {
                                     name="diabetes"
                                     label="Diabetes"
                                 />
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Medidas Corporales</h3>
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <CustomFormField
-                                    fieldType={FormFieldType.INPUT}
+                                    fieldType={FormFieldType.CHECKBOX}
                                     control={form.control}
-                                    name="peso"
-                                    label="Peso (kg)"
-                                    placeholder="Ej: 70"
-                                    type="number"
+                                    name="actividadFisica"
+                                    label="Actividad Física Regular"
                                 />
                                 <CustomFormField
-                                    fieldType={FormFieldType.INPUT}
+                                    fieldType={FormFieldType.CHECKBOX}
                                     control={form.control}
-                                    name="talla"
-                                    label="Estatura (cm)"
-                                    placeholder="Ej: 170"
-                                    type="number"
+                                    name="hipertension"
+                                    label="Hipertensión"
                                 />
                             </div>
                         </div>
@@ -391,5 +369,5 @@ export default function TriajeInicialForm() {
                 </Form>
             )}
         </div>
-    );
+    )
 } 

@@ -1,21 +1,21 @@
 // src/components/forms/RegistroEntidadForm.tsx
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { AlertCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
-import CustomFormField, { FormFieldType } from "@/src/components/CustomFormField";
-import { Alert, AlertDescription } from "@/src/components/ui/alert";
-import { Button } from "@/src/components/ui/button";
-import { Form } from "@/src/components/ui/form";
-import { ROLES, TiposIdentificacionEnum } from "@/src/constants";
-import { useAuth } from "@/src/providers/auth-provider";
-import { EntidadSalud, Usuario } from "@/src/types";
-import { entidadSaludService } from "@/src/services/EntidadSaludService";
+import CustomFormField, { FormFieldType } from "@/src/components/CustomFormField"
+import { Alert, AlertDescription } from "@/src/components/ui/alert"
+import { Button } from "@/src/components/ui/button"
+import { Form } from "@/src/components/ui/form"
+import { ROLES, TiposIdentificacionEnum } from "@/src/constants"
+import { useAuth } from "@/src/providers/auth-provider"
+import { entidadSaludService } from "@/src/services/EntidadSaludService"
+import { EntidadSalud, Usuario } from "@/src/types"
 
 // Esquema de validación
 const registroEntidadSchema = z.object({
@@ -42,16 +42,16 @@ const registroEntidadSchema = z.object({
 }).refine((data) => data.clave === data.confirmarClave, {
     message: "Las contraseñas no coinciden",
     path: ["confirmarClave"],
-});
+})
 
-type RegistroEntidadFormValues = z.infer<typeof registroEntidadSchema>;
+type RegistroEntidadFormValues = z.infer<typeof registroEntidadSchema>
 
 export default function RegistroEntidadForm(): JSX.Element {
-    const router = useRouter();
-    const { registroUsuario } = useAuth();
-    const [error, setError] = useState<string | null>(null);
-    const [cargando, setCargando] = useState<boolean>(false);
-    const [exitoso, setExitoso] = useState<boolean>(false);
+    const router = useRouter()
+    const { registroUsuario } = useAuth()
+    const [error, setError] = useState<string | null>(null)
+    const [cargando, setCargando] = useState<boolean>(false)
+    const [exitoso, setExitoso] = useState<boolean>(false)
 
     const form = useForm<RegistroEntidadFormValues>({
         resolver: zodResolver(registroEntidadSchema),
@@ -64,12 +64,12 @@ export default function RegistroEntidadForm(): JSX.Element {
             clave: "",
             confirmarClave: "",
         },
-    });
+    })
 
     const onSubmit = async (datos: RegistroEntidadFormValues): Promise<void> => {
-        setCargando(true);
-        setError(null);
-        setExitoso(false);
+        setCargando(true)
+        setError(null)
+        setExitoso(false)
 
         try {
             // Preparar datos para enviar
@@ -108,23 +108,23 @@ export default function RegistroEntidadForm(): JSX.Element {
             console.log("Registro exitoso:", respuesta);
 
             // Marcar como exitoso
-            setExitoso(true);
+            setExitoso(true)
 
-            // Esperar 2 segundos antes de redirigir al login
+            // Esperar 2 segundos antes de redirigir al dashboard de administración
             setTimeout(() => {
-                router.push("/acceso");
-            }, 2000);
+                router.push("/admin")
+            }, 2000)
 
         } catch (err: any) {
-            console.error("Error al registrar entidad:", err);
+            console.error("Error al registrar entidad:", err)
             setError(
                 err.response?.data?.mensaje ||
                 "Error al registrar la entidad. Por favor, verifica los datos e intenta nuevamente."
-            );
+            )
         } finally {
-            setCargando(false);
+            setCargando(false)
         }
-    };
+    }
 
     return (
         <div className="flex flex-col items-center justify-center p-4 md:p-8">
@@ -253,5 +253,5 @@ export default function RegistroEntidadForm(): JSX.Element {
                 </Form>
             </div>
         </div>
-    );
+    )
 }

@@ -96,4 +96,4 @@ export const API_ENDPOINTS = {
 }
 
 // Alias para compatibilidad
-export const ATENCIONES = API_ENDPOINTS.ATENCIONES_MEDICAS 
+export const ATENCIONES = API_ENDPOINTS.ATENCIONES_MEDICAS

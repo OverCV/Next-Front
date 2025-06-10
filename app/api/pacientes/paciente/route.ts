@@ -53,7 +53,10 @@ export async function GET(request: Request) {
 		// Obtener el ID del usuario de los parámetros de la URL
 		const url = new URL(request.url)
 		const usuarioId = url.searchParams.get("usuarioId")
-		const token = url.searchParams.get("token") || ""
+
+		// Obtener el token del header Authorization
+		const authHeader = request.headers.get("authorization")
+		const token = authHeader?.replace("Bearer ", "") || ""
 
 		if (!usuarioId) {
 			logError("ID de usuario no proporcionado", { url: url.toString() })
