@@ -116,7 +116,7 @@ export default function EntidadPage() {
                         className="flex items-center gap-2"
                     >
                         <PlusCircle className="size-4" />
-                        Postular Campaña
+                        Agregar Campaña
                     </Button>
                 </div>
 
