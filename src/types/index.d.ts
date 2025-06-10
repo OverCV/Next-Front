@@ -204,3 +204,15 @@ declare type UpdateAppointmentParams = {
   appointment: Appointment;
   type: string;
 };
+
+export interface ServiciosMedicosCampana {
+  id?: number;
+  servicioId: string;
+  campanaId: string;
+}
+
+export interface FactoresRiesgoCampana {
+  id?: number;
+  campanaId: number;
+  factorId: number;
+}
