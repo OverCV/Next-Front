@@ -139,6 +139,8 @@ export interface Usuario extends DatosAcceso {
   celular: string
   estaActivo: boolean
   rolId: number
+  entidadSalud: EntidadSalud | null
+  entidadSaludId: number | null
 }
 
 export interface UsuarioAccedido extends Usuario {
@@ -152,7 +154,7 @@ export interface EntidadSalud {
   direccion: string;
   telefono: string;
   correo: string;
-  usuarioId: number;
+  //usuarioId: number;
 }
 
 export interface RespuestaAuth {

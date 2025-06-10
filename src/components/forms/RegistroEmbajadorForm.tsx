@@ -93,7 +93,9 @@ export default function RegistroEmbajadorForm() {
                 clave: datos.clave,
                 celular: datos.telefono,
                 estaActivo: true,
-                rolId: ROLES.EMBAJADOR, // Id 7: Rol de embajador
+                rolId: ROLES.EMBAJADOR,
+                entidadSaludId: null,
+                entidadSalud: null
             };
 
             const user = JSON.parse(localStorage.getItem("usuario") || "{}");
@@ -101,7 +103,7 @@ export default function RegistroEmbajadorForm() {
             // Llamar al mismo endpoint de registro que usamos para las entidades y pacientes
             const respuesta = await registroUsuario(datosRegistro);
 
-            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user["id"]);
+            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user.id);
 
             const datosEmbajador: Embajador = {
                 id: 0,

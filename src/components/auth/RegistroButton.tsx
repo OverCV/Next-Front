@@ -9,7 +9,7 @@ export function RegistroButton() {
     const router = useRouter();
 
     const navegarARegistro = () => {
-        router.push("/registro/entidad");
+        router.push("/admin/registrar-entidad");
     };
 
     return (
