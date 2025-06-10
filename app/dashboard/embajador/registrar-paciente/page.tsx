@@ -128,7 +128,7 @@ export default function RegistrarPacientePage() {
     }, [cargarCampanasDisponibles]) // Solo depende de la función memoizada
 
     const onSubmit = async (datos: RegistroCompletoFormValues): Promise<void> => {
-        const token = usuario?.token || localStorage.getItem('authToken')
+        const token = usuario?.token ?? localStorage.getItem('authToken')
 
         if (!token) {
             console.error("No hay token disponible")

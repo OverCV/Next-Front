@@ -47,7 +47,7 @@ export const PasskeyModal = () => {
   };
 
   const validatePasskey = () => {
-    const clavePase = process.env.NEXT_PUBLIC_PASSKEY || "999999";
+    const clavePase = process.env.NEXT_PUBLIC_PASSKEY || "111111";
 
     if (passkey === clavePase) {
       localStorage.setItem("accessKey", encryptKey(passkey));

@@ -87,7 +87,7 @@ export default function RegistroUsuarioPacienteForm({ onUsuarioCreado }: Registr
                 identificacion: datos.identificacion,
                 nombres: datos.nombres,
                 apellidos: datos.apellidos,
-                correo: datos.correo || `${datos.identificacion}@healink.com`,
+                correo: datos.correo ?? `${datos.identificacion}@healink.com`,
                 // Contraseña por defecto para los pacientes
                 clave: datos.identificacion,
                 celular: datos.celular,

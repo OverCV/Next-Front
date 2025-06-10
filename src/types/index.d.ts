@@ -139,7 +139,7 @@ export interface CrearInscripcionCampana {
 }
 
 export interface EmbajadorEntidad {
-  id: number;
+  id?: number;
   entidadId: number;
   embajadorId: number;
   entidad: EntidadSalud | null;
@@ -178,7 +178,7 @@ export interface UsuarioAccedido extends Usuario {
 }
 
 export interface EntidadSalud {
-  id: number;
+  id?: number;
   razonSocial: string;
   direccion: string;
   telefono: string;

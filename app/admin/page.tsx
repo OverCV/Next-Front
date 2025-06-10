@@ -12,6 +12,7 @@ import { PasskeyModal } from "@/src/components/PasskeyModal";
 import { StatCard } from "@/src/components/StatCard";
 import { Button } from "@/src/components/ui/button";
 import { useAuth } from "@/src/providers/auth-provider";
+import { RegistroEntidadSaludButton } from "@/src/components/auth/RegistroEntidadSaludButton";
 
 // Página de administración
 const AdminPage = () => {
@@ -40,7 +41,7 @@ const AdminPage = () => {
           />
         </Link>
 
-        <p className="text-16-semibold mr-8">Admin Dashboard</p>
+        <p className="text-16-semibold mr-8 ">Admin Dashboard</p>
 
         {/* Navegación para escritorio */}
         <nav className="mr-4 mt-1 hidden md:flex md:items-center md:space-x-4 lg:space-x-6">
@@ -99,6 +100,9 @@ const AdminPage = () => {
         {/* Componente de prueba para notificaciones SMS */}
         <NotificacionPrueba />
       </main>
+
+      <RegistroEntidadSaludButton />
+
     </div>
   );
 };
