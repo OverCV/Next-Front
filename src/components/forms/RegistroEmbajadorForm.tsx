@@ -106,7 +106,6 @@ export default function RegistroEmbajadorForm() {
             const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user.id);
 
             const datosEmbajador: Embajador = {
-                id: 0,
                 usuarioId: respuesta.id,
                 nombreCompleto: `${datos.nombres} ${datos.apellidos}`,
                 telefono: datos.telefono,
@@ -117,23 +116,27 @@ export default function RegistroEmbajadorForm() {
 
             const respuestaEmbajador = await EmbajadorService.crearEmbajador(datosEmbajador)
 
-            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user["id"])
+            if (!respuestaEmbajador) {
+                setError("Error al registrar el embajador. Por favor, verifica los datos e intenta nuevamente.")
+                setCargando(false)
+                return
+            }
 
             const datosEmbajadorEntidad: EmbajadorEntidad = {
                 entidadId: entidad.id ?? 0,
-                embajadorId: respuestaEmbajador.id,
+                embajadorId: respuestaEmbajador.id ?? 0,
                 entidad: null,
                 embajador: null,
             }
 
-            const respuestaEmbajadorEntidad = await EmbajadorEntidadService.crearEmbajadorEntidad(datosEmbajadorEntidad)
+            await EmbajadorEntidadService.crearEmbajadorEntidad(datosEmbajadorEntidad)
 
             setExitoso(true)
 
             // Redirigir después de 2 segundos
-            // setTimeout(() => {
-            //     router.push('/dashboard/entidad')
-            // }, 2000)
+            setTimeout(() => {
+                router.push('/dashboard/entidad')
+            }, 2000)
 
         } catch (err: any) {
             console.error("Error al registrar embajador:", err)

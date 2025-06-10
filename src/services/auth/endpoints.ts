@@ -22,7 +22,7 @@ export const ENDPOINTS = {
 		BASE: `${API_URL}/pacientes`,
 		PERFIL: (usuarioId: number) => `${API_URL}/pacientes/usuario/${usuarioId}`,
 		TRIAJE: (pacienteId: number) => `${API_URL}/pacientes/triaje?pacienteId=${pacienteId}`,
-		CREAR_TRIAJE: `${API_URL}/pacientes/triaje`
+		CREAR_TRIAJE: `${API_URL}/triaje`
 	},
 
 	// Triajes

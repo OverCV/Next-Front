@@ -139,15 +139,15 @@ export interface CrearInscripcionCampana {
 }
 
 export interface EmbajadorEntidad {
-  id?: number;
-  entidadId: number;
-  embajadorId: number;
-  entidad: EntidadSalud | null;
-  embajador: Embajador | null;
+  id?: number
+  entidadId: number
+  embajadorId: number
+  entidad: EntidadSalud | null
+  embajador: Embajador | null
 }
 
 export interface Embajador {
-  id: number
+  id?: number
   nombreCompleto: string
   telefono: string
   usuarioId: number
@@ -180,12 +180,12 @@ export interface UsuarioAccedido extends Usuario {
 }
 
 export interface EntidadSalud {
-  id?: number;
-  razonSocial: string;
-  direccion: string;
-  telefono: string;
-  correo: string;
-  //usuarioId: number;
+  id?: number
+  razonSocial: string
+  direccion: string
+  telefono: string
+  correo: string
+  //usuarioId: number
 }
 
 export interface RespuestaAuth {

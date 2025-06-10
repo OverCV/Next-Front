@@ -87,8 +87,14 @@ export default function RegistroEntidadForm(): JSX.Element {
                 correo: datos.correo,
             };
 
-            const respuestaEntidad = await entidadSaludService.crearEntidadSalud(datosEntidad);
+            const respuestaEntidad : EntidadSalud = await entidadSaludService.crearEntidadSalud(datosEntidad);
             console.log("Registro entidad exitoso:", respuestaEntidad);
+
+            if (!respuestaEntidad) {
+                setError("Error al registrar la entidad. Por favor, verifica los datos e intenta nuevamente.")
+                setCargando(false)
+                return
+            }
 
             const datosRegistro: Usuario = {
                 tipoIdentificacion: TiposIdentificacionEnum.NIT,  // Fijo para entidades de salud
@@ -100,7 +106,7 @@ export default function RegistroEntidadForm(): JSX.Element {
                 celular: datos.telefono,
                 estaActivo: true,
                 rolId: ROLES.ENTIDAD_SALUD,
-                entidadSaludId: respuestaEntidad.id,
+                entidadSaludId: respuestaEntidad.id ?? 0,
                 entidadSalud: null
             };
 
