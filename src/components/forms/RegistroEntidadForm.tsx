@@ -73,6 +73,29 @@ export default function RegistroEntidadForm(): JSX.Element {
 
         try {
             // Preparar datos para enviar
+            
+
+            // Llamar a la API para registrar
+            
+
+            const datosEntidad: EntidadSalud = {
+                id: 0,
+                //usuarioId: respuesta.id,
+                razonSocial: datos.razonSocial,
+                direccion: datos.direccion,
+                telefono: datos.telefono,
+                correo: datos.correo,
+            };
+
+            const respuestaEntidad : EntidadSalud = await entidadSaludService.crearEntidadSalud(datosEntidad);
+            console.log("Registro entidad exitoso:", respuestaEntidad);
+
+            if (!respuestaEntidad) {
+                setError("Error al registrar la entidad. Por favor, verifica los datos e intenta nuevamente.")
+                setCargando(false)
+                return
+            }
+
             const datosRegistro: Usuario = {
                 tipoIdentificacion: TiposIdentificacionEnum.NIT,  // Fijo para entidades de salud
                 identificacion: datos.identificacion,
@@ -83,22 +106,12 @@ export default function RegistroEntidadForm(): JSX.Element {
                 celular: datos.telefono,
                 estaActivo: true,
                 rolId: ROLES.ENTIDAD_SALUD,
-            }
+                entidadSaludId: respuestaEntidad.id ?? 0,
+                entidadSalud: null
+            };
 
-            // Llamar a la API para registrar
-            const respuesta = await registroUsuario(datosRegistro)
-            console.log("Registro exitoso:", respuesta)
-
-            const datosEntidad: EntidadSalud = {
-                usuarioId: respuesta.id,
-                razonSocial: datos.razonSocial,
-                direccion: datos.direccion,
-                telefono: datos.telefono,
-                correo: datos.correo,
-            }
-
-            const respuestaEntidad = await entidadSaludService.crearEntidadSalud(datosEntidad)
-            console.log("Registro entidad exitoso:", respuestaEntidad)
+            const respuesta = await registroUsuario(datosRegistro);
+            console.log("Registro exitoso:", respuesta);
 
             // Marcar como exitoso
             setExitoso(true)

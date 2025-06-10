@@ -25,7 +25,7 @@ export default function PacientePage() {
     const [triaje, setTriaje] = useState<Triaje | null>(null)
     const [campanas, setCampanas] = useState<Campana[]>([])
     const [campanasDisponibles, setCampanasDisponibles] = useState<Campana[]>([])
-    const [pacienteId, setPacienteId] = useState<number | null>(null)
+    const [usuarioId, setPacienteId] = useState<number | null>(null)
 
     const [cargandoTriaje, setCargandoTriaje] = useState(true)
     const [cargandoCampanas, setCargandoCampanas] = useState(true)
@@ -68,33 +68,52 @@ export default function PacientePage() {
     }, [usuario?.id, router])
 
     const cargarMisCampanas = async () => {
-        if (!pacienteId) {
+        if (!usuario?.id) {
             console.log("⏳ Esperando pacienteId para cargar campañas...")
             return
         }
 
         setCargandoCampanas(true)
-        console.log("🔍 Cargando campañas para paciente:", pacienteId)
+        console.log("🔍 Cargando campañas para paciente:", usuario?.id)
 
         try {
             // Usar endpoint centralizado para inscripciones
-            const responseCampanas = await apiClient.get(ENDPOINTS.CAMPANAS.INSCRIPCIONES.POR_PACIENTE(pacienteId))
-            const todasCampanas = responseCampanas.data
-            setCampanasDisponibles(todasCampanas)
+            const responseCampanas = await apiClient.get(ENDPOINTS.CAMPANAS.INSCRIPCIONES.POR_USUARIO(usuario?.id))
+            const todasCampanasInscritas = responseCampanas.data
 
-            // Cargar inscripciones del paciente usando el mismo endpoint
-            const responseInscripciones = await apiClient.get(ENDPOINTS.CAMPANAS.INSCRIPCIONES.POR_PACIENTE(pacienteId))
-            const inscripciones = responseInscripciones.data
+            // Obtener detalles completos de cada campaña
+            const campanasDetalladas = await Promise.all(
+                todasCampanasInscritas.map(async (inscripcion: any) => {
+                    try {
+                        const responseCampana = await apiClient.get(ENDPOINTS.CAMPANAS.POR_ID(inscripcion.campanaId))
+                        return {
+                            ...responseCampana,
+                            estado: inscripcion.estado,
+                            fechaInscripcion: inscripcion.fechaInscripcion
+                        }
+                    } catch (err) {
+                        console.error(`❌ Error al obtener detalles de campaña ${inscripcion.campanaId}:`, err)
+                        return null
+                    }
+                })
+            )
 
+            console.log("Inscripciones: ", campanasDetalladas)
+
+            // Filtrar campañas nulas y actualizar el array
+            const campanasFiltradas = campanasDetalladas.filter(campana => campana !== null)
+
+            setCampanasDisponibles(campanasFiltradas)
             // Filtrar las campañas en las que está inscrito
-            const campanasInscritas = todasCampanas.filter((campana: Campana) =>
-                inscripciones.some((inscripcion: any) =>
+            /*const campanasInscritas = todasCampanasInscritas.filter((campana: Campana) =>
+                todasCampanasInscritas.some((inscripcion: any) =>
                     inscripcion.campanaId === campana.id &&
                     inscripcion.estado === 'INSCRITO'
                 )
-            )
-            setCampanas(campanasInscritas)
-            console.log("✅ Campañas cargadas:", campanasInscritas.length)
+            )*/
+
+            setCampanas(campanasFiltradas)
+            //console.log("✅ Campañas cargadas:", campanasFiltradas.length)
         } catch (err: any) {
             console.error('❌ Error al cargar campañas:', err)
             // setError('Error al cargar las campañas. Intente nuevamente.')
@@ -105,27 +124,27 @@ export default function PacientePage() {
 
     // Cargar campañas solo cuando tengamos pacienteId
     useEffect(() => {
-        if (pacienteId && !cargandoPaciente) {
+        if (usuarioId && !cargandoPaciente) {
             console.log("🔄 Iniciando carga de campañas...")
             cargarMisCampanas()
         }
-    }, [pacienteId, cargandoPaciente])
+    }, [usuarioId, cargandoPaciente])
 
     // Cargar triaje inicial del paciente
     useEffect(() => {
         const cargarTriaje = async () => {
-            if (!pacienteId || cargandoPaciente) {
+            if (!usuarioId || cargandoPaciente) {
                 console.log("⏳ Esperando datos para cargar triaje...")
                 return
             }
 
             setCargandoTriaje(true)
             setError(null)
-            console.log("🔍 Cargando triaje para paciente:", pacienteId)
+            console.log("🔍 Cargando triaje para paciente:", usuarioId)
 
             try {
                 // Usar endpoint centralizado para triajes
-                const response = await apiClient.get(ENDPOINTS.TRIAJES.POR_PACIENTE(pacienteId))
+                const response = await apiClient.get(ENDPOINTS.TRIAJES.POR_PACIENTE(usuarioId))
 
                 const triajes = response.data
                 // Tomamos el triaje más reciente
@@ -147,11 +166,11 @@ export default function PacientePage() {
             }
         }
 
-        if (pacienteId && !cargandoPaciente) {
+        if (usuarioId && !cargandoPaciente) {
             console.log("🔄 Iniciando carga de triaje...")
             cargarTriaje()
         }
-    }, [pacienteId, cargandoPaciente, router])
+    }, [usuarioId, cargandoPaciente, router])
 
     // Si está cargando datos iniciales, mostrar indicador
     if (cargandoPaciente || (cargandoTriaje && !error)) {
@@ -228,16 +247,58 @@ export default function PacientePage() {
                         <p className="mt-2 text-slate-500">Cargando campañas...</p>
                     </div>
                 ) : campanas.length > 0 ? (
-                    <div className="space-y-4">
-                        {campanas.map(campana => (
-                            <div key={campana.id} className="rounded-lg border p-4">
-                                <h3 className="font-semibold">{campana.nombre}</h3>
-                                <p className="text-sm text-slate-500">{campana.descripcion}</p>
-                                <div className="mt-2 text-sm">
-                                    <span className="font-medium">Estado:</span> {campana.estatus}
-                                </div>
-                            </div>
-                        ))}
+                    <div className="overflow-x-auto">
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr className="border-b border-slate-200 dark:border-slate-700">
+                                    <th className="py-3 text-left font-medium">Nombre</th>
+                                    <th className="py-3 text-left font-medium">Descripción</th>
+                                    <th className="py-3 text-left font-medium">Pacientes</th>
+                                    <th className="py-3 text-left font-medium">Fecha Inicio</th>
+                                    <th className="py-3 text-left font-medium">Estado</th>
+                                    <th className="py-3 text-right font-medium">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {campanas.map(campana => (
+                                    <tr key={campana.id} className="border-b border-slate-100 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50">
+                                        <td className="py-4 font-medium text-slate-900 dark:text-slate-100">{campana.nombre}</td>
+                                        <td className="py-4 text-slate-600 dark:text-slate-400 max-w-md truncate">{campana.descripcion}</td>
+                                        <td className="py-4 text-center">
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                {campana.pacientes || 0}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 text-slate-600 dark:text-slate-400">
+                                            {new Date(campana.fechaInicio).toLocaleDateString('es-ES', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })}
+                                        </td>
+                                        <td className="py-4">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${campana.estado.toLowerCase() === 'postulada' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                                                campana.estado.toLowerCase() === 'ejecucion' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                                                    campana.estado.toLowerCase() === 'finalizada' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                                                        'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                                                }`}>
+                                                {campana.estado}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 text-right">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                                onClick={() => router.push(`/dashboard/paciente/campanas/${campana.id}`)}
+                                            >
+                                                Ver Detalles
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 ) : (
                     <div className="rounded-lg border border-dashed border-slate-300 p-8 text-center dark:border-slate-700">

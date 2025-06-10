@@ -192,7 +192,7 @@ export const pacientesService = {
 	// Función para inscribir paciente a campaña
 	inscribirPacienteCampana: async (datos: CrearInscripcionCampana): Promise<InscripcionCampana> => {
 		try {
-			console.log("📝 Inscribiendo paciente a campaña:", datos)
+			console.log("📝 Inscribiendo usuario a campaña:", datos)
 
 			const response = await apiClient.post(
 				ENDPOINTS.CAMPANAS.INSCRIPCIONES.CREAR, {
@@ -200,10 +200,10 @@ export const pacientesService = {
 				campanaId: datos.campanaId,
 			})
 
-			console.log("✅ Paciente inscrito a campaña:", response.data)
+			console.log("✅ Usuario inscrito a campaña:", response.data)
 			return response.data
 		} catch (error: any) {
-			console.error("❌ Error al inscribir paciente a campaña:", error)
+			console.error("❌ Error al inscribir usuario a campaña:", error)
 			throw error
 		}
 	}
