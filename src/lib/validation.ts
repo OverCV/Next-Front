@@ -120,7 +120,7 @@ export const CampaignCreationSchema = z
       .min(10, "La descripción debe tener al menos 10 caracteres")
       .max(500, "La descripción no puede exceder 500 caracteres"),
 
-    localizacion: z.number({
+    localizacionId: z.number({
       required_error: "La localizacion de la campaña es requerido",
     }),
 
