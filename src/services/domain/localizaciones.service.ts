@@ -1,15 +1,14 @@
 import { httpGet } from "@/src/request/Requests";
+import { Localizacion } from "@/src/types";
 
 export const localizacionesService = {
-  obtenerLocalizaciones: async () => {
-    let res;
-    await httpGet("/localizaciones")
-      .then((response) => {
-        res = response;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    return res;
+  obtenerLocalizaciones: async (): Promise<Localizacion[]> => {
+    try {
+      const response = await httpGet("/localizaciones");
+      return response || [];
+    } catch (err) {
+      console.error("Error al obtener localizaciones:", err);
+      return [];
+    }
   },
 };

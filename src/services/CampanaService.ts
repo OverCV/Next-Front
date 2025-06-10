@@ -61,7 +61,7 @@ export const CampanaService = {
    */
   obtenerCampanaPorId: async (campanaId: number): Promise<CampanaModel> => {
     try {
-      const response = await apiClient.get(`${API_URL}/campanas/${campanaId}`);
+      const response = await apiClient.get(`${API_URL}/campana/${campanaId}`);
       return response.data;
     } catch (error) {
       console.error("Error al obtener campaña por ID:", error);

@@ -1,20 +1,23 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { AlertCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
-import CustomFormField, { FormFieldType } from "@/src/components/CustomFormField";
-import { Alert, AlertDescription } from "@/src/components/ui/alert";
-import { Button } from "@/src/components/ui/button";
-import { Form } from "@/src/components/ui/form";
-import { SelectItem } from "@/src/components/ui/select";
-import { ROLES, TIPOS_IDENTIFICACION, TiposIdentificacionEnum } from "@/src/constants";
-import { useAuth } from "@/src/providers/auth-provider";
-import { DatosRegistro } from "@/src/types";
+import CustomFormField, { FormFieldType } from "@/src/components/CustomFormField"
+import { Alert, AlertDescription } from "@/src/components/ui/alert"
+import { Button } from "@/src/components/ui/button"
+import { Form } from "@/src/components/ui/form"
+import { SelectItem } from "@/src/components/ui/select"
+import { ROLES, TIPOS_IDENTIFICACION, TiposIdentificacionEnum } from "@/src/constants"
+import { useAuth } from "@/src/providers/auth-provider"
+import EmbajadorEntidadService from "@/src/services/EmbajadorEntidadService"
+import EmbajadorService from "@/src/services/EmbajadorService"
+import entidadSaludService from "@/src/services/EntidadSaludService"
+import { Embajador, EmbajadorEntidad, Usuario } from "@/src/types"
 
 // Esquema de validación
 const registroEmbajadorSchema = z.object({
@@ -46,16 +49,16 @@ const registroEmbajadorSchema = z.object({
 }).refine((data) => data.clave === data.confirmarClave, {
     message: "Las contraseñas no coinciden",
     path: ["confirmarClave"],
-});
+})
 
-type RegistroEmbajadorFormValues = z.infer<typeof registroEmbajadorSchema>;
+type RegistroEmbajadorFormValues = z.infer<typeof registroEmbajadorSchema>
 
 export default function RegistroEmbajadorForm() {
-    const router = useRouter();
-    const { registroUsuario } = useAuth();
-    const [error, setError] = useState<string | null>(null);
-    const [cargando, setCargando] = useState<boolean>(false);
-    const [exitoso, setExitoso] = useState<boolean>(false);
+    const router = useRouter()
+    const { registroUsuario } = useAuth()
+    const [error, setError] = useState<string | null>(null)
+    const [cargando, setCargando] = useState<boolean>(false)
+    const [exitoso, setExitoso] = useState<boolean>(false)
 
     const form = useForm<RegistroEmbajadorFormValues>({
         resolver: zodResolver(registroEmbajadorSchema),
@@ -70,18 +73,18 @@ export default function RegistroEmbajadorForm() {
             confirmarClave: "",
             localidad: "",
         },
-    });
+    })
 
     const onSubmit = async (datos: RegistroEmbajadorFormValues): Promise<void> => {
-        setCargando(true);
-        setError(null);
-        setExitoso(false);
+        setCargando(true)
+        setError(null)
+        setExitoso(false)
 
         try {
-            console.log("Datos de registro:", datos);
+            console.log("Datos de registro:", datos)
 
             // Preparar datos para enviar al endpoint de registro
-            const datosRegistro: DatosRegistro = {
+            const datosRegistro: Usuario = {
                 tipoIdentificacion: datos.tipoIdentificacion,
                 identificacion: datos.identificacion,
                 nombres: datos.nombres,
@@ -90,33 +93,61 @@ export default function RegistroEmbajadorForm() {
                 clave: datos.clave,
                 celular: datos.telefono,
                 estaActivo: true,
-                rolId: ROLES.EMBAJADOR, // Id 7: Rol de embajador
+                rolId: ROLES.EMBAJADOR,
+                entidadSaludId: null,
+                entidadSalud: null
             };
+
+            const user = JSON.parse(localStorage.getItem("usuario") || "{}")
 
             // Llamar al mismo endpoint de registro que usamos para las entidades y pacientes
             const respuesta = await registroUsuario(datosRegistro);
-            console.log("Registro exitoso:", respuesta);
 
-            // TODO: Aquí podríamos guardar datos adicionales específicos
-            // como la localidad asignada y la relación con la entidad de salud
+            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user.id);
 
-            setExitoso(true);
+            const datosEmbajador: Embajador = {
+                usuarioId: respuesta.id,
+                nombreCompleto: `${datos.nombres} ${datos.apellidos}`,
+                telefono: datos.telefono,
+                localidad: datos.localidad,
+                identificacion: "",
+                correo: "",
+            }
+
+            const respuestaEmbajador = await EmbajadorService.crearEmbajador(datosEmbajador)
+
+            if (!respuestaEmbajador) {
+                setError("Error al registrar el embajador. Por favor, verifica los datos e intenta nuevamente.")
+                setCargando(false)
+                return
+            }
+
+            const datosEmbajadorEntidad: EmbajadorEntidad = {
+                entidadId: entidad.id ?? 0,
+                embajadorId: respuestaEmbajador.id ?? 0,
+                entidad: null,
+                embajador: null,
+            }
+
+            await EmbajadorEntidadService.crearEmbajadorEntidad(datosEmbajadorEntidad)
+
+            setExitoso(true)
 
             // Redirigir después de 2 segundos
             setTimeout(() => {
-                router.push('/dashboard/entidad');
-            }, 2000);
+                router.push('/dashboard/entidad')
+            }, 2000)
 
         } catch (err: any) {
-            console.error("Error al registrar embajador:", err);
+            console.error("Error al registrar embajador:", err)
             setError(
                 err.response?.data?.mensaje ||
                 "Error al registrar el embajador. Por favor, verifica los datos e intenta nuevamente."
-            );
+            )
         } finally {
-            setCargando(false);
+            setCargando(false)
         }
-    };
+    }
 
     return (
         <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-md dark:border-slate-700 dark:bg-slate-900">
@@ -272,5 +303,5 @@ export default function RegistroEmbajadorForm() {
                 </form>
             </Form>
         </div>
-    );
+    )
 }

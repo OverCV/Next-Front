@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
     const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard');
-    const token = request.cookies.get('token')?.value;
+    const token = request.cookies.get('authToken')?.value;
 
     if (isProtectedRoute && !token) {
         return NextResponse.redirect(new URL('/acceso', request.url));

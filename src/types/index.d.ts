@@ -91,6 +91,21 @@ export interface CampanaModel {
   factores?: FactorRiesgo[];
 }
 
+// Interfaz para campañas desde la API (estructura diferente al mock)
+export interface CampanaAPI {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  localizacionId: number;
+  fechaLimiteInscripcion: string;
+  fechaInicio: string;
+  fechaLimite: string | null;
+  minParticipantes: number;
+  maxParticipantes: number;
+  entidadId: number;
+  estado: "POSTULADA" | "EJECUCION" | "FINALIZADA" | "CANCELADA";
+}
+
 // Interfaz para citaciones
 export interface Citacion {
   id: number;
@@ -106,6 +121,40 @@ export interface Citacion {
   notas?: string;
 }
 
+// Interfaz para inscripciones a campañas
+export interface InscripcionCampana {
+  id: number;
+  pacienteId: number;
+  campanaId: number;
+  fechaInscripcion: string;
+  estado: "INSCRITO" | "RETIRADO" | "COMPLETADO";
+  motivoRetiro?: string;
+}
+
+// Datos para crear inscripción
+export interface CrearInscripcionCampana {
+  usuarioId: number;
+  campanaId: number;
+}
+
+export interface EmbajadorEntidad {
+  id?: number;
+  entidadId: number;
+  embajadorId: number;
+  entidad: EntidadSalud | null;
+  embajador: Embajador | null;
+}
+
+export interface Embajador {
+  id?: number;
+  nombreCompleto: string;
+  telefono: string;
+  usuarioId: number;
+  localidad: string;
+  identificacion: string;
+  correo: string;
+}
+
 // Interfaces autenticación y usuario
 export interface DatosAcceso {
   tipoIdentificacion: TiposIdentificacionEnum;
@@ -113,16 +162,15 @@ export interface DatosAcceso {
   clave: string;
 }
 
-export interface DatosRegistro {
-  tipoIdentificacion: TiposIdentificacionEnum;
-  identificacion: string;
+export interface Usuario extends DatosAcceso {
   nombres: string;
   apellidos: string;
   correo: string;
-  clave: string;
   celular: string;
   estaActivo: boolean;
   rolId: number;
+  entidadSalud: EntidadSalud | null;
+  entidadSaludId: number | null;
 }
 
 export interface Usuario {
@@ -139,9 +187,22 @@ export interface Usuario {
   entidadSaludId: number;
   entidadSalud?: object;
 }
+export interface UsuarioAccedido extends Usuario {
+  id: number;
+  token?: string;
+}
+
+export interface EntidadSalud {
+  id?: number;
+  razonSocial: string;
+  direccion: string;
+  telefono: string;
+  correo: string;
+  //usuarioId: number
+}
 
 export interface RespuestaAuth {
-  usuario: Usuario;
+  usuario: UsuarioAccedido;
   token: string;
 }
 
@@ -149,43 +210,7 @@ export interface RespuestaAuth {
 
 /* eslint-disable no-unused-vars */
 
-// declare type parametrosBusquedaProps = {
-//   params: { [key: string]: string };
-//   paramsBusqueda: { [key: string]: string | string[] | undefined };
-// };
-
-declare type Gender = "Male" | "Female" | "Other";
-
-declare interface CreateUserParams {
-  nombres: string;
-  apellidos: string;
-  email: string;
-  phone: string;
-}
-declare interface User extends CreateUserParams {
-  $id: string;
-}
-
-declare interface RegisterUserParams extends CreateUserParams {
-  userId: string;
-  birthDate: Date;
-  gender: Gender;
-  address: string;
-  occupation: string;
-  emergencyContactName: string;
-  emergencyContactNumber: string;
-  primaryPhysician: string;
-  insuranceProvider: string;
-  insurancePolicyNumber: string;
-  allergies: string | undefined;
-  currentMedication: string | undefined;
-  familyMedicalHistory: string | undefined;
-  pastMedicalHistory: string | undefined;
-  identificationType: string | undefined;
-  identificationNumber: string | undefined;
-  identificationDocument: FormData | undefined;
-  privacyConsent: boolean;
-}
+declare type GeneroBiologico = "MASCULINO" | "FEMENINO";
 
 declare type CreateAppointmentParams = {
   userId: string;

@@ -1,45 +1,84 @@
 import axios, {
-  AxiosInstance,
-  AxiosResponse,
-  AxiosError,
-  InternalAxiosRequestConfig,
+    AxiosInstance,
+    AxiosResponse,
+    AxiosError,
+    InternalAxiosRequestConfig,
 } from "axios";
 import Cookies from "js-cookie";
 
-import { API_URL } from "@/src/config/env";
+import { API_URL } from '@/src/config/env'
+
+console.log("🔵 apiClient.ts: Script cargado. Definiendo apiClient...")
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+    baseURL: API_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+})
+
+console.log("🔵 apiClient.ts: Instancia de Axios creada. BaseURL:", apiClient.defaults.baseURL)
 
 // Interceptor para añadir el token a todas las peticiones
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-    // Obtener token de las cookies
-    const token = Cookies.get("authToken");
+    (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+        const metodo = config.method?.toUpperCase()
+        const ruta = config.url
 
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+        let token: string | undefined = Cookies.get('authToken')
+
+        if (!token && typeof window !== 'undefined') {
+            token = localStorage.getItem('authToken') || undefined
+        }
+
+        if (token && config.headers) {
+            config.headers.Authorization = `Bearer ${token}`
+        }
+
+        // Log simplificado sin exponer información sensible
+        console.log(`📡 ${metodo} ${ruta} - Token: ${token ? '✅' : '❌'}`)
+
+        return config
+    },
+    (error: AxiosError): Promise<never> => {
+        console.error("❌ Error en configuración de petición:", error.message)
+        return Promise.reject(error)
     }
-    return config;
-  },
-  (error: AxiosError): Promise<never> => Promise.reject(error)
-);
+)
+
+console.log("🔵 apiClient.ts: Interceptor de REQUEST configurado.")
 
 // Interceptor para manejar errores comunes
 apiClient.interceptors.response.use(
-  (response: AxiosResponse): AxiosResponse => response,
-  (error: AxiosError): Promise<AxiosError> => {
-    if (error.response?.status === 401) {
-      // Si hay error de autenticación, limpiar cookie y localStorage
-      Cookies.remove("authToken");
-      localStorage.removeItem("usuario");
-    }
-    return Promise.reject(error);
-  }
-);
+    (response: AxiosResponse): AxiosResponse => {
+        const metodo = response.config.method?.toUpperCase()
+        const ruta = response.config.url
+        const status = response.status
 
-export default apiClient;
+        console.log(`✅ ${metodo} ${ruta} - ${status}`)
+        return response
+    },
+    (error: AxiosError): Promise<AxiosError> => {
+        const metodo = error.config?.method?.toUpperCase()
+        const ruta = error.config?.url
+        const status = error.response?.status
+
+        console.error(`❌ ${metodo} ${ruta} - ${status}`)
+
+        if (status === 401) {
+            console.warn("🚫 Sesión expirada - Limpiando tokens...")
+            Cookies.remove('authToken')
+
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('authToken')
+                localStorage.removeItem('usuario')
+            }
+        }
+
+        return Promise.reject(error)
+    }
+)
+
+console.log("🔵 apiClient.ts: Interceptor de RESPONSE configurado.")
+
+export default apiClient
