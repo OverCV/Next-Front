@@ -1,6 +1,6 @@
 // src/app/dashboard/desarrollador/page.tsx
 
-import { RegistroButton } from "@/src/components/auth/RegistroButton";
+import { RegistroEntidadSaludButton } from "@/src/components/auth/RegistroEntidadSaludButton";
 
 export default function DesarrolladorPage() {
     return <div className="space-y-6">
@@ -51,9 +51,6 @@ export default function DesarrolladorPage() {
                 </div>
             </div>
         </div>
-
-        <RegistroButton />
-
 
     </div>
 

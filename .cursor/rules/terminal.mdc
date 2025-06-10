@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+If you want to execute the NextJS project just do a `npm run dev`.
+
+
+If you're in python first check for the `.venv` file and then activate it to install any library.

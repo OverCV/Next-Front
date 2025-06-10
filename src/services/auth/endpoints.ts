@@ -25,6 +25,23 @@ export const ENDPOINTS = {
 		CREAR_TRIAJE: `${API_URL}/pacientes/triaje`
 	},
 
+	// Triajes
+	TRIAJES: {
+		BASE: `${API_URL}/triaje`,
+		POR_PACIENTE: (pacienteId: number) => `${API_URL}/triaje/paciente/${pacienteId}`
+	},
+
+	// Campañas e Inscripciones
+	CAMPANAS: {
+		BASE: `${API_URL}/campanas`,
+		TODAS: `${API_URL}/campana`,
+		INSCRIPCIONES: {
+			BASE: `${API_URL}/inscripciones-campana`,
+			POR_PACIENTE: (pacienteId: number) => `${API_URL}/inscripciones-campana/paciente/${pacienteId}`,
+			CREAR: `${API_URL}/inscripciones-campana`
+		}
+	},
+
 	// Localizaciones
 	LOCALIZACIONES: {
 		BASE: `${API_URL}/localizaciones`,
