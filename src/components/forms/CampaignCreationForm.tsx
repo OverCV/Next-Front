@@ -23,13 +23,16 @@ import {
 import {
   Checkbox,
 } from '@/src/components/ui/checkbox';
-import { Badge } from '@/src/components/ui/badge';
 import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { useAuth } from '@/src/providers/auth-provider';
-import { CrearCampanaParams } from '@/src/services/CampanaService';
-import campanasService from '@/src/services/CampanaService';
+import { CampanaService, CrearCampanaParams } from '@/src/services/CampanaService';
+import { ServicioMedico } from '@/src/services/ServicioMedico';
+import { FactorRiesgoServicio } from '@/src/services/FactorRiesgo';
+
 import { localizacionesService } from '@/src/services/domain/localizaciones.service';
-import { FactorRiesgo, Localizacion, ServicioMedico } from '@/src/types';
+import { FactorRiesgoModel, Localizacion, ServicioMedicoModel, Usuario } from '@/src/types';
+import { ServicioCampanaService } from '@/src/services/ServicioCampana';
+import { FactorCampanaService } from '@/src/services/FactorCampana';
 
 // Dynamically import DatePicker to reduce initial bundle size
 import dynamic from 'next/dynamic';
@@ -42,6 +45,7 @@ const DatePicker = dynamic(() => import('react-datepicker'), {
 
 // Import styles in a separate import to avoid bundling issues
 import "react-datepicker/dist/react-datepicker.css";
+
 
 // Memoized checkbox option component for better performance
 const CheckboxOption = memo(({
@@ -60,6 +64,7 @@ const CheckboxOption = memo(({
       id={`option-${id}`}
       checked={isChecked}
       onCheckedChange={onChange}
+      className="cursor-pointer"
     />
     <label
       htmlFor={`option-${id}`}
@@ -80,10 +85,10 @@ interface CampaignCreationFormProps {
 }
 
 function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps) {
-  const { usuario } = useAuth();
+  const { usuario } = useAuth() as { usuario: Usuario };
   const [localizaciones, setLocalizaciones] = useState<Localizacion[]>([]);
-  const [servicios, setServicios] = useState<ServicioMedico[]>([]);
-  const [factores, setFactores] = useState<FactorRiesgo[]>([]);
+  const [servicios, setServicios] = useState<ServicioMedicoModel[]>([]);
+  const [factores, setFactores] = useState<FactorRiesgoModel[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cargandoDatos, setCargandoDatos] = useState(true);
@@ -102,13 +107,14 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
     defaultValues: {
       nombre: '',
       descripcion: '',
-      localizacion: 0,
+      localizacionId: 0,
       fechaInicio: new Date(Date.now() + 86400000), // Mañana
       fechaLimite: new Date(Date.now() + 604800000), // Una semana después
+      fechaLimiteInscripcion: new Date(Date.now() + 432000000), // 5 días después
       minParticipantes: 10,
       maxParticipantes: 30,
-      serviciosIds: [],
-      factoresIds: []
+      serviciosIds: [] as string[],
+      factoresIds: [] as string[]
     }
   });
 
@@ -118,8 +124,8 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
     try {
       const [localizacionesData, serviciosData, factoresData] = await Promise.all([
         localizacionesService.obtenerLocalizaciones(),
-        campanasService.obtenerServiciosMedicos(),
-        campanasService.obtenerFactoresRiesgo()
+        ServicioMedico.obtenerServiciosMedicos(),
+        FactorRiesgoServicio.obtenerFactoresRiesgo()
       ]);
 
       setLocalizaciones(localizacionesData ?? []);
@@ -131,6 +137,7 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
     } finally {
       setCargandoDatos(false);
     }
+
   }, []);
 
   // Effect for loading data
@@ -149,17 +156,25 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
     setError(null);
 
     try {
-      // Preparar datos para envío
+      // Preparar datos para envío (sin servicios ni factores, se asocian después)
       const campanaData: CrearCampanaParams = {
-        ...data,
-        fechaInicio: format(data.fechaInicio, 'yyyy-MM-dd\'T\'HH:mm:ss'),
-        fechaLimite: format(data.fechaLimite, 'yyyy-MM-dd\'T\'HH:mm:ss'),
-        serviciosIds: data.serviciosIds.map(Number),
-        factoresIds: data.factoresIds.map(Number),
+        nombre: data.nombre,
+        descripcion: data.descripcion,
+        fechaInicio: format(data.fechaInicio, 'yyyy-MM-dd'),
+        fechaLimite: format(data.fechaLimite, 'yyyy-MM-dd'),
+        fechaLimiteInscripcion: format(data.fechaLimiteInscripcion, 'yyyy-MM-dd'),
+        minParticipantes: data.minParticipantes,
+        maxParticipantes: data.maxParticipantes,
+        localizacionId: data.localizacionId,
+        estado: "POSTULADA",
+        entidadId: usuario.entidadSaludId
       };
-
       // Enviar datos al servidor
-      await campanasService.crearCampana(campanaData);
+      let result = await CampanaService.crearCampana(campanaData);
+
+      let campanaID = result?.id;
+
+      onSubmitCampanasFactores(data.serviciosIds, data.factoresIds, campanaID);
 
       // Resetear formulario
       reset();
@@ -170,11 +185,50 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
       }
     } catch (err: any) {
       console.error('Error al crear campaña:', err);
-      setError(err.message || 'Ocurrió un error al crear la campaña. Por favor, intente nuevamente.');
+
+      // Mensaje de error más específico
+      let errorMessage = 'Ocurrió un error al crear la campaña. Por favor, intente nuevamente.';
+
+      if (err.message) {
+        if (err.message.includes('servicios médicos')) {
+          errorMessage = 'La campaña se creó pero hubo un error al asociar los servicios médicos.';
+        } else if (err.message.includes('factores de riesgo')) {
+          errorMessage = 'La campaña se creó pero hubo un error al asociar los factores de riesgo.';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   }, [usuario, reset, onSuccess, setIsSubmitting, setError]);
+
+  const onSubmitCampanasFactores = async (servicios: string[], factores: string[], campanaID?: number) => {
+    // Asociar servicios médicos y factores de riesgo si la campaña se creó exitosamente
+    if (campanaID && (servicios.length > 0 || factores.length > 0)) {
+      try {
+        // Asociar servicios médicos si hay seleccionados
+        await ServicioCampanaService.asociarServiciosMedicos(
+          campanaID,
+          servicios.map(Number)
+        );
+
+        await FactorCampanaService.asociarFactoresRiesgo(
+          campanaID,
+          factores.map(Number)
+        );
+
+
+      } catch (associationError: any) {
+        console.warn('Error al asociar servicios o factores de riesgo:', associationError);
+        // No lanzamos el error para no fallar la creación de la campaña
+        // pero podríamos mostrar una advertencia al usuario
+      }
+    }
+
+  }
 
   // Cancelar formulario - memoized with useCallback
   const handleCancel = useCallback(() => {
@@ -250,61 +304,98 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
         </div>
 
         {/* Fechas */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          {/* Fecha inicio */}
+        <div className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {/* Fecha inicio */}
+            <div className="space-y-2">
+              <Label htmlFor="fechaInicio" className={errors.fechaInicio ? 'text-red-500' : ''}>
+                Fecha de inicio*
+              </Label>
+              <Controller
+                control={control}
+                name="fechaInicio"
+                render={({ field }) => (
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400 z-10" />
+                    <DatePicker
+                      selected={field.value}
+                      onChange={(date: Date) => field.onChange(date)}
+                      onFocus={() => { }}
+                      locale={es}
+                      dateFormat="dd/MM/yyyy"
+                      minDate={new Date()}
+                      className={`w-full rounded-md border ${errors.fechaInicio ? 'border-red-500' : 'border-slate-200'
+                        } pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400`}
+                    />
+                  </div>
+                )}
+              />
+              {errors.fechaInicio && (
+                <p className="text-sm text-red-500">{errors.fechaInicio.message}</p>
+              )}
+            </div>
+
+            {/* Fecha límite */}
+            <div className="space-y-2">
+              <Label htmlFor="fechaLimite" className={errors.fechaLimite ? 'text-red-500' : ''}>
+                Fecha límite*
+              </Label>
+              <Controller
+                control={control}
+                name="fechaLimite"
+                render={({ field }) => (
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400 z-10" />
+                    <DatePicker
+                      selected={field.value}
+                      onChange={(date: Date) => field.onChange(date)}
+                      onFocus={() => { }}
+                      locale={es}
+                      dateFormat="dd/MM/yyyy"
+                      minDate={watch('fechaInicio')}
+                      className={`w-full rounded-md border ${errors.fechaLimite ? 'border-red-500' : 'border-slate-200'
+                        } pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400`}
+                    />
+                  </div>
+                )}
+              />
+              {errors.fechaLimite && (
+                <p className="text-sm text-red-500">{errors.fechaLimite.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Fecha límite de inscripción */}
           <div className="space-y-2">
-            <Label htmlFor="fechaInicio" className={errors.fechaInicio ? 'text-red-500' : ''}>
-              Fecha de inicio*
+            <Label htmlFor="fechaLimiteInscripcion" className={errors.fechaLimiteInscripcion ? 'text-red-500' : ''}>
+              Fecha límite de inscripción*
             </Label>
             <Controller
               control={control}
-              name="fechaInicio"
+              name="fechaLimiteInscripcion"
               render={({ field }) => (
                 <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400 z-10" />
                   <DatePicker
                     selected={field.value}
                     onChange={(date: Date) => field.onChange(date)}
+                    onFocus={() => { }}
                     locale={es}
                     dateFormat="dd/MM/yyyy"
                     minDate={new Date()}
-                    className={`w-full rounded-md border ${errors.fechaInicio ? 'border-red-500' : 'border-slate-200'
-                      } px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400`}
+                    maxDate={watch('fechaLimite')}
+                    className={`w-full rounded-md border ${errors.fechaLimiteInscripcion ? 'border-red-500' : 'border-slate-200'
+                      } pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400`}
                   />
-                  <Calendar className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                 </div>
               )}
             />
-            {errors.fechaInicio && (
-              <p className="text-sm text-red-500">{errors.fechaInicio.message}</p>
+            {errors.fechaLimiteInscripcion && (
+              <p className="text-sm text-red-500">{errors.fechaLimiteInscripcion.message}</p>
             )}
-          </div>
-
-          {/* Fecha límite */}
-          <div className="space-y-2">
-            <Label htmlFor="fechaLimite" className={errors.fechaLimite ? 'text-red-500' : ''}>
-              Fecha límite*
-            </Label>
-            <Controller
-              control={control}
-              name="fechaLimite"
-              render={({ field }) => (
-                <div className="relative">
-                  <DatePicker
-                    selected={field.value}
-                    onChange={(date: Date) => field.onChange(date)}
-                    locale={es}
-                    dateFormat="dd/MM/yyyy"
-                    minDate={watch('fechaInicio')}
-                    className={`w-full rounded-md border ${errors.fechaLimite ? 'border-red-500' : 'border-slate-200'
-                      } px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400`}
-                  />
-                  <Calendar className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-                </div>
-              )}
-            />
-            {errors.fechaLimite && (
-              <p className="text-sm text-red-500">{errors.fechaLimite.message}</p>
-            )}
+            <p className="text-sm text-slate-500">
+              Fecha hasta la cual los usuarios pueden inscribirse en la campaña
+            </p>
           </div>
         </div>
 
@@ -347,18 +438,18 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
 
         {/* Localización */}
         <div className="space-y-2">
-          <Label htmlFor="localizacionId" className={errors.localizacion ? 'text-red-500' : ''}>
+          <Label htmlFor="localizacionId" className={errors.localizacionId ? 'text-red-500' : ''}>
             Localización
           </Label>
           <Controller
             control={control}
-            name="localizacion"
+            name="localizacionId"
             render={({ field }) => (
               <Select
                 value={field.value?.toString()}
                 onValueChange={(value) => field.onChange(Number(value))}
               >
-                <SelectTrigger className={errors.localizacion ? 'border-red-500' : ''}>
+                <SelectTrigger className={errors.localizacionId ? 'border-red-500' : ''}>
                   <SelectValue placeholder="Seleccione una localización" />
                 </SelectTrigger>
                 <SelectContent>
@@ -372,15 +463,15 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
               </Select>
             )}
           />
-          {errors.localizacion && (
-            <p className="text-sm text-red-500">{errors.localizacion.message}</p>
+          {errors.localizacionId && (
+            <p className="text-sm text-red-500">{errors.localizacionId.message}</p>
           )}
         </div>
 
         {/* Servicios médicos */}
         <div className="space-y-2">
           <Label className={errors.serviciosIds ? 'text-red-500' : ''}>
-            Servicios médicos ofrecidos*
+            Servicios médicos ofrecidos
           </Label>
           <div className="grid gap-2 sm:grid-cols-2">
             <Controller
@@ -393,13 +484,13 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
                       key={servicio.id}
                       id={servicio.id}
                       name={servicio.nombre}
-                      isChecked={field.value.includes(servicio.id.toString())}
+                      isChecked={field.value?.some(id => String(id) === String(servicio.id)) || false}
                       onChange={(checked) => {
                         if (checked) {
-                          field.onChange([...field.value, servicio.id]);
+                          field.onChange([...field.value || [], String(servicio.id)]);
                         } else {
                           field.onChange(
-                            field.value.filter((id) => id !== servicio.id.toString())
+                            (field.value || []).filter(id => String(id) !== String(servicio.id))
                           );
                         }
                       }}
@@ -428,14 +519,14 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
                       key={factor.id}
                       id={factor.id}
                       name={factor.nombre}
-                      isChecked={field.value.includes(factor.id.toString()) || false}
+                      isChecked={field.value?.some(id => String(id) === String(factor.id)) || false}
                       onChange={(checked) => {
                         const currentValues = field.value || [];
                         if (checked) {
-                          field.onChange([...currentValues, factor.id]);
+                          field.onChange([...currentValues, String(factor.id)]);
                         } else {
                           field.onChange(
-                            currentValues.filter((id) => id !== factor.id.toString())
+                            currentValues.filter(id => String(id) !== String(factor.id))
                           );
                         }
                       }}
@@ -448,7 +539,7 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
         </div>
       </div>
 
-      {/* Botones de acción - memoized to prevent re-renders */}
+      {/* Botones de acción */}
       <div className="flex justify-end space-x-2">
         <Button
           type="button"
