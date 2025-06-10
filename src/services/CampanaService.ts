@@ -21,6 +21,7 @@ export interface CrearCampanaParams {
   localizacionId?: number;
   serviciosIds?: number[];
   factoresIds?: number[];
+  entidadId: number;
 }
 
 // Interfaz para datos de actualización de campaña

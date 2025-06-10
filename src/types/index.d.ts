@@ -136,6 +136,8 @@ export interface Usuario {
   estaActivo: boolean;
   rolId: number;
   token?: string;
+  entidadSaludId: number;
+  entidadSalud?: object;
 }
 
 export interface RespuestaAuth {
