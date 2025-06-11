@@ -8,11 +8,11 @@ export const EmbajadorService = {
     const response = await httpGet("/embajadores");
     return response.data;
   },
-  
+
   crearEmbajador: async (embajador: Embajador): Promise<Embajador> => {
     try {
       const response = await httpPost("/embajadores", embajador);
-      return response.data;
+      return response;
     } catch (error) {
       const axiosError = error as AxiosError;
       if (axiosError.response) {
@@ -25,7 +25,7 @@ export const EmbajadorService = {
   },
 
   obtenerEmbajadoresPorIds: async (ids: number[]): Promise<Embajador[]> => {
-    const response = await httpGet(`/embajadores/ids?ids=${ids.join(',')}`);
+    const response = await httpGet(`/embajadores/ids?ids=${ids.join(",")}`);
     return response.data;
   },
 };
