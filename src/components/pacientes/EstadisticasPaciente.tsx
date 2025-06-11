@@ -19,21 +19,21 @@ export default function EstadisticasPaciente({ estadisticas }: EstadisticasPacie
                 type="ejecucion"
                 count={estadisticas.campanasActivas}
                 label="Campañas Activas"
-                icon="/assets/icons/calendar.svg"
+                icon="/assets/icons/activa.svg"
             />
 
             <StatCard
                 type="postulada"
                 count={estadisticas.campanasDisponibles}
                 label="Campañas Disponibles"
-                icon="/assets/icons/calendar.svg"
+                icon="/assets/icons/postulada.svg"
             />
 
             <StatCard
                 type={estadisticas.triagesRealizados > 0 ? 'ejecucion' : 'postulada'}
                 count={estadisticas.triagesRealizados}
                 label="Triajes Realizados"
-                icon="/assets/icons/heart.svg"
+                icon="/assets/icons/ambulancia.svg"
             />
         </section>
     )

@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from 'react'
 import { Save, AlertCircle, RefreshCw } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
 
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { Button } from '@/src/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { Textarea } from '@/src/components/ui/textarea'
-import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { medicosService, DatoClinico } from '@/src/services/domain/medicos.service'
 
 interface DatosClinicosFormProps {
@@ -19,7 +19,7 @@ interface DatosClinicosFormProps {
 export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinicosFormProps) {
     const [datosExistentes, setDatosExistentes] = useState<DatoClinico[]>([])
     const [nuevosDatos, setNuevosDatos] = useState<Omit<DatoClinico, 'id'>>({
-        pacienteId: pacienteId,
+        pacienteId,
         presionSistolica: 120,
         presionDiastolica: 80,
         frecuenciaCardiacaMin: 70,
@@ -162,12 +162,12 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b">
-                                        <th className="text-left py-2">Fecha</th>
-                                        <th className="text-left py-2">Presión</th>
-                                        <th className="text-left py-2">FC</th>
-                                        <th className="text-left py-2">Temp</th>
-                                        <th className="text-left py-2">SpO2</th>
-                                        <th className="text-left py-2">Colesterol</th>
+                                        <th className="py-2 text-left">Fecha</th>
+                                        <th className="py-2 text-left">Presión</th>
+                                        <th className="py-2 text-left">FC</th>
+                                        <th className="py-2 text-left">Temp</th>
+                                        <th className="py-2 text-left">SpO2</th>
+                                        <th className="py-2 text-left">Colesterol</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -195,7 +195,7 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                 </CardHeader>
                 <CardContent className="space-y-6">
                     {/* Signos vitales */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="presionSistolica">Presión Sistólica (mmHg)</Label>
                             <Input
@@ -220,7 +220,7 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="frecuenciaCardiacaMin">Frecuencia Cardíaca Mín (bpm)</Label>
                             <Input
@@ -245,7 +245,7 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="temperatura">Temperatura (°C)</Label>
                             <Input
@@ -272,7 +272,7 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                     </div>
 
                     {/* Laboratorios */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="colesterolTotal">Colesterol Total (mg/dL)</Label>
                             <Input

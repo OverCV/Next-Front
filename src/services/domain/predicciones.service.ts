@@ -1,46 +1,7 @@
-import apiClient from '../api'
+import { PrediccionRiesgoCV, PrediccionGuardada, HealthCheck } from '@/src/types'
+
+import apiSpringClient from '../api'
 import { ENDPOINTS } from '../auth/endpoints'
-
-// Interfaces para las predicciones
-export interface FactorInfluyente {
-	[key: string]: number
-}
-
-export interface PrediccionRiesgoCV {
-	confianza: number
-	factores_principales: FactorInfluyente[]
-	fecha_prediccion: string
-	modelo_version: string
-	nivel_riesgo: string
-	probabilidad: number
-	recomendaciones: string[]
-	riesgo: boolean
-	valor_prediccion: number
-}
-
-export interface PrediccionGuardada {
-	id: number
-	pacienteId: number
-	campanaId: number
-	valorPrediccion: number
-	confianza: number
-	factoresInfluyentes: object
-	fechaPrediccion: string
-	modeloVersion: string
-	tipo: string
-	nivelRiesgo: string
-	recomendaciones: string[]
-	creadoPor: string
-	actualizadoPor?: string
-	fechaCreacion: string
-	fechaActualizacion?: string
-}
-
-export interface HealthCheck {
-	status: string
-	service: string
-	version: string
-}
 
 export const prediccionesService = {
 	// Verificar estado de la API de FastAPI
@@ -99,7 +60,7 @@ export const prediccionesService = {
 	obtenerPredicciones: async (): Promise<PrediccionGuardada[]> => {
 		console.log('🔍 Obteniendo predicciones guardadas...')
 		try {
-			const response = await apiClient.get(ENDPOINTS.PREDICCIONES.BASE)
+			const response = await apiSpringClient.get(ENDPOINTS.PREDICCIONES.BASE)
 			console.log('✅ Predicciones obtenidas:', response.data.length)
 			return response.data
 		} catch (error) {
@@ -112,7 +73,7 @@ export const prediccionesService = {
 	obtenerPrediccionesPorPaciente: async (pacienteId: number): Promise<PrediccionGuardada[]> => {
 		console.log('🔍 Obteniendo predicciones para paciente:', pacienteId)
 		try {
-			const response = await apiClient.get(ENDPOINTS.PREDICCIONES.POR_PACIENTE(pacienteId))
+			const response = await apiSpringClient.get(ENDPOINTS.PREDICCIONES.POR_PACIENTE(pacienteId))
 			console.log('✅ Predicciones del paciente obtenidas:', response.data.length)
 			return response.data
 		} catch (error) {
@@ -125,7 +86,7 @@ export const prediccionesService = {
 	obtenerPrediccionesPorCampana: async (campanaId: number): Promise<PrediccionGuardada[]> => {
 		console.log('🔍 Obteniendo predicciones para campaña:', campanaId)
 		try {
-			const response = await apiClient.get(ENDPOINTS.PREDICCIONES.POR_CAMPANA(campanaId))
+			const response = await apiSpringClient.get(ENDPOINTS.PREDICCIONES.POR_CAMPANA(campanaId))
 			console.log('✅ Predicciones de la campaña obtenidas:', response.data.length)
 			return response.data
 		} catch (error) {

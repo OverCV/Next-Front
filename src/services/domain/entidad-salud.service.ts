@@ -1,14 +1,11 @@
 import { AxiosError } from "axios";
 
-import { API_SPRINGBOOT_URL } from "@/src/config/env";
 import { EntidadSalud } from "@/src/types";
 
-import apiClient from "./api";
-import { httpGet } from "../request/Requests";
+import apiSpringClient from "../api";
+import { ENDPOINTS } from "../auth/endpoints";
 
-
-
-// Servicio para gestionar campañas
+// Servicio para gestionar entidades de salud
 export const entidadSaludService = {
 
   /**
@@ -16,7 +13,7 @@ export const entidadSaludService = {
    */
   crearEntidadSalud: async (entidadData: EntidadSalud): Promise<EntidadSalud> => {
     try {
-      const response = await apiClient.post(`${API_SPRINGBOOT_URL}/entidades-salud`, entidadData);
+      const response = await apiSpringClient.post(ENDPOINTS.ENTIDADES_SALUD.BASE, entidadData);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -30,13 +27,23 @@ export const entidadSaludService = {
   },
 
   obtenerEntidadPorId: async (id: number): Promise<EntidadSalud> => {
-    const response = await httpGet(`${API_SPRINGBOOT_URL}/entidades-salud/${id}`);
-    return response.data;
+    try {
+      const response = await apiSpringClient.get(ENDPOINTS.ENTIDADES_SALUD.POR_ID(id));
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener entidad por ID:", error);
+      throw error;
+    }
   },
 
   obtenerEntidadPorUsuarioId: async (usuarioId: number): Promise<EntidadSalud> => {
-    const response = await httpGet(`${API_SPRINGBOOT_URL}/entidades-salud/usuario/${usuarioId}`);
-    return response;
+    try {
+      const response = await apiSpringClient.get(`${ENDPOINTS.ENTIDADES_SALUD.BASE}/usuario/${usuarioId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener entidad por usuario ID:", error);
+      throw error;
+    }
   },
 
 };

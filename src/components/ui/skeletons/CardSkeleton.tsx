@@ -1,7 +1,8 @@
 import React from 'react'
 
 import { Card, CardContent, CardHeader } from '@/src/components/ui/card'
-import { Skeleton } from '@/src/components/ui/skeleton'
+
+import { Skeleton } from '../skeleton'
 
 interface CardSkeletonProps {
     showHeader?: boolean

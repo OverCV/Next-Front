@@ -149,7 +149,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               dateFormat={props.dateFormat ?? "dd/MM/yyyy"}
               wrapperClassName="date-picker"
               placeholderText={props.placeholder}
-              className="w-full bg-transparent border-0 outline-none px-3 py-2"
+              className="w-full border-0 bg-transparent px-3 py-2 outline-none"
             />
           </FormControl>
         </div>

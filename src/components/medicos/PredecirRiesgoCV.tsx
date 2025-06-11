@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
 import { Brain, AlertCircle, RefreshCw, TrendingUp, Calendar, Target, CheckCircle, Heart } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
 
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { Badge } from '@/src/components/ui/badge'
@@ -192,9 +192,9 @@ export default function PredecirRiesgoCV({ pacienteId, campanaId }: PredecirRies
             <Card>
                 <CardContent className="p-6">
                     <div className="text-center">
-                        <Brain className="mx-auto size-12 text-blue-500 mb-4" />
-                        <h3 className="text-lg font-medium mb-2">Generar Nueva Predicción</h3>
-                        <p className="text-sm text-slate-500 mb-4">
+                        <Brain className="mx-auto mb-4 size-12 text-blue-500" />
+                        <h3 className="mb-2 text-lg font-medium">Generar Nueva Predicción</h3>
+                        <p className="mb-4 text-sm text-slate-500">
                             Análisis del riesgo cardiovascular basado en los datos actuales del paciente
                         </p>
                         <Button
@@ -217,48 +217,48 @@ export default function PredecirRiesgoCV({ pacienteId, campanaId }: PredecirRies
             {prediccionActual && (
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-lg">
                             <Heart className="size-5 text-red-500" />
                             Resultado de Predicción
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {/* Métricas principales */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="text-center p-4 bg-slate-50 rounded-lg dark:bg-slate-800">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                            <div className="rounded-lg bg-slate-50 p-4 text-center dark:bg-slate-800">
                                 <p className="text-sm text-slate-600">Nivel de Riesgo</p>
                                 <Badge className={`mt-1 ${obtenerColorRiesgo(prediccionActual.nivel_riesgo)}`}>
                                     {prediccionActual.nivel_riesgo}
                                 </Badge>
                             </div>
-                            <div className="text-center p-4 bg-slate-50 rounded-lg dark:bg-slate-800">
+                            <div className="rounded-lg bg-slate-50 p-4 text-center dark:bg-slate-800">
                                 <p className="text-sm text-slate-600">Probabilidad</p>
-                                <p className="text-2xl font-bold mt-1">
+                                <p className="mt-1 text-2xl font-bold">
                                     {Math.round(prediccionActual.probabilidad * 100)}%
                                 </p>
                             </div>
-                            <div className="text-center p-4 bg-slate-50 rounded-lg dark:bg-slate-800">
+                            <div className="rounded-lg bg-slate-50 p-4 text-center dark:bg-slate-800">
                                 <p className="text-sm text-slate-600">Confianza</p>
-                                <p className="text-2xl font-bold mt-1">{prediccionActual.confianza}%</p>
+                                <p className="mt-1 text-2xl font-bold">{prediccionActual.confianza}%</p>
                             </div>
                         </div>
 
                         {/* Factores principales */}
                         <div>
-                            <h4 className="font-medium mb-3">Factores Principales de Riesgo</h4>
+                            <h4 className="mb-3 font-medium">Factores Principales de Riesgo</h4>
                             <div className="space-y-2">
                                 {prediccionActual.factores_principales.map((factor, index) => {
                                     const { nombre, porcentaje } = formatearFactor(factor)
                                     return (
                                         <div key={index} className="flex items-center gap-3">
-                                            <span className="text-sm min-w-[120px]">{nombre}:</span>
-                                            <div className="flex-1 bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                                            <span className="min-w-[120px] text-sm">{nombre}:</span>
+                                            <div className="h-2 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
                                                 <div
-                                                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                                    className="h-2 rounded-full bg-blue-600 transition-all duration-300"
                                                     style={{ width: `${porcentaje}%` }}
                                                 />
                                             </div>
-                                            <span className="text-sm font-medium min-w-[40px]">{porcentaje}%</span>
+                                            <span className="min-w-[40px] text-sm font-medium">{porcentaje}%</span>
                                         </div>
                                     )
                                 })}
@@ -267,11 +267,11 @@ export default function PredecirRiesgoCV({ pacienteId, campanaId }: PredecirRies
 
                         {/* Recomendaciones */}
                         <div>
-                            <h4 className="font-medium mb-3">Recomendaciones Médicas</h4>
+                            <h4 className="mb-3 font-medium">Recomendaciones Médicas</h4>
                             <ul className="space-y-2">
                                 {prediccionActual.recomendaciones.map((recomendacion, index) => (
                                     <li key={index} className="flex items-start gap-2 text-sm">
-                                        <CheckCircle className="size-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                        <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-500" />
                                         {recomendacion}
                                     </li>
                                 ))}
@@ -279,7 +279,7 @@ export default function PredecirRiesgoCV({ pacienteId, campanaId }: PredecirRies
                         </div>
 
                         {/* Información técnica */}
-                        <div className="pt-4 border-t text-xs text-slate-500">
+                        <div className="border-t pt-4 text-xs text-slate-500">
                             <p>Modelo: {prediccionActual.modelo_version}</p>
                             <p>Fecha: {new Date(prediccionActual.fecha_prediccion).toLocaleString('es-ES')}</p>
                         </div>
@@ -315,11 +315,11 @@ export default function PredecirRiesgoCV({ pacienteId, campanaId }: PredecirRies
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b">
-                                        <th className="text-left py-2">Fecha</th>
-                                        <th className="text-left py-2">Nivel de Riesgo</th>
-                                        <th className="text-left py-2">Valor</th>
-                                        <th className="text-left py-2">Confianza</th>
-                                        <th className="text-left py-2">Modelo</th>
+                                        <th className="py-2 text-left">Fecha</th>
+                                        <th className="py-2 text-left">Nivel de Riesgo</th>
+                                        <th className="py-2 text-left">Valor</th>
+                                        <th className="py-2 text-left">Confianza</th>
+                                        <th className="py-2 text-left">Modelo</th>
                                     </tr>
                                 </thead>
                                 <tbody>

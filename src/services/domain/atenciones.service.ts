@@ -1,11 +1,10 @@
-import { API_ENDPOINTS } from "@/src/config/api-endpoints"
-
-import apiClient from "./api"
+import apiSpringClient from "../api"
+import { ENDPOINTS } from "../auth/endpoints"
 
 export const atencionesService = {
 	obtenerSugerenciasDiagnostico: async (pacienteId: number) => {
 		try {
-			const response = await apiClient.get(`${API_ENDPOINTS.ATENCIONES_MEDICAS}/sugerencias/${pacienteId}`)
+			const response = await apiSpringClient.get(`${ENDPOINTS.ATENCIONES_MEDICAS.BASE}/sugerencias/${pacienteId}`)
 			return response.data
 		} catch (error) {
 			console.error("Error al obtener sugerencias de diagnóstico:", error)
@@ -15,7 +14,7 @@ export const atencionesService = {
 
 	registrarDiagnostico: async (pacienteId: number, diagnostico: any) => {
 		try {
-			const response = await apiClient.post(`${API_ENDPOINTS.ATENCIONES_MEDICAS}/diagnostico/${pacienteId}`, diagnostico)
+			const response = await apiSpringClient.post(`${ENDPOINTS.ATENCIONES_MEDICAS.BASE}/diagnostico/${pacienteId}`, diagnostico)
 			return response.data
 		} catch (error) {
 			console.error("Error al registrar diagnóstico:", error)
@@ -25,7 +24,7 @@ export const atencionesService = {
 
 	obtenerHistorialAtenciones: async (pacienteId: number) => {
 		try {
-			const response = await apiClient.get(`${API_ENDPOINTS.ATENCIONES_MEDICAS}/historial/${pacienteId}`)
+			const response = await apiSpringClient.get(`${ENDPOINTS.ATENCIONES_MEDICAS.BASE}/historial/${pacienteId}`)
 			return response.data
 		} catch (error) {
 			console.error("Error al obtener historial de atenciones:", error)

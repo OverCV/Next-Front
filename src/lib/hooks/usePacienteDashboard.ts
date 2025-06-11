@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback } from 'react'
 
 import { useAuth } from '@/src/providers/auth-provider'
-import apiClient from '@/src/services/api'
+import apiSpringClient from '@/src/services/api'
 import { ENDPOINTS } from '@/src/services/auth/endpoints'
 import { Triaje, Campana } from '@/src/types'
 
@@ -37,7 +37,7 @@ export const usePacienteDashboard = () => {
 
 			try {
 				// Usar endpoint centralizado
-				const response = await apiClient.get(ENDPOINTS.PACIENTES.PERFIL(usuario.id))
+				const response = await apiSpringClient.get(ENDPOINTS.PACIENTES.PERFIL(usuario.id))
 
 				console.log("✅ Paciente encontrado:", response.data.id)
 				setPacienteId(response.data.id)
@@ -69,14 +69,14 @@ export const usePacienteDashboard = () => {
 
 		try {
 			// Usar endpoint centralizado para inscripciones
-			const responseCampanas = await apiClient.get(ENDPOINTS.CAMPANAS.INSCRIPCIONES.POR_USUARIO(usuario?.id))
+			const responseCampanas = await apiSpringClient.get(ENDPOINTS.CAMPANAS.INSCRIPCIONES.POR_USUARIO(usuario?.id))
 			const todasCampanasInscritas = responseCampanas.data
 
 			// Obtener detalles completos de cada campaña
 			const campanasDetalladas = await Promise.all(
 				todasCampanasInscritas.map(async (inscripcion: any) => {
 					try {
-						const responseCampana = await apiClient.get(ENDPOINTS.CAMPANAS.POR_ID(inscripcion.campanaId))
+						const responseCampana = await apiSpringClient.get(ENDPOINTS.CAMPANAS.POR_ID(inscripcion.campanaId))
 						return {
 							...responseCampana,
 							estado: inscripcion.estado,
@@ -125,7 +125,7 @@ export const usePacienteDashboard = () => {
 
 			try {
 				// Usar endpoint centralizado para triajes
-				const response = await apiClient.get(ENDPOINTS.TRIAJES.POR_PACIENTE(usuarioId))
+				const response = await apiSpringClient.get(ENDPOINTS.TRIAJES.POR_PACIENTE(usuarioId))
 
 				const triajes = response.data
 				// Tomamos el triaje más reciente

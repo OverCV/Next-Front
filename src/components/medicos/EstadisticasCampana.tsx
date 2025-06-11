@@ -1,7 +1,7 @@
 "use client"
 
-import React from 'react'
 import { Calendar, Clock, User, Activity } from 'lucide-react'
+import React from 'react'
 
 import { CitacionMedica } from '@/src/services/domain/medicos.service'
 

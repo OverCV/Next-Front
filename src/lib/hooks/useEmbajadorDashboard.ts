@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 
+import { ROLES } from '@/src/constants'
 import { useAuth } from '@/src/providers/auth-provider'
 import { inscripcionesService, InscripcionCompleta } from '@/src/services/domain/inscripciones.service'
-import { usuariosService } from '@/src/services/usuarios'
-import { ROLES } from '@/src/constants'
+import { usuariosService } from '@/src/services/domain/usuarios.service'
 import { UsuarioAccedido } from '@/src/types'
 
 export interface EstadisticasEmbajador {

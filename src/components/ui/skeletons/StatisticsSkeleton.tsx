@@ -5,18 +5,23 @@ import { Skeleton } from '@/src/components/ui/skeleton'
 
 interface StatisticsSkeletonProps {
     cards?: number
+    count?: number // Alias para cards para compatibilidad
     showIcons?: boolean
     className?: string
 }
 
 export default function StatisticsSkeleton({
-    cards = 4,
+    cards,
+    count,
     showIcons = true,
     className
 }: StatisticsSkeletonProps) {
+    // Usar count si se proporciona, si no usar cards, si no usar 4
+    const numCards = count ?? cards ?? 4
+    
     return (
         <div className={`grid gap-4 md:grid-cols-2 lg:grid-cols-4 ${className}`}>
-            {Array.from({ length: cards }, (_, i) => (
+            {Array.from({ length: numCards }, (_, i) => (
                 <Card key={i}>
                     <CardContent className="p-6">
                         <div className="flex items-center justify-between">

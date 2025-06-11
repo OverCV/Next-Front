@@ -20,28 +20,28 @@ export default function EstadisticasMedico({ estadisticas }: EstadisticasMedicoP
                 type="ejecucion"
                 count={estadisticas.campanasActivas}
                 label="Campañas Activas"
-                icon="/assets/icons/calendar.svg"
+                icon="/assets/icons/activa.svg"
             />
 
             <StatCard
                 type="postulada"
                 count={estadisticas.totalCampanas}
                 label="Total Campañas"
-                icon="/assets/icons/heart.svg"
+                icon="/assets/icons/postulada.svg"
             />
 
             <StatCard
                 type="ejecucion"
                 count={estadisticas.pacientesAtendidosHoy}
                 label="Pacientes Atendidos Hoy"
-                icon="/assets/icons/user-check.svg"
+                icon="/assets/icons/user.svg"
             />
 
             <StatCard
                 type="postulada"
                 count={estadisticas.citasPendientes}
                 label="Citas Pendientes"
-                icon="/assets/icons/clock.svg"
+                icon="/assets/icons/appointments.svg"
             />
         </section>
     )

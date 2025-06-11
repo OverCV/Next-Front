@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
 import { useAuth } from '@/src/providers/auth-provider'
-import apiClient from '@/src/services/api'
+import apiSpringClient from '@/src/services/api'
 import { ENDPOINTS } from '@/src/services/auth/endpoints'
 import { Campana } from '@/src/types'
 
@@ -31,7 +31,7 @@ export const useMedicoDashboard = () => {
 
 		try {
 			// Obtener todas las campañas (necesitamos endpoint específico para médicos)
-			const responseCampanas = await apiClient.get(ENDPOINTS.CAMPANAS.TODAS)
+			const responseCampanas = await apiSpringClient.get(ENDPOINTS.CAMPANAS.TODAS)
 			const todasCampanas = responseCampanas.data
 
 			// Filtrar campañas donde el médico está asignado

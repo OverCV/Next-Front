@@ -24,7 +24,7 @@ export interface Triaje {
   antecedentesCardiacos: boolean
   resultadoRiesgoCv: number // 0-1
   descripcion?: string
-  nivelPrioridad: 'ALTA' | 'MEDIA' | 'BAJA'
+  nivelPrioridad: "ALTA" | "MEDIA" | "BAJA"
 }
 
 // Interfaz para factores de riesgo
@@ -32,7 +32,7 @@ export interface FactorRiesgo {
   id: number
   nombre: string
   descripcion: string
-  tipo: 'SOCIAL' | 'AMBIENTAL' | 'RACIAL'
+  tipo: "SOCIAL" | "AMBIENTAL" | "RACIAL"
 }
 
 // Interfaz para datos clínicos
@@ -70,7 +70,12 @@ export interface ServicioMedico {
   descripcion: string
 }
 
-declare type Estatus = "postulada" | "ejecucion" | "finalizada" | "cancelada"
+export enum EstadoCampana {
+  POSTULADA = "POSTULADA",
+  EJECUCION = "EJECUCION",
+  FINALIZADA = "FINALIZADA",
+  CANCELADA = "CANCELADA"
+}
 
 // Interfaz para campañas de salud
 export interface Campana {
@@ -80,32 +85,17 @@ export interface Campana {
   localizacion?: Localizacion
   fechaInicio: string
   fechaLimite: string
+  fechaLimiteInscripcion: string
   minParticipantes: number
   maxParticipantes: number
   entidadId: number
-  estatus: Estatus
-  estado: string
+  estado: EstadoCampana
   fechaCreacion: string
-  pacientes?: number // Número de pacientes inscritos
-  fecha?: string // Formato legible de fecha
+  pacientes?: number
   servicios?: ServicioMedico[]
   factores?: FactorRiesgo[]
 }
 
-// Interfaz para campañas desde la API (estructura diferente al mock)
-export interface CampanaAPI {
-  id: number
-  nombre: string
-  descripcion: string
-  localizacionId: number
-  fechaLimiteInscripcion: string
-  fechaInicio: string
-  fechaLimite: string | null
-  minParticipantes: number
-  maxParticipantes: number
-  entidadId: number
-  estado: 'POSTULADA' | 'EJECUCION' | 'FINALIZADA' | 'CANCELADA'
-}
 
 // Interfaz para citaciones
 export interface Citacion {
@@ -116,7 +106,7 @@ export interface Citacion {
   horaProgramada: string
   horaAtencion?: string
   duracionEstimada: number // en minutos
-  estado: 'AGENDADA' | 'ATENDIDA' | 'CANCELADA'
+  estado: "AGENDADA" | "ATENDIDA" | "CANCELADA"
   prediccionAsistencia?: number // 0-100%
   prioridad: number // 1-5
   notas?: string
@@ -159,7 +149,7 @@ export interface InscripcionCampana {
   pacienteId: number
   campanaId: number
   fechaInscripcion: string
-  estado: 'INSCRITO' | 'RETIRADO' | 'COMPLETADO'
+  estado: "INSCRITO" | "RETIRADO" | "COMPLETADO"
   motivoRetiro?: string
 }
 
@@ -195,6 +185,14 @@ export interface EmbajadorEntidad {
   embajador: Embajador | null
 }
 
+// export interface EmbajadorEntidad {
+//   id?: number
+//   entidadId: number
+//   embajadorId: number
+//   entidad: EntidadSalud | null
+//   embajador: Embajador | null
+// }
+
 // Interfaces autenticación y usuario
 export interface DatosAcceso {
   tipoIdentificacion: TiposIdentificacionEnum
@@ -209,21 +207,17 @@ export interface Usuario extends DatosAcceso {
   celular: string
   estaActivo: boolean
   rolId: number
-  entidadSalud: EntidadSalud | null
-  entidadSaludId: number | null
 }
-
 export interface UsuarioAccedido extends Usuario {
   id: number
+  creadoPorId: number
   token?: string
 }
-
 
 export interface RespuestaAuth {
   usuario: UsuarioAccedido
   token: string
 }
-
 
 // Viejo:
 
@@ -237,7 +231,7 @@ declare type CreateAppointmentParams = {
   primaryPhysician: string
   reason: string
   schedule: Date
-  status: Estatus
+  status: EstadoCampana
   note: string | undefined
 }
 
@@ -247,4 +241,165 @@ declare type UpdateAppointmentParams = {
   timeZone: string
   appointment: Appointment
   type: string
+}
+
+export interface ServiciosMedicosCampana {
+  id?: number
+  servicioId: string
+  campanaId: string
+}
+
+export interface FactoresRiesgoCampana {
+  id?: number
+  campanaId: number
+  factorId: number
+}
+
+// Interfaces para Predicciones de Riesgo Cardiovascular
+export interface FactorInfluyente {
+  [key: string]: number
+}
+
+export interface PrediccionRiesgoCV {
+  confianza: number
+  factores_principales: FactorInfluyente[]
+  fecha_prediccion: string
+  modelo_version: string
+  nivel_riesgo: string
+  probabilidad: number
+  recomendaciones: string[]
+  riesgo: boolean
+  valor_prediccion: number
+}
+
+export interface PrediccionGuardada {
+  id: number
+  pacienteId: number
+  campanaId: number
+  valorPrediccion: number
+  confianza: number
+  factoresInfluyentes: object
+  fechaPrediccion: string
+  modeloVersion: string
+  tipo: string
+  nivelRiesgo: string
+  recomendaciones: string[]
+  creadoPor: string
+  actualizadoPor?: string
+  fechaCreacion: string
+  fechaActualizacion?: string
+}
+
+export interface HealthCheck {
+  status: string
+  service: string
+  version: string
+}
+
+// Interfaces para Triajes de Pacientes
+export interface TriajePaciente {
+  id: number
+  pacienteId: number
+  edad: number
+  actividadFisica: boolean
+  peso: number
+  estatura: number
+  tabaquismo: boolean
+  alcoholismo: boolean
+  diabetes: boolean
+  dolorPecho: boolean
+  dolorIrradiado: boolean
+  sudoracion: boolean
+  nauseas: boolean
+  antecedentesCardiacos: boolean
+  hipertension: boolean
+  fechaTriaje: string
+  descripcion?: string
+}
+
+// Interfaces para Información de Pacientes y Usuarios
+export interface PacienteInfo {
+  id: number
+  fechaNacimiento: string
+  genero: string
+  direccion: string
+  tipoSangre: string
+  localizacionId: number
+  usuarioId: number
+}
+
+export interface UsuarioInfo {
+  id: number
+  nombres: string
+  apellidos: string
+  correo: string
+  celular: string
+  tipoIdentificacion: string
+  identificacion: string
+}
+
+export interface PacienteCompleto {
+  paciente: PacienteInfo
+  usuario: UsuarioInfo
+  triajes: TriajePaciente[]
+  datosClinicosRecientes: DatoClinico[]
+}
+
+// Interfaces para Campañas con Localización
+export interface CampanaConLocalizacion {
+  id: number
+  nombre: string
+  descripcion: string
+  localizacionId: number
+  fechaLimiteInscripcion: string
+  fechaInicio: string
+  fechaLimite: string
+  minParticipantes: number
+  maxParticipantes: number
+  entidadId: number
+  estado: 'POSTULADA' | 'EJECUCION' | 'FINALIZADA' | 'CANCELADA'
+  localizacion?: {
+    id: number
+    departamento: string
+    municipio: string
+    vereda?: string
+    localidad?: string
+    latitud: number
+    longitud: number
+  }
+}
+
+export interface InscripcionCompleta {
+  inscripcion: InscripcionCampana
+  campana: CampanaConLocalizacion
+}
+
+// Interfaces para datos de creación y actualización de campañas
+export interface CrearCampanaParams {
+  nombre: string
+  descripcion: string
+  fechaInicio: string
+  fechaLimite: string
+  fechaLimiteInscripcion: string
+  estado: string
+  minParticipantes: number
+  maxParticipantes: number
+  localizacionId?: number
+  serviciosIds?: number[]
+  factoresIds?: number[]
+  entidadId: number | null
+}
+
+export interface ActualizarCampanaParams {
+  id: number
+  nombre?: string
+  descripcion?: string
+  fechaInicio?: string
+  fechaLimite?: string
+  minParticipantes?: number
+  maxParticipantes?: number
+  estatus?: string
+  localizacionId?: number
+  serviciosIds?: number[]
+  factoresIds?: number[]
 }

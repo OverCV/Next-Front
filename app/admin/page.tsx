@@ -93,7 +93,7 @@ const AdminPage = () => {
             type="finalizada"
             count={1}
             label="Campañas finalizadas"
-            icon={"/assets/icons/finalizada.svg"}
+            icon={"/assets/icons/cancelada.svg"}
           />
         </section>
 

@@ -30,7 +30,7 @@ import { Form } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { SelectItem } from "@/src/components/ui/select";
 import { NIVELES_PRIORIDAD } from "@/src/constants";
-import { atencionesService } from "@/src/services/atenciones";
+import { atencionesService } from "@/src/services/domain/atenciones.service";
 
 
 // Esquema de validación para diagnóstico

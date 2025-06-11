@@ -37,11 +37,48 @@ export const ENDPOINTS = {
 		BASE: `${API_SPRINGBOOT_URL}/campanas`,
 		TODAS: `${API_SPRINGBOOT_URL}/campana`,
 		POR_ID: (campanaId: number) => `${API_SPRINGBOOT_URL}/campana/${campanaId}`,
+		POR_ENTIDAD: (entidadId: number) => `${API_SPRINGBOOT_URL}/campana/entidad/${entidadId}`,
+		CAMBIAR_ESTADO: (campanaId: number) => `${API_SPRINGBOOT_URL}/campanas/${campanaId}/estatus`,
 		INSCRIPCIONES: {
 			BASE: `${API_SPRINGBOOT_URL}/inscripciones-campana`,
 			POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/inscripciones-campana/usuario/${usuarioId}`,
 			CREAR: `${API_SPRINGBOOT_URL}/inscripciones-campana`
 		}
+	},
+
+	// Embajadores
+	EMBAJADORES: {
+		BASE: `${API_SPRINGBOOT_URL}/embajadores`,
+		POR_IDS: (ids: number[]) => `${API_SPRINGBOOT_URL}/embajadores/ids?ids=${ids.join(",")}`,
+		ENTIDADES: {
+			BASE: `${API_SPRINGBOOT_URL}/embajadores-entidades`,
+			POR_EMBAJADOR: (embajadorId: number) => `${API_SPRINGBOOT_URL}/embajadores-entidades/embajador/${embajadorId}`
+		}
+	},
+
+	// Servicios Médicos
+	SERVICIOS_MEDICOS: {
+		BASE: `${API_SPRINGBOOT_URL}/servicios-medicos`,
+		CAMPANA: `${API_SPRINGBOOT_URL}/servicios-campana`
+	},
+
+	// Factores de Riesgo
+	FACTORES_RIESGO: {
+		BASE: `${API_SPRINGBOOT_URL}/factor-riesgo`,
+		PACIENTE: `${API_SPRINGBOOT_URL}/factor-paciente`,
+		CAMPANA: `${API_SPRINGBOOT_URL}/campana-factores`
+	},
+
+	// Entidades de Salud
+	ENTIDADES_SALUD: {
+		BASE: `${API_SPRINGBOOT_URL}/entidades-salud`,
+		POR_ID: (entidadId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/${entidadId}`
+	},
+
+	// Personal Médico
+	PERSONAL_MEDICO: {
+		BASE: `${API_SPRINGBOOT_URL}/personal-medico`,
+		POR_ID: (medicoId: number) => `${API_SPRINGBOOT_URL}/personal-medico/${medicoId}`
 	},
 
 	// Localizaciones
@@ -73,6 +110,54 @@ export const ENDPOINTS = {
 		ACTUALIZAR: (id: number) => `${API_SPRINGBOOT_URL}/datos-clinicos/${id}`
 	},
 
+	// Atenciones Médicas
+	ATENCIONES_MEDICAS: {
+		BASE: `${API_SPRINGBOOT_URL}/atenciones_medicas`,
+		POR_ID: (atencionId: number) => `${API_SPRINGBOOT_URL}/atenciones_medicas/${atencionId}`
+	},
+
+	// Diagnósticos
+	DIAGNOSTICOS: {
+		BASE: `${API_SPRINGBOOT_URL}/diagnosticos`,
+		POR_ID: (diagnosticoId: number) => `${API_SPRINGBOOT_URL}/diagnosticos/${diagnosticoId}`
+	},
+
+	// Historias Clínicas
+	HISTORIAS_CLINICAS: {
+		BASE: `${API_SPRINGBOOT_URL}/historias-clinicas`,
+		POR_PACIENTE: (pacienteId: number) => `${API_SPRINGBOOT_URL}/historias-clinicas/paciente/${pacienteId}`
+	},
+
+	// Recomendaciones
+	RECOMENDACIONES: {
+		BASE: `${API_SPRINGBOOT_URL}/recomendaciones`,
+		POR_PACIENTE: (pacienteId: number) => `${API_SPRINGBOOT_URL}/recomendaciones/paciente/${pacienteId}`
+	},
+
+	// Prescripciones
+	PRESCRIPCIONES: {
+		BASE: `${API_SPRINGBOOT_URL}/prescripciones`,
+		POR_ID: (prescripcionId: number) => `${API_SPRINGBOOT_URL}/prescripciones/${prescripcionId}`
+	},
+
+	// Seguimientos
+	SEGUIMIENTOS: {
+		BASE: `${API_SPRINGBOOT_URL}/seguimientos`,
+		POR_PACIENTE: (pacienteId: number) => `${API_SPRINGBOOT_URL}/seguimientos/paciente/${pacienteId}`
+	},
+
+	// Interacciones Chatbot
+	INTERACCIONES_CHATBOT: {
+		BASE: `${API_SPRINGBOOT_URL}/interacciones_chatbot`,
+		POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/interacciones_chatbot/usuario/${usuarioId}`
+	},
+
+	// Roles
+	ROLES: {
+		BASE: `${API_SPRINGBOOT_URL}/roles`,
+		POR_ID: (rolId: number) => `${API_SPRINGBOOT_URL}/roles/${rolId}`
+	},
+
 	// API de FastAPI - Predicciones de Riesgo Cardiovascular
 	FASTAPI: {
 		HEALTH: `${API_FASTAPI_URL}/`,
@@ -85,5 +170,11 @@ export const ENDPOINTS = {
 		BASE: `${API_SPRINGBOOT_URL}/predicciones`,
 		POR_PACIENTE: (pacienteId: number) => `${API_SPRINGBOOT_URL}/predicciones/paciente/${pacienteId}`,
 		POR_CAMPANA: (campanaId: number) => `${API_SPRINGBOOT_URL}/predicciones/campana/${campanaId}`
+	},
+
+	// Health Check
+	HEALTH: {
+		CHECK: `${API_SPRINGBOOT_URL.replace('/api', '')}/healthz`,
+		TEST: `${API_SPRINGBOOT_URL}/test`
 	}
 } 

@@ -11,10 +11,10 @@ import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog'
-import apiClient from '@/src/services/api'
+import apiSpringClient from '@/src/services/api'
 import { ENDPOINTS } from '@/src/services/auth/endpoints'
-import { medicosService, CitacionMedica } from '@/src/services/domain/medicos.service'
-import { Campana } from '@/src/types'
+import { medicosService } from '@/src/services/domain/medicos.service'
+import { Campana, CitacionMedica } from '@/src/types'
 
 export default function CampanasPage() {
 	const params = useParams()
@@ -37,7 +37,7 @@ export default function CampanasPage() {
 
 			setCargandoCampana(true)
 			try {
-				const response = await apiClient.get(ENDPOINTS.CAMPANAS.POR_ID(campanaId))
+				const response = await apiSpringClient.get(ENDPOINTS.CAMPANAS.POR_ID(campanaId))
 				setCampana(response.data)
 				console.log('✅ Campaña cargada:', response.data.nombre)
 			} catch (err: any) {

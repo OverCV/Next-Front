@@ -45,7 +45,7 @@ export default function RootLayout({
               {children}
             </div>
 
-            <footer className="fixed bottom-0 inset-x-0 backdrop-blur-sm bg-white/75 dark:bg-slate-900/75 py-3 border-t border-slate-200 dark:border-slate-800 z-40">
+            <footer className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/75 py-3 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/75">
               <div className="container mx-auto text-center">
                 <p className="text-slate-500 dark:text-slate-400">
                   © Healink 2025 — Campañas de Salud Cardiovascular

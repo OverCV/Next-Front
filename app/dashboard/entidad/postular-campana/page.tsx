@@ -11,12 +11,12 @@ import { Button } from '@/src/components/ui/button'
 
 // Lazy load the CampaignCreationForm component
 const CampaignCreationForm = lazy(() =>
-  import('@/src/components/forms/CampaignCreationForm')
+  import('@/src/components/forms/RegistroCampanaForm')
 )
 
 // Loading component for Suspense fallback
 const FormSkeleton = () => (
-  <div className="space-y-6 animate-pulse">
+  <div className="animate-pulse space-y-6">
     <div className="h-10 w-full max-w-md rounded bg-slate-200 dark:bg-slate-700"></div>
     <div className="h-32 w-full rounded bg-slate-200 dark:bg-slate-700"></div>
     <div className="grid gap-4 sm:grid-cols-2">
@@ -73,7 +73,7 @@ export default function PostularCampanaPage() {
           variant="ghost"
           size="icon"
           onClick={handleBack}
-          className="h-8 w-8"
+          className="size-8"
           aria-label="Volver al dashboard"
           disabled={isLoading}
         >

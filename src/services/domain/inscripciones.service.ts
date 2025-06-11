@@ -1,4 +1,4 @@
-import apiClient from '../api'
+import apiSpringClient from '../api'
 import { ENDPOINTS } from '../auth/endpoints'
 
 // Interfaces para las inscripciones
@@ -44,7 +44,7 @@ export const inscripcionesService = {
 	obtenerInscripcionesPorUsuario: async (usuarioId: number): Promise<InscripcionCampana[]> => {
 		console.log('🔍 Obteniendo inscripciones para usuario:', usuarioId)
 		try {
-			const response = await apiClient.get(ENDPOINTS.CAMPANAS.INSCRIPCIONES.POR_USUARIO(usuarioId))
+			const response = await apiSpringClient.get(ENDPOINTS.CAMPANAS.INSCRIPCIONES.POR_USUARIO(usuarioId))
 			console.log('✅ Inscripciones obtenidas:', response.data.length)
 			return response.data
 		} catch (error) {
@@ -57,7 +57,7 @@ export const inscripcionesService = {
 	obtenerCampanaPorId: async (campanaId: number): Promise<CampanaConLocalizacion> => {
 		console.log('🔍 Obteniendo campaña:', campanaId)
 		try {
-			const response = await apiClient.get(ENDPOINTS.CAMPANAS.POR_ID(campanaId))
+			const response = await apiSpringClient.get(ENDPOINTS.CAMPANAS.POR_ID(campanaId))
 			console.log('✅ Campaña obtenida:', response.data.nombre)
 			return response.data
 		} catch (error) {
@@ -70,7 +70,7 @@ export const inscripcionesService = {
 	obtenerLocalizacionPorId: async (localizacionId: number) => {
 		console.log('🔍 Obteniendo localización:', localizacionId)
 		try {
-			const response = await apiClient.get(`/localizaciones/${localizacionId}`)
+			const response = await apiSpringClient.get(`/localizaciones/${localizacionId}`)
 			console.log('✅ Localización obtenida:', response.data.municipio)
 			return response.data
 		} catch (error) {
@@ -120,7 +120,7 @@ export const inscripcionesService = {
 	crearInscripcion: async (usuarioId: number, campanaId: number): Promise<InscripcionCampana> => {
 		console.log('📝 Creando inscripción - Usuario:', usuarioId, 'Campaña:', campanaId)
 		try {
-			const response = await apiClient.post(ENDPOINTS.CAMPANAS.INSCRIPCIONES.CREAR, {
+			const response = await apiSpringClient.post(ENDPOINTS.CAMPANAS.INSCRIPCIONES.CREAR, {
 				usuarioId,
 				campanaId
 			})

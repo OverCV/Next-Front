@@ -1,11 +1,8 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useState, useEffect, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
-import { useAuth } from '@/src/providers/auth-provider'
-import { localizacionesService } from '@/src/services/domain/localizaciones.service'
-import { useRegistroPaciente, DatosRegistroCompleto } from '@/src/lib/hooks/useRegistroPaciente'
 import {
 	TIPOS_IDENTIFICACION_PACIENTE,
 	TiposIdentificacionEnum,
@@ -14,6 +11,9 @@ import {
 	GeneroBiologicoEnum,
 	TipoSangreEnum
 } from '@/src/constants'
+import { useRegistroPaciente, DatosRegistroCompleto } from '@/src/lib/hooks/useRegistroPaciente'
+import { useAuth } from '@/src/providers/auth-provider'
+import { localizacionesService } from '@/src/services/domain/localizaciones.service'
 import { Localizacion } from '@/src/types'
 
 // Esquema de validación completo

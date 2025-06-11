@@ -20,9 +20,9 @@ export default function ListSkeleton({
     return (
         <div className={`space-y-4 ${className}`}>
             {Array.from({ length: items }, (_, i) => (
-                <div key={i} className="flex items-center gap-3 p-4 rounded-lg border">
+                <div key={i} className="flex items-center gap-3 rounded-lg border p-4">
                     {showAvatar && (
-                        <Skeleton className="size-10 rounded-full flex-shrink-0" />
+                        <Skeleton className="size-10 shrink-0 rounded-full" />
                     )}
 
                     <div className="flex-1 space-y-2">

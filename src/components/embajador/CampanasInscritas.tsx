@@ -1,8 +1,8 @@
 "use client"
 
-import React from 'react'
 import { Calendar, MapPin, Users, RefreshCw } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import React from 'react'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
@@ -110,8 +110,8 @@ export default function CampanasInscritas({
                                         <div className="flex-1 space-y-3">
                                             {/* Información principal */}
                                             <div>
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <h3 className="font-medium text-lg">{campana.nombre}</h3>
+                                                <div className="mb-1 flex items-center gap-2">
+                                                    <h3 className="text-lg font-medium">{campana.nombre}</h3>
                                                     <Badge className={obtenerColorEstadoCampana(campana.estado)}>
                                                         {campana.estado}
                                                     </Badge>
@@ -122,7 +122,7 @@ export default function CampanasInscritas({
                                             </div>
 
                                             {/* Información adicional */}
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                                            <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
                                                 <div className="flex items-center gap-2">
                                                     <MapPin className="size-4 text-slate-400" />
                                                     <span>{formatearLocalizacion(campana.localizacion)}</span>
@@ -155,9 +155,9 @@ export default function CampanasInscritas({
                                                         <span>Progreso de la campaña</span>
                                                         <span>{estadisticas.diasRestantes} días restantes</span>
                                                     </div>
-                                                    <div className="w-full bg-slate-200 rounded-full h-2 dark:bg-slate-700">
+                                                    <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700">
                                                         <div
-                                                            className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                                                            className="h-2 rounded-full bg-green-600 transition-all duration-300"
                                                             style={{ width: `${estadisticas.progreso}%` }}
                                                         />
                                                     </div>

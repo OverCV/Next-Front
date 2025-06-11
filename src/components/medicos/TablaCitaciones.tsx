@@ -5,7 +5,7 @@ import React from 'react'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
-import { CitacionMedica } from '@/src/services/domain/medicos.service'
+import { CitacionMedica } from '@/src/types'
 
 interface TablaCitacionesProps {
     citaciones: CitacionMedica[]

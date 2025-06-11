@@ -573,39 +573,6 @@
   font-size: 14px !important;
   display: flex !important;
   align-items: center !important;
-  cursor: pointer !important;
-}
-
-.dark .react-datepicker__time-list-item {
-  color: #f1f5f9 !important;
-}
-
-.react-datepicker__time-list-item:hover {
-  background-color: #e2e8f0 !important;
-}
-
-.dark .react-datepicker__time-list-item:hover {
-  background-color: #475569 !important;
-}
-
-.react-datepicker__time-list-item--selected {
-  background-color: #10b981 !important;
-  color: #ffffff !important;
-  font-weight: 600 !important;
-}
-
-.react-datepicker__time-list-item--selected:hover {
-  background-color: #059669 !important;
-}
-
-.react-datepicker-time__header {
-  color: #1e293b !important;
-  font-weight: 600 !important;
-  font-size: 14px !important;
-}
-
-.dark .react-datepicker-time__header {
-  color: #f1f5f9 !important;
 }
 
 /* =====  REACT PHONE NUMBER INPUT OVERRIDES */

@@ -10,17 +10,17 @@ import { API_SPRINGBOOT_URL } from '@/src/config/env'
 
 console.log("🔵 apiClient.ts: Script cargado. Definiendo apiClient...")
 
-const apiClient: AxiosInstance = axios.create({
+const apiSpringClient: AxiosInstance = axios.create({
     baseURL: API_SPRINGBOOT_URL,
     headers: {
         'Content-Type': 'application/json',
     },
 })
 
-console.log("🔵 apiClient.ts: Instancia de Axios creada. BaseURL:", apiClient.defaults.baseURL)
+console.log("🔵 apiClient.ts: Instancia de Axios creada. BaseURL:", apiSpringClient.defaults.baseURL)
 
 // Interceptor para añadir el token a todas las peticiones
-apiClient.interceptors.request.use(
+apiSpringClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
         const metodo = config.method?.toUpperCase()
         const ruta = config.url
@@ -49,7 +49,7 @@ apiClient.interceptors.request.use(
 console.log("🔵 apiClient.ts: Interceptor de REQUEST configurado.")
 
 // Interceptor para manejar errores comunes
-apiClient.interceptors.response.use(
+apiSpringClient.interceptors.response.use(
     (response: AxiosResponse): AxiosResponse => {
         const metodo = response.config.method?.toUpperCase()
         const ruta = response.config.url
@@ -81,4 +81,4 @@ apiClient.interceptors.response.use(
 
 console.log("🔵 apiClient.ts: Interceptor de RESPONSE configurado.")
 
-export default apiClient
+export default apiSpringClient

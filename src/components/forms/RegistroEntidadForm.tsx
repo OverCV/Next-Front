@@ -14,7 +14,7 @@ import { Button } from "@/src/components/ui/button"
 import { Form } from "@/src/components/ui/form"
 import { ROLES, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
-import { entidadSaludService } from "@/src/services/EntidadSaludService"
+import { entidadSaludService } from "@/src/services/domain/entidad-salud.service"
 import { EntidadSalud, Usuario } from "@/src/types"
 
 // Esquema de validación
@@ -98,9 +98,7 @@ export default function RegistroEntidadForm(): JSX.Element {
                 clave: datos.clave,
                 celular: datos.telefono,
                 estaActivo: true,
-                rolId: ROLES.ENTIDAD_SALUD,
-                entidadSaludId: respuestaEntidad.id,
-                entidadSalud: null
+                rolId: ROLES.ENTIDAD_SALUD
             }
 
             const respuesta = await registroUsuario(datosRegistro)

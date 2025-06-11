@@ -1,88 +1,14 @@
-import apiClient from '../api'
+import { CitacionMedica, DatoClinico, TriajePaciente, PacienteInfo, UsuarioInfo, PacienteCompleto } from '@/src/types'
+
+import apiSpringClient from '../api'
 import { ENDPOINTS } from '../auth/endpoints'
-
-export interface CitacionMedica {
-	id: number
-	pacienteId: number
-	campanaId: number
-	medicoId: number
-	horaProgramada: string
-	horaAtencion?: string
-	duracionEstimada: number
-	estado: 'PROGRAMADA' | 'ATENDIDA' | 'CANCELADA' | 'NO_ASISTIO'
-	prediccionAsistencia: number
-	codigoTicket: string
-	notas?: string
-}
-
-export interface DatoClinico {
-	id?: number
-	pacienteId: number
-	presionSistolica: number
-	presionDiastolica: number
-	frecuenciaCardiacaMin: number
-	frecuenciaCardiacaMax: number
-	saturacionOxigeno: number
-	temperatura: number
-	colesterolTotal: number
-	hdl: number
-	observaciones?: string
-	fechaMedicion: string
-}
-
-export interface TriajePaciente {
-	id: number
-	pacienteId: number
-	edad: number
-	actividadFisica: boolean
-	peso: number
-	estatura: number
-	tabaquismo: boolean
-	alcoholismo: boolean
-	diabetes: boolean
-	dolorPecho: boolean
-	dolorIrradiado: boolean
-	sudoracion: boolean
-	nauseas: boolean
-	antecedentesCardiacos: boolean
-	hipertension: boolean
-	fechaTriaje: string
-	descripcion?: string
-}
-
-export interface PacienteInfo {
-	id: number
-	fechaNacimiento: string
-	genero: string
-	direccion: string
-	tipoSangre: string
-	localizacionId: number
-	usuarioId: number
-}
-
-export interface UsuarioInfo {
-	id: number
-	nombres: string
-	apellidos: string
-	correo: string
-	celular: string
-	tipoIdentificacion: string
-	identificacion: string
-}
-
-export interface PacienteCompleto {
-	paciente: PacienteInfo
-	usuario: UsuarioInfo
-	triajes: TriajePaciente[]
-	datosClinicosRecientes: DatoClinico[]
-}
 
 export const medicosService = {
 	// Obtener todas las citaciones médicas
 	obtenerCitacionesMedicas: async (): Promise<CitacionMedica[]> => {
 		console.log('🔍 Obteniendo citaciones médicas...')
 		try {
-			const response = await apiClient.get(ENDPOINTS.CITACIONES.BASE)
+			const response = await apiSpringClient.get(ENDPOINTS.CITACIONES.BASE)
 			console.log('✅ Citaciones obtenidas:', response.data.length)
 			return response.data
 		} catch (error) {
@@ -95,7 +21,7 @@ export const medicosService = {
 	obtenerCitacionesPorMedico: async (medicoId: number): Promise<CitacionMedica[]> => {
 		console.log('🔍 Obteniendo citaciones para médico:', medicoId)
 		try {
-			const response = await apiClient.get(ENDPOINTS.CITACIONES.POR_MEDICO(medicoId))
+			const response = await apiSpringClient.get(ENDPOINTS.CITACIONES.POR_MEDICO(medicoId))
 			console.log('✅ Citaciones del médico obtenidas:', response.data.length)
 			return response.data
 		} catch (error) {
@@ -108,7 +34,7 @@ export const medicosService = {
 	obtenerCitacionesPorCampana: async (campanaId: number): Promise<CitacionMedica[]> => {
 		console.log('🔍 Obteniendo citaciones para campaña:', campanaId)
 		try {
-			const response = await apiClient.get(ENDPOINTS.CITACIONES.POR_CAMPANA(campanaId))
+			const response = await apiSpringClient.get(ENDPOINTS.CITACIONES.POR_CAMPANA(campanaId))
 			console.log('✅ Citaciones de la campaña obtenidas:', response.data.length)
 			return response.data
 		} catch (error) {
@@ -121,7 +47,7 @@ export const medicosService = {
 	actualizarEstadoCitacion: async (citacionId: number, estado: string): Promise<CitacionMedica> => {
 		console.log('🔄 Actualizando estado de citación:', citacionId, estado)
 		try {
-			const response = await apiClient.patch(ENDPOINTS.CITACIONES.ACTUALIZAR_ESTADO(citacionId), { estado })
+			const response = await apiSpringClient.patch(ENDPOINTS.CITACIONES.ACTUALIZAR_ESTADO(citacionId), { estado })
 			console.log('✅ Estado de citación actualizado')
 			return response.data
 		} catch (error) {
@@ -135,7 +61,7 @@ export const medicosService = {
 		console.log('👨‍⚕️ Marcando citación como atendida:', citacionId)
 		try {
 			const horaAtencion = new Date().toISOString()
-			const response = await apiClient.patch(ENDPOINTS.CITACIONES.ACTUALIZAR_ESTADO(citacionId), {
+			const response = await apiSpringClient.patch(ENDPOINTS.CITACIONES.ACTUALIZAR_ESTADO(citacionId), {
 				estado: 'ATENDIDA',
 				horaAtencion
 			})
@@ -151,7 +77,7 @@ export const medicosService = {
 	obtenerDatosClinicos: async (): Promise<DatoClinico[]> => {
 		console.log('🔍 Obteniendo datos clínicos...')
 		try {
-			const response = await apiClient.get(ENDPOINTS.DATOS_CLINICOS.BASE)
+			const response = await apiSpringClient.get(ENDPOINTS.DATOS_CLINICOS.BASE)
 			console.log('✅ Datos clínicos obtenidos:', response.data.length)
 			return response.data
 		} catch (error) {
@@ -164,7 +90,7 @@ export const medicosService = {
 	obtenerDatosClinicosPorPaciente: async (pacienteId: number): Promise<DatoClinico[]> => {
 		console.log('🔍 Obteniendo datos clínicos para paciente:', pacienteId)
 		try {
-			const response = await apiClient.get(ENDPOINTS.DATOS_CLINICOS.POR_PACIENTE(pacienteId))
+			const response = await apiSpringClient.get(ENDPOINTS.DATOS_CLINICOS.POR_PACIENTE(pacienteId))
 			console.log('✅ Datos clínicos del paciente obtenidos:', response.data.length)
 			return response.data
 		} catch (error) {
@@ -177,7 +103,7 @@ export const medicosService = {
 	crearDatosClinicos: async (datos: Omit<DatoClinico, 'id'>): Promise<DatoClinico> => {
 		console.log('📝 Creando datos clínicos para paciente:', datos.pacienteId)
 		try {
-			const response = await apiClient.post(ENDPOINTS.DATOS_CLINICOS.CREAR, datos)
+			const response = await apiSpringClient.post(ENDPOINTS.DATOS_CLINICOS.CREAR, datos)
 			console.log('✅ Datos clínicos creados exitosamente')
 			return response.data
 		} catch (error) {
@@ -190,7 +116,7 @@ export const medicosService = {
 	actualizarDatosClinicos: async (id: number, datos: Partial<DatoClinico>): Promise<DatoClinico> => {
 		console.log('🔄 Actualizando datos clínicos:', id)
 		try {
-			const response = await apiClient.put(ENDPOINTS.DATOS_CLINICOS.ACTUALIZAR(id), datos)
+			const response = await apiSpringClient.put(ENDPOINTS.DATOS_CLINICOS.ACTUALIZAR(id), datos)
 			console.log('✅ Datos clínicos actualizados exitosamente')
 			return response.data
 		} catch (error) {
@@ -203,7 +129,7 @@ export const medicosService = {
 	obtenerTriajesPorPaciente: async (pacienteId: number): Promise<TriajePaciente[]> => {
 		console.log('🔍 Obteniendo triajes para paciente:', pacienteId)
 		try {
-			const response = await apiClient.get(ENDPOINTS.TRIAJES.POR_PACIENTE(pacienteId))
+			const response = await apiSpringClient.get(ENDPOINTS.TRIAJES.POR_PACIENTE(pacienteId))
 			console.log('✅ Triajes del paciente obtenidos:', response.data.length)
 			return response.data
 		} catch (error) {
@@ -216,7 +142,7 @@ export const medicosService = {
 	obtenerPaciente: async (pacienteId: number): Promise<PacienteInfo> => {
 		console.log('🔍 Obteniendo información del paciente:', pacienteId)
 		try {
-			const response = await apiClient.get(ENDPOINTS.PACIENTES.POR_ID(pacienteId))
+			const response = await apiSpringClient.get(ENDPOINTS.PACIENTES.POR_ID(pacienteId))
 			console.log('✅ Información del paciente obtenida')
 			return response.data
 		} catch (error) {
@@ -229,7 +155,7 @@ export const medicosService = {
 	obtenerUsuario: async (usuarioId: number): Promise<UsuarioInfo> => {
 		console.log('🔍 Obteniendo información del usuario:', usuarioId)
 		try {
-			const response = await apiClient.get(ENDPOINTS.USUARIOS.PERFIL(usuarioId))
+			const response = await apiSpringClient.get(ENDPOINTS.USUARIOS.PERFIL(usuarioId))
 			console.log('✅ Información del usuario obtenida')
 			return response.data
 		} catch (error) {
