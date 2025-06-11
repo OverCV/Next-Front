@@ -11,6 +11,7 @@ import { useAuth } from '@/src/providers/auth-provider'
 import apiClient from '@/src/services/api'
 import { ENDPOINTS } from '@/src/services/auth/endpoints'
 import { Triaje, Campana } from '@/src/types'
+import SeguimientosWidget from '@/src/components/SeguimientosWidget'
 
 // import TriajeForm from '@/src/components/forms/TriajeForm'
 // import { campanasService } from '@/src/services/campanas'
@@ -198,27 +199,32 @@ export default function PacientePage() {
 
             {/* Estadísticas */}
             <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <StatCard
-                    type="ejecucion"
-                    count={campanas.length}
-                    label="Campañas Activas"
-                    icon="/assets/icons/calendar.svg"
+                <StatCard 
+                    type="appointments" 
+                    count={campanas.length} 
+                    label="Campañas" 
+                    icon={Calendar} 
                 />
-
-                <StatCard
-                    type="postulada"
-                    count={campanasDisponibles.length}
-                    label="Campañas Disponibles"
-                    icon="/assets/icons/calendar.svg"
+                <StatCard 
+                    type="pending" 
+                    count={0} 
+                    label="Citas Pendientes" 
+                    icon={Calendar} 
                 />
-
-                <StatCard
-                    type={triaje ? 'ejecucion' : 'cancelada'}
-                    count={triaje ? 1 : 0}
-                    label="Triajes Realizados"
-                    icon="/assets/icons/heart.svg"
+                <StatCard 
+                    type="cancelled" 
+                    count={0} 
+                    label="Citas Canceladas" 
+                    icon={Calendar} 
                 />
             </section>
+
+            {/* Nueva sección: Seguimientos */}
+            {usuarioId && (
+                <section className="mt-8">
+                    <SeguimientosWidget pacienteId={usuarioId} />
+                </section>
+            )}
 
             {/* Mis Campañas */}
             <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
