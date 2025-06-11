@@ -1,11 +1,12 @@
 import { AxiosError } from "axios";
 
-import { API_URL } from "@/src/config/env";
+import { API_SPRINGBOOT_URL } from "@/src/config/env";
 import { Campana, FactorRiesgo, ServicioMedico } from "@/src/types";
-import { CAMPANAS_MOCK } from "@/src/constants";
+// import { CAMPANAS_MOCK } from "@/src/constants";
+
+import { httpGet } from "../request/Requests";
 
 import apiClient from "./api";
-import { httpGet } from "../request/Requests";
 
 // Interfaz para datos de creación de campaña
 export interface CrearCampanaParams {
@@ -41,7 +42,7 @@ export const campanasService = {
    * Obtiene todas las campañas de una entidad
    */
   obtenerCampanasPorEntidad: async (entidadId: number): Promise<Campana[]> => {
-    const response = await httpGet(`${API_URL}/campana/entidad/${entidadId}`);
+    const response = await httpGet(`${API_SPRINGBOOT_URL}/campana/entidad/${entidadId}`);
     if (response !== undefined) {
       return response;
     }
@@ -53,7 +54,7 @@ export const campanasService = {
    */
   obtenerCampanaPorId: async (campanaId: number): Promise<Campana> => {
     try {
-      const response = await apiClient.get(`${API_URL}/campana/${campanaId}`);
+      const response = await apiClient.get(`${API_SPRINGBOOT_URL}/campana/${campanaId}`);
       return response.data;
     } catch (error) {
       console.error("Error al obtener campaña por ID:", error);
@@ -72,7 +73,7 @@ export const campanasService = {
    */
   crearCampana: async (campanaData: CrearCampanaParams): Promise<Campana> => {
     try {
-      const response = await apiClient.post(`${API_URL}/campanas`, campanaData);
+      const response = await apiClient.post(`${API_SPRINGBOOT_URL}/campanas`, campanaData);
       return response.data;
     } catch (error) {
       console.error("Error al crear campaña:", error);
@@ -94,7 +95,7 @@ export const campanasService = {
   ): Promise<Campana> => {
     try {
       const response = await apiClient.put(
-        `${API_URL}/campanas/${campanaData.id}`,
+        `${API_SPRINGBOOT_URL}/campanas/${campanaData.id}`,
         campanaData
       );
       return response.data;
@@ -119,7 +120,7 @@ export const campanasService = {
   ): Promise<Campana> => {
     try {
       const response = await apiClient.patch(
-        `${API_URL}/campanas/${campanaId}/estatus`,
+        `${API_SPRINGBOOT_URL}/campanas/${campanaId}/estatus`,
         { estatus }
       );
       return response.data;
@@ -150,7 +151,7 @@ export const campanasService = {
    * Obtiene los factores de riesgo disponibles
    */
   obtenerFactoresRiesgo: async (): Promise<FactorRiesgo[] | undefined> => {
-    let response = undefined;
+    let response;
     await httpGet("/factor-riesgo")
       .then((res) => {
         if (res !== undefined) {

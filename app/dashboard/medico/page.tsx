@@ -1,76 +1,70 @@
-"use client";
+"use client"
 
-import { Calendar, User, ClipboardList, Clock, RefreshCw, AlertCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { Calendar, User, RefreshCw, AlertCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
-import { StatCard } from '@/src/components/StatCard';
-import { Alert, AlertDescription } from '@/src/components/ui/alert';
-import { Button } from '@/src/components/ui/button';
-import { Input } from '@/src/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs';
-import { formatearFecha } from '@/src/lib/utils';
-import { useAuth } from '@/src/providers/auth-provider';
-import apiClient from '@/src/services/api';
-import { ENDPOINTS } from '@/src/services/auth/endpoints';
-import { Campana } from '@/src/types';
-
-// import CitacionesDiarias from '@/src/components/medicos/CitacionesDiarias';
-// import PacientesEspera from '@/src/components/medicos/PacientesEspera';
-// import { Badge } from '@/src/components/ui/badge';
-// import { pacientesService } from '@/src/services/pacientes';
+import { StatCard } from '@/src/components/StatCard'
+import { Alert, AlertDescription } from '@/src/components/ui/alert'
+import { Button } from '@/src/components/ui/button'
+import { Input } from '@/src/components/ui/input'
+import { formatearFecha } from '@/src/lib/utils'
+import { useAuth } from '@/src/providers/auth-provider'
+import apiClient from '@/src/services/api'
+import { ENDPOINTS } from '@/src/services/auth/endpoints'
+import { Campana } from '@/src/types'
 
 export default function MedicoPage() {
-    const router = useRouter();
-    const { usuario } = useAuth();
-    const [busqueda, setBusqueda] = useState('');
-    const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>(new Date());
-    const [campanas, setCampanas] = useState<Campana[]>([]);
-    const [campanasActivas, setCampanasActivas] = useState<Campana[]>([]);
+    const router = useRouter()
+    const { usuario } = useAuth()
+    const [busqueda, setBusqueda] = useState('')
+    const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>(new Date())
+    const [campanas, setCampanas] = useState<Campana[]>([])
+    const [campanasActivas, setCampanasActivas] = useState<Campana[]>([])
 
-    const [cargandoCampanas, setCargandoCampanas] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [cargandoCampanas, setCargandoCampanas] = useState(true)
+    const [error, setError] = useState<string | null>(null)
 
     // Cargar campañas del médico
     const cargarMisCampanas = async () => {
         if (!usuario?.id) {
             console.log("⏳ Esperando datos del médico para cargar campañas...")
-            return;
+            return
         }
 
-        setCargandoCampanas(true);
-        console.log("🔍 Cargando campañas para médico:", usuario.id);
+        setCargandoCampanas(true)
+        console.log("🔍 Cargando campañas para médico:", usuario.id)
 
         try {
             // Obtener todas las campañas (necesitamos endpoint específico para médicos)
-            const responseCampanas = await apiClient.get(ENDPOINTS.CAMPANAS.TODAS);
-            const todasCampanas = responseCampanas.data;
+            const responseCampanas = await apiClient.get(ENDPOINTS.CAMPANAS.TODAS)
+            const todasCampanas = responseCampanas.data
 
             // Filtrar campañas donde el médico está asignado
             // Por ahora mostramos todas, luego se puede filtrar por medicoId
             const campanasDelMedico = todasCampanas.filter((campana: Campana) =>
                 campana.estado === 'EJECUCION' || campana.estado === 'POSTULADA'
-            );
+            )
 
-            setCampanas(campanasDelMedico);
-            setCampanasActivas(campanasDelMedico.filter((c: Campana) => c.estado === 'EJECUCION'));
+            setCampanas(campanasDelMedico)
+            setCampanasActivas(campanasDelMedico.filter((c: Campana) => c.estado === 'EJECUCION'))
 
-            console.log("✅ Campañas del médico cargadas:", campanasDelMedico.length);
+            console.log("✅ Campañas del médico cargadas:", campanasDelMedico.length)
         } catch (err: any) {
-            console.error('❌ Error al cargar campañas del médico:', err);
-            setError('Error al cargar las campañas. Intente nuevamente.');
+            console.error('❌ Error al cargar campañas del médico:', err)
+            setError('Error al cargar las campañas. Intente nuevamente.')
         } finally {
-            setCargandoCampanas(false);
+            setCargandoCampanas(false)
         }
-    };
+    }
 
     // Cargar campañas al montar el componente
     useEffect(() => {
         if (usuario?.id) {
             console.log("🔄 Iniciando carga de campañas del médico...")
-            cargarMisCampanas();
+            cargarMisCampanas()
         }
-    }, [usuario?.id]);
+    }, [usuario?.id])
 
     // Si está cargando datos iniciales, mostrar indicador
     if (cargandoCampanas) {
@@ -81,7 +75,7 @@ export default function MedicoPage() {
                     <p className="mt-2 text-slate-500">Cargando campañas médicas...</p>
                 </div>
             </div>
-        );
+        )
     }
 
     return (
@@ -131,7 +125,7 @@ export default function MedicoPage() {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => cambiarFecha(new Date())}
+                        onClick={() => setFechaSeleccionada(new Date())}
                         className="flex items-center gap-2"
                     >
                         <Calendar className="size-4" />
@@ -256,5 +250,5 @@ export default function MedicoPage() {
                 )}
             </div>
         </div>
-    );
+    )
 }

@@ -1,9 +1,9 @@
 import axios from "axios";
-import { API_URL } from "../config/env";
+import { API_SPRINGBOOT_URL } from "../config/env";
 
 // Configuración base de Axios
 const API = axios.create({
-  baseURL: API_URL,
+  baseURL: API_SPRINGBOOT_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

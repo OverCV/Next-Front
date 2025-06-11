@@ -111,9 +111,7 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
             }))
 
             // Llamar callback si existe
-            setTimeout(() => {
-                if (onGuardar) onGuardar()
-            }, 1500)
+            if (onGuardar) onGuardar()
 
         } catch (err: any) {
             console.error('❌ Error al guardar datos clínicos:', err)

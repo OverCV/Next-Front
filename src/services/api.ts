@@ -6,12 +6,12 @@ import axios, {
 } from "axios";
 import Cookies from "js-cookie";
 
-import { API_URL } from '@/src/config/env'
+import { API_SPRINGBOOT_URL } from '@/src/config/env'
 
 console.log("🔵 apiClient.ts: Script cargado. Definiendo apiClient...")
 
 const apiClient: AxiosInstance = axios.create({
-    baseURL: API_URL,
+    baseURL: API_SPRINGBOOT_URL,
     headers: {
         'Content-Type': 'application/json',
     },

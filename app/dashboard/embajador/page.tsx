@@ -16,7 +16,7 @@ import { StatusBadge } from '@/src/components/StatusBadge';
 import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
-import { CAMPANAS_MOCK, ROLES } from '@/src/constants';
+import { ROLES } from '@/src/constants';
 import { usuariosService } from '@/src/services/usuarios';
 import { UsuarioAccedido } from '@/src/types';
 

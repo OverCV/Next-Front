@@ -35,7 +35,7 @@ export default function DashboardLayout({
             <div className="flex h-screen items-center justify-center">
                 <div className="flex flex-col items-center text-center">
                     <div className="size-10 animate-spin rounded-full border-y-2 border-green-500"></div>
-                    <p className="mt-4">Verificando autenticación...</p>
+                    <p className="mt-4">Autenticando...</p>
                 </div>
             </div>
         );
