@@ -82,7 +82,7 @@ export default function RegistroEmbajadorForm() {
 
         try {
             // Validación simple: verificar que existe usuario
-            if (!usuario || !usuario.id) {
+            if (!usuario?.id) {
                 setError('No hay una sesión activa. Inicie sesión nuevamente')
                 return
             }
@@ -120,14 +120,14 @@ export default function RegistroEmbajadorForm() {
                 return
             }
 
-            const datosEmbajadorEntidad: EmbajadorEntidad = {
-                entidadId: usuario.id,
-                embajadorId: respuestaEmbajador.id ?? 0,
-                entidad: null,
-                embajador: null,
-            }
+            // const datosEmbajadoresEntidad: EmbajadorEntidad = {
+            //     entidadId: usuario.id,
+            //     embajadorId: respuestaEmbajador.id ?? 0,
+            //     entidad: null,
+            //     embajador: null,
+            // }
 
-            await EmbajadorEntidadService.crearEmbajadorEntidad(datosEmbajadorEntidad)
+            // await EmbajadorEntidadService.crearEmbajadoresEntidad(datosEmbajadoresEntidad)
 
             setExitoso(true)
 
@@ -139,7 +139,7 @@ export default function RegistroEmbajadorForm() {
         } catch (err: any) {
             console.error("Error al registrar embajador:", err)
             setError(
-                err.response?.data?.mensaje ||
+                err.response?.data?.mensaje ??
                 "Error al registrar el embajador. Por favor, verifica los datos e intenta nuevamente."
             )
         } finally {

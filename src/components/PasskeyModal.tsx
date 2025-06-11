@@ -71,6 +71,7 @@ export const PasskeyModal = () => {
                 alt="close"
                 width={20}
                 height={20}
+                style={{ height: "auto", width: "20px" }}
               />
             </button>
           </AlertDialogTitle>
