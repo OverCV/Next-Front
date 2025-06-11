@@ -14,6 +14,7 @@ import { StatCard } from '@/src/components/StatCard'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { Button } from '@/src/components/ui/button'
 import { Input } from '@/src/components/ui/input'
+import { DashboardSkeleton } from '@/src/components/ui/skeletons'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import campanasService from '@/src/services/CampanaService'
 import EmbajadorEntidadService from '@/src/services/EmbajadorEntidadService'
@@ -114,6 +115,17 @@ export default function EntidadPage() {
     const recargarDatos = () => {
         cargarEmbajadores()
         cargarCampanas()
+    }
+
+    // Si está cargando datos iniciales, mostrar skeleton profesional
+    if (cargando) {
+        return (
+            <DashboardSkeleton
+                showStats
+                showCards={false}
+                showTable
+            />
+        )
     }
 
     return (
@@ -310,9 +322,9 @@ export default function EntidadPage() {
                                         {campanas.map(campana => (
                                             <tr key={campana.id} className="border-b border-slate-100 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50">
                                                 <td className="py-4 font-medium text-slate-900 dark:text-slate-100">{campana.nombre}</td>
-                                                <td className="py-4 text-slate-600 dark:text-slate-400 max-w-md truncate">{campana.descripcion}</td>
+                                                <td className="max-w-md truncate py-4 text-slate-600 dark:text-slate-400">{campana.descripcion}</td>
                                                 <td className="py-4 text-center">
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                    <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                                                         {campana.pacientes || 0}
                                                     </span>
                                                 </td>
@@ -324,7 +336,7 @@ export default function EntidadPage() {
                                                     })}
                                                 </td>
                                                 <td className="py-4">
-                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${campana.estado.toLowerCase() === 'postulada' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                                                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${campana.estado.toLowerCase() === 'postulada' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
                                                         campana.estado.toLowerCase() === 'ejecucion' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
                                                             campana.estado.toLowerCase() === 'finalizada' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
                                                                 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
@@ -336,7 +348,7 @@ export default function EntidadPage() {
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        className="hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                                        className="transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
                                                         onClick={() => router.push(`/dashboard/entidad/campanas/${campana.id}`)}
                                                     >
                                                         Ver Detalles
