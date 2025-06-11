@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import apiClient from "@/src/services/api";
+import apiSpringClient from "@/src/services/api";
 
 // Función para escribir logs en un archivo
 function logError(message: string, error: any) {
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 		}
 
 		// Llamar al backend para crear el triaje del paciente
-		const response = await apiClient.post(
+		const response = await apiSpringClient.post(
 			"/pacientes/triaje",
 			datosParaEnviar,
 			{
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
 
 			try {
 				// Intentar obtener el triaje del backend real
-				const response = await apiClient.get(`/triaje/paciente/${pacienteId}`, {
+				const response = await apiSpringClient.get(`/triaje/paciente/${pacienteId}`, {
 					headers: {
 						"Authorization": token ? `Bearer ${token}` : ""
 					}

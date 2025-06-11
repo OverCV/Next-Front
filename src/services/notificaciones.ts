@@ -1,31 +1,3 @@
-// src/services/notificaciones.ts
-// import nodemailer from 'nodemailer';
-// import twilio from 'twilio';
-
-// Cliente de Twilio (inicializado sólo en el lado del servidor)
-// let twilioClient: ReturnType<typeof twilio> | null = null;
-// let mailerTransport: nodemailer.Transporter | null = null;
-
-// Inicializar clientes solo en servidor
-// if (typeof window === 'undefined') {
-//     // Cliente Twilio
-//     twilioClient = twilio(
-//         process.env.TWILIO_ACCOUNT_SID,
-//         process.env.TWILIO_AUTH_TOKEN
-//     );
-
-//     // Transportador de email
-//     mailerTransport = nodemailer.createTransport({
-//         service: process.env.EMAIL_SERVICE || 'gmail',
-//         auth: {
-//             user: process.env.EMAIL_USER,
-//             pass: process.env.EMAIL_PASSWORD
-//         }
-//     });
-// }
-// import { NextResponse } from 'next/server';
-// Twilio solo se importa en el servidor
-
 export const notificacionesService = {
     /**
      * Envía un SMS usando Twilio directamente

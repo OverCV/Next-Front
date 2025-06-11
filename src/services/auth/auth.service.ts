@@ -1,9 +1,11 @@
 import { AxiosResponse } from "axios"
 import Cookies from "js-cookie"
 
-import { API_ENDPOINTS } from "../../config/api-endpoints"
-import { DatosAcceso, RespuestaAuth, Usuario, UsuarioAccedido } from "../../types"
-import apiClient from "../api"
+import { DatosAcceso, RespuestaAuth, Usuario, UsuarioAccedido } from "@/src/types"
+
+import apiSpringClient from "../api"
+
+import { ENDPOINTS } from "./endpoints"
 
 /**
  * Token y claves de almacenamiento
@@ -21,8 +23,8 @@ export const authService = {
 	registro: async (datosUsuario: Usuario): Promise<RespuestaAuth> => {
 		try {
 			console.log("🔐 AUTH-SERVICE: Registrando usuario...")
-			const response: AxiosResponse<RespuestaAuth> = await apiClient.post(
-				API_ENDPOINTS.AUTH.REGISTRO,
+			const response: AxiosResponse<RespuestaAuth> = await apiSpringClient.post(
+				ENDPOINTS.AUTH.REGISTRO,
 				datosUsuario
 			)
 
@@ -41,7 +43,7 @@ export const authService = {
 		try {
 			console.log("🔐 AUTH-SERVICE: Iniciando sesión...")
 
-			const response = await apiClient.post(API_ENDPOINTS.AUTH.ACCESO, credenciales)
+			const response = await apiSpringClient.post(ENDPOINTS.AUTH.ACCESO, credenciales)
 
 			// Guardar token
 			authService.guardarToken(response.data.token)
@@ -69,7 +71,7 @@ export const authService = {
 
 			// Intentar notificar al backend (opcional - no fallar si no funciona)
 			try {
-				await apiClient.post(API_ENDPOINTS.AUTH.SALIR)
+				await apiSpringClient.post(ENDPOINTS.AUTH.SALIR)
 			} catch (error) {
 				console.warn("⚠️ AUTH-SERVICE: Error al notificar logout al backend:", error)
 			}
@@ -88,7 +90,7 @@ export const authService = {
 	 * Guarda el token en las cookies y localStorage
 	 */
 	guardarToken: (token: string): void => {
-		// Guardar en cookies (más seguro, se incluye automáticamente en requests)
+		// Guardar en cookies (más seguro, incluye automáticamente)
 		Cookies.set(TOKEN_KEY, token, {
 			expires: 7, // 7 días
 			secure: process.env.NODE_ENV === 'production',
@@ -112,7 +114,7 @@ export const authService = {
 
 		// Si no está en cookies, intentar desde localStorage
 		if (!token && typeof window !== "undefined") {
-			token = localStorage.getItem(TOKEN_KEY)
+			token = localStorage.getItem(TOKEN_KEY) || undefined
 
 			// Si lo encontramos en localStorage, guardarlo también en cookies
 			if (token) {

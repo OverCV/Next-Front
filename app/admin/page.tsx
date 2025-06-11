@@ -1,30 +1,30 @@
 // app\admin\page.tsx
-"use client";
+"use client"
 
-import { LogOut, Menu, X } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { LogOut, Menu, X } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
-import NotificacionPrueba from "@/src/components/notificacionPrueba";
-import { PasskeyModal } from "@/src/components/PasskeyModal";
-import { StatCard } from "@/src/components/StatCard";
-import { Button } from "@/src/components/ui/button";
-import { useAuth } from "@/src/providers/auth-provider";
-import { RegistroEntidadSaludButton } from "@/src/components/auth/RegistroEntidadSaludButton";
+import { RegistroEntidadSaludButton } from "@/src/components/auth/RegistroEntidadSaludButton"
+import NotificacionPrueba from "@/src/components/notificacionPrueba"
+import { PasskeyModal } from "@/src/components/PasskeyModal"
+import { StatCard } from "@/src/components/StatCard"
+import { Button } from "@/src/components/ui/button"
+import { useAuth } from "@/src/providers/auth-provider"
 
 // Página de administración
 const AdminPage = () => {
-  const { cerrarSesion } = useAuth();
-  const router = useRouter();
+  const { cerrarSesion } = useAuth()
+  const router = useRouter()
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const handleLogout = async () => {
-    await cerrarSesion();
-    router.push("/acceso");
-  };
+    await cerrarSesion()
+    router.push("/acceso")
+  }
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
@@ -90,9 +90,9 @@ const AdminPage = () => {
             icon={"/assets/icons/activa.svg"}
           />
           <StatCard
-            type="cancelada"
+            type="finalizada"
             count={1}
-            label="Campañas canceladas"
+            label="Campañas finalizadas"
             icon={"/assets/icons/cancelada.svg"}
           />
         </section>
@@ -104,7 +104,7 @@ const AdminPage = () => {
       <RegistroEntidadSaludButton />
 
     </div>
-  );
-};
+  )
+}
 
-export default AdminPage;
+export default AdminPage

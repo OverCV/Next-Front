@@ -125,7 +125,9 @@ export const CampaignCreationSchema = z
         required_error: "La localización de la campaña es requerida",
         invalid_type_error: "Debe seleccionar una localización válida",
       })
-      .min(1, "Debe seleccionar una localización"),
+      .min(1, "Debe seleccionar una localización")
+      .optional()
+      .refine((val) => val !== undefined && val !== null, "La localización es requerida"),
 
     fechaInicio: z
       .date({
