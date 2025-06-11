@@ -7,6 +7,7 @@ import { CAMPANA_RUTA } from "./RutasApi";
 
 import { httpGet, httpPost } from "../request/Requests";
 import apiClient from "./api";
+import response from "twilio/lib/http/response";
 
 // Interfaz para datos de creación de campaña
 export interface CrearCampanaParams {
@@ -21,7 +22,7 @@ export interface CrearCampanaParams {
   localizacionId?: number;
   serviciosIds?: number[];
   factoresIds?: number[];
-  entidadId: number;
+  entidadId: number | undefined;
 }
 
 // Interfaz para datos de actualización de campaña
@@ -44,16 +45,20 @@ export const CampanaService = {
   /**
    * Obtiene todas las campañas de una entidad
    */
-  obtenerCampanasPorEntidad: async (entidadId: number) => {
+  obtenerCampanasPorEntidad: async (
+    entidadId: number
+  ): Promise<CampanaModel[] | undefined> => {
+    let response = undefined;
     await httpGet(CAMPANA_RUTA + entidadId)
-      .then((response) => {
-        if (response !== undefined) {
-          return response;
+      .then((res) => {
+        if (res !== undefined) {
+          response = res;
         }
       })
       .then((err) => {
         console.log("error obteniendo una entidad", err);
       });
+    return response;
   },
 
   /**
@@ -73,7 +78,7 @@ export const CampanaService = {
       // Cast estatus to the correct type and ensure fechaLimiteInscripcion is present
       return {
         ...campaña,
-        estatus: campaña.estatus as CampanaModel["estatus"],
+        estado: campaña.estado as CampanaModel["estado"],
         fechaLimiteInscripcion: campaña.fechaLimite,
       };
     }
