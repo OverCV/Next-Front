@@ -137,12 +137,12 @@ export interface CrearInscripcionCampana {
   campanaId: number;
 }
 
-export interface EmbajadorEntidad {
-  id?: number;
-  entidadId: number;
-  embajadorId: number;
-  entidad: EntidadSalud | null;
-  embajador: Embajador | null;
+export interface EntidadSalud {
+  id?: number
+  razonSocial: string
+  direccion: string
+  telefono: string
+  correo: string
 }
 
 export interface Embajador {
@@ -153,6 +153,14 @@ export interface Embajador {
   localidad: string;
   identificacion: string;
   correo: string;
+}
+
+export interface EmbajadorEntidad {
+  id?: number
+  entidadId: number
+  embajadorId: number
+  entidad: EntidadSalud | null
+  embajador: Embajador | null
 }
 
 // Interfaces autenticación y usuario
@@ -175,14 +183,6 @@ export interface Usuario extends DatosAcceso {
 export interface UsuarioAccedido extends Usuario {
   id: number;
   token?: string;
-}
-
-export interface EntidadSalud {
-  id: number;
-  razonSocial: string;
-  direccion: string;
-  telefono: string;
-  correo: string;
 }
 
 export interface RespuestaAuth {

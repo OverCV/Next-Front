@@ -1,9 +1,10 @@
 import { useState, useCallback } from "react"
+
 import { ROLES, TiposIdentificacionEnum, TipoSangreEnum } from "@/src/constants"
-import { usuariosService } from "@/src/services/usuarios"
-import { pacientesService } from "@/src/services/domain/pacientes.service"
-import { ENDPOINTS } from "@/src/services/auth/endpoints"
 import apiClient from "@/src/services/api"
+import { ENDPOINTS } from "@/src/services/auth/endpoints"
+import { pacientesService } from "@/src/services/domain/pacientes.service"
+import { usuariosService } from "@/src/services/usuarios"
 import { Usuario, GeneroBiologico, Campana, CampanaAPI } from "@/src/types"
 
 export interface DatosRegistroCompleto {
@@ -105,6 +106,8 @@ export const useRegistroPaciente = () => {
 				celular: datos.celular,
 				estaActivo: true,
 				rolId: ROLES.PACIENTE,
+				entidadSaludId: null,
+				entidadSalud: null,
 			}
 
 			console.log("🔸 PASO 1: Creando usuario...")
