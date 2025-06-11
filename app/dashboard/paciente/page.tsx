@@ -5,11 +5,16 @@ import React from 'react'
 
 import EstadisticasPaciente from '@/src/components/pacientes/EstadisticasPaciente'
 import TablaCampanasPaciente from '@/src/components/pacientes/TablaCampanasPaciente'
+import SeguimientosWidget from '@/src/components/SeguimientosWidget'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { DashboardSkeleton } from '@/src/components/ui/skeletons'
 import { usePacienteDashboard } from '@/src/lib/hooks/usePacienteDashboard'
+import { useAuth } from '@/src/providers/auth-provider'
 
 export default function PacientePage() {
+    // 🔐 Obtener información del usuario autenticado
+    const { usuario } = useAuth()
+    
     const {
         // Estados principales
         campanas,
@@ -50,6 +55,11 @@ export default function PacientePage() {
 
             {/* Estadísticas */}
             <EstadisticasPaciente estadisticas={estadisticas} />
+
+            {/* 🎯 Widget de Seguimientos - PASO 3 */}
+            {usuario?.id && (
+                <SeguimientosWidget pacienteId={usuario.id} />
+            )}
 
             {/* Mis Campañas */}
             <TablaCampanasPaciente
