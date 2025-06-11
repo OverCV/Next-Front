@@ -55,6 +55,7 @@ type RegistroEmbajadorFormValues = z.infer<typeof registroEmbajadorSchema>
 
 export default function RegistroEmbajadorForm() {
     const router = useRouter()
+    const { usuario } = useAuth() as { usuario: Usuario | undefined };
     const { registroUsuario } = useAuth()
     const [error, setError] = useState<string | null>(null)
     const [cargando, setCargando] = useState<boolean>(false)
@@ -81,7 +82,10 @@ export default function RegistroEmbajadorForm() {
         setExitoso(false)
 
         try {
-            console.log("Datos de registro:", datos)
+            if (!usuario || !usuario?.entidadSaludId) {
+                setError('No hay una sesión activa. Inicie sesión nuevamente.');
+                return;
+            }
 
             // Preparar datos para enviar al endpoint de registro
             const datosRegistro: Usuario = {
@@ -98,12 +102,9 @@ export default function RegistroEmbajadorForm() {
                 entidadSalud: null
             };
 
-            const user = JSON.parse(localStorage.getItem("usuario") || "{}")
-
             // Llamar al mismo endpoint de registro que usamos para las entidades y pacientes
             const respuesta = await registroUsuario(datosRegistro);
 
-            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user.id);
 
             const datosEmbajador: Embajador = {
                 usuarioId: respuesta.id,
@@ -123,11 +124,12 @@ export default function RegistroEmbajadorForm() {
             }
 
             const datosEmbajadorEntidad: EmbajadorEntidad = {
-                entidadId: entidad.id ?? 0,
+                entidadId: usuario?.entidadSaludId,
                 embajadorId: respuestaEmbajador.id ?? 0,
                 entidad: null,
                 embajador: null,
             }
+
 
             await EmbajadorEntidadService.crearEmbajadorEntidad(datosEmbajadorEntidad)
 

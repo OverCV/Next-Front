@@ -2,7 +2,6 @@
 
 import {
     UserPlus,
-    // Calendar,
     RefreshCw,
     Search,
     AlertCircle,
@@ -12,26 +11,21 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 import { StatCard } from '@/src/components/StatCard';
-import { StatusBadge } from '@/src/components/StatusBadge';
 import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs';
-import { CAMPANAS_MOCK, ROLES } from '@/src/constants';
-// import { useAuth } from '@/src/providers/auth-provider';
-import { usuariosService } from '@/src/services/usuarios';
-import { Campana, Embajador, EntidadSalud, UsuarioAccedido } from '@/src/types';
-import EmbajadorService from '@/src/services/EmbajadorService';
-import { entidadSaludService } from '@/src/services/EntidadSaludService';
-import campanasService from '@/src/services/CampanaService';
+import { CampanaModel, Embajador, Usuario } from '@/src/types';
+import { CampanaService } from '@/src/services/CampanaService';
 import EmbajadorEntidadService from '@/src/services/EmbajadorEntidadService';
+import { useAuth } from '@/src/providers/auth-provider';
 
 export default function EntidadPage() {
     const router = useRouter();
-    // const { usuario } = useAuth();
+    const { usuario } = useAuth() as { usuario: Usuario | undefined };
     const [busqueda, setBusqueda] = useState('');
     const [embajadores, setEmbajadores] = useState<Embajador[]>([]);
-    const [campanas, setCampanas] = useState<Campana[]>([]);
+    const [campanas, setCampanas] = useState<CampanaModel[]>([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -40,16 +34,18 @@ export default function EntidadPage() {
         setCargando(true);
         setError(null);
         try {
-            // Obtener usuarios con rol de embajador (rolId: 7)
-            const user = JSON.parse(localStorage.getItem("usuario") || "{}");
+            if (!usuario || !usuario.entidadSaludId) {
+                setError('No hay una sesión activa. Inicie sesión nuevamente.');
+                return;
+            }
+            const embajadoresEntidadData = await EmbajadorEntidadService.obtenerEmbajadoresPorEntidadId(usuario?.entidadSaludId);
 
-            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user["id"]);
+            let embajadoresData = undefined;
+            if (embajadoresEntidadData !== undefined) {
+                embajadoresData = embajadoresEntidadData.map(emb => emb.embajador).filter((emb): emb is Embajador => emb !== null);
+            }
 
-            const embajadoresEntidadData = await EmbajadorEntidadService.obtenerEmbajadoresPorEntidadId(entidad.id);
-
-            const embajadoresData = embajadoresEntidadData.map(emb => emb.embajador).filter((emb): emb is Embajador => emb !== null);
-
-            setEmbajadores(embajadoresData);
+            setEmbajadores(embajadoresData ?? []);
         } catch (err: any) {
             console.error('Error al cargar embajadores:', err);
             setError('No se pudieron cargar los embajadores. Por favor, intente de nuevo.');
@@ -62,10 +58,14 @@ export default function EntidadPage() {
         setCargando(true);
         setError(null);
         try {
-            const user = JSON.parse(localStorage.getItem("usuario") || "{}");
-            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(user["id"]);
-            const campanasData = await campanasService.obtenerCampanasPorEntidad(entidad.id);
-            if (campanasData.length > 0) {
+            if (!usuario || !usuario?.entidadSaludId) {
+                setError('No hay una sesión activa. Inicie sesión nuevamente.');
+                return;
+            }
+
+            const campanasData = await CampanaService.obtenerCampanasPorEntidad(usuario?.entidadSaludId);
+
+            if (campanasData !== undefined && campanasData.length > 0) {
                 setCampanas(campanasData);
             }
         } catch (err: any) {
@@ -124,7 +124,7 @@ export default function EntidadPage() {
 
                 <StatCard
                     type="ejecucion"
-                    count={campanas.filter(c => c.estatus?.toLowerCase() === 'ejecucion').length}
+                    count={campanas.filter(c => c.estado?.toLowerCase() === 'ejecucion').length}
                     label="Campañas en Ejecución"
                     icon="/assets/icons/megaphone.svg"
                 />
@@ -147,7 +147,7 @@ export default function EntidadPage() {
                         className="flex items-center gap-2"
                     >
                         <PlusCircle className="size-4" />
-                        Postular Campaña
+                        Agregar Campaña
                     </Button>
                 </div>
 

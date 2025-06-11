@@ -1,11 +1,13 @@
 import { AxiosError } from "axios";
 
 import { API_URL } from "@/src/config/env";
-import { Campana, FactorRiesgo, ServicioMedico } from "@/src/types";
+import { CampanaModel } from "@/src/types";
 import { CAMPANAS_MOCK } from "@/src/constants";
+import { CAMPANA_RUTA } from "./RutasApi";
 
+import { httpGet, httpPost } from "../request/Requests";
 import apiClient from "./api";
-import { httpGet } from "../request/Requests";
+import response from "twilio/lib/http/response";
 
 // Interfaz para datos de creación de campaña
 export interface CrearCampanaParams {
@@ -13,11 +15,14 @@ export interface CrearCampanaParams {
   descripcion: string;
   fechaInicio: string;
   fechaLimite: string;
+  fechaLimiteInscripcion: string;
+  estado: string;
   minParticipantes: number;
   maxParticipantes: number;
   localizacionId?: number;
   serviciosIds?: number[];
   factoresIds?: number[];
+  entidadId: number | null;
 }
 
 // Interfaz para datos de actualización de campaña
@@ -36,22 +41,30 @@ export interface ActualizarCampanaParams {
 }
 
 // Servicio para gestionar campañas
-export const campanasService = {
+export const CampanaService = {
   /**
    * Obtiene todas las campañas de una entidad
    */
-  obtenerCampanasPorEntidad: async (entidadId: number): Promise<Campana[]> => {
-    const response = await httpGet(`${API_URL}/campana/entidad/${entidadId}`);
-    if (response !== undefined) {
-      return response;
-    }
-    return [];
+  obtenerCampanasPorEntidad: async (
+    entidadId: number
+  ): Promise<CampanaModel[] | undefined> => {
+    let response = undefined;
+    await httpGet(CAMPANA_RUTA + `/entidad/${entidadId}`)
+      .then((res) => {
+        if (res !== undefined) {
+          response = res;
+        }
+      })
+      .catch((err) => {
+        console.log("error obteniendo una entidad", err);
+      });
+    return response;
   },
 
   /**
    * Obtiene una campaña específica por su ID
    */
-  obtenerCampanaPorId: async (campanaId: number): Promise<Campana> => {
+  obtenerCampanaPorId: async (campanaId: number): Promise<CampanaModel> => {
     try {
       const response = await apiClient.get(`${API_URL}/campana/${campanaId}`);
       return response.data;
@@ -62,28 +75,32 @@ export const campanasService = {
       if (!campaña) {
         throw new Error("Campaña no encontrada");
       }
-      // Cast estatus to the correct type
-      return { ...campaña, estatus: campaña.estatus as Campana["estatus"], estado: campaña.estado as Campana["estado"] };
+      // Cast estatus to the correct type and ensure fechaLimiteInscripcion is present
+      return {
+        ...campaña,
+        estado: campaña.estado as CampanaModel["estado"],
+        fechaLimiteInscripcion: campaña.fechaLimite,
+      };
     }
   },
 
   /**
    * Crea una nueva campaña
    */
-  crearCampana: async (campanaData: CrearCampanaParams): Promise<Campana> => {
-    try {
-      const response = await apiClient.post(`${API_URL}/campanas`, campanaData);
-      return response.data;
-    } catch (error) {
-      console.error("Error al crear campaña:", error);
-      const axiosError = error as AxiosError;
-      if (axiosError.response) {
-        throw new Error(
-          `Error ${axiosError.response.status}: ${axiosError.response.statusText}`
-        );
-      }
-      throw new Error("Error al crear la campaña");
-    }
+  crearCampana: async (
+    campanaData: CrearCampanaParams
+  ): Promise<CampanaModel | undefined> => {
+    let response = undefined;
+    await httpPost(CAMPANA_RUTA, campanaData)
+      .then((res) => {
+        if (res !== undefined) {
+          response = res;
+        }
+      })
+      .catch((err) => {
+        console.log("error: ", err);
+      });
+    return response;
   },
 
   /**
@@ -91,7 +108,7 @@ export const campanasService = {
    */
   actualizarCampana: async (
     campanaData: ActualizarCampanaParams
-  ): Promise<Campana> => {
+  ): Promise<CampanaModel> => {
     try {
       const response = await apiClient.put(
         `${API_URL}/campanas/${campanaData.id}`,
@@ -116,7 +133,7 @@ export const campanasService = {
   cambiarEstadoCampana: async (
     campanaId: number,
     estatus: string
-  ): Promise<Campana> => {
+  ): Promise<CampanaModel> => {
     try {
       const response = await apiClient.patch(
         `${API_URL}/campanas/${campanaId}/estatus`,
@@ -128,40 +145,4 @@ export const campanasService = {
       throw new Error("Error al cambiar el estado de la campaña");
     }
   },
-
-  /**
-   * Obtiene los servicios médicos disponibles
-   */
-  obtenerServiciosMedicos: async (): Promise<ServicioMedico[] | undefined> => {
-    let response;
-    await httpGet("/servicios-medicos")
-      .then((res) => {
-        if (res !== undefined) {
-          response = res;
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    return response;
-  },
-
-  /**
-   * Obtiene los factores de riesgo disponibles
-   */
-  obtenerFactoresRiesgo: async (): Promise<FactorRiesgo[] | undefined> => {
-    let response = undefined;
-    await httpGet("/factor-riesgo")
-      .then((res) => {
-        if (res !== undefined) {
-          response = res;
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    return response;
-  },
 };
-
-export default campanasService;
