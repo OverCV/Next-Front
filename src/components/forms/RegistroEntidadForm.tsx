@@ -14,7 +14,7 @@ import { Button } from "@/src/components/ui/button"
 import { Form } from "@/src/components/ui/form"
 import { ROLES, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
-import { entidadSaludService } from "@/src/services/EntidadSaludService"
+import { entidadSaludService } from "@/src/services/domain/entidad-salud.service"
 import { EntidadSalud, Usuario } from "@/src/types"
 
 // Esquema de validación
@@ -72,25 +72,18 @@ export default function RegistroEntidadForm(): JSX.Element {
         setExitoso(false)
 
         try {
-            // Preparar datos para enviar
-            
-
             // Llamar a la API para registrar
-            
-
             const datosEntidad: EntidadSalud = {
-                id: 0,
-                //usuarioId: respuesta.id,
                 razonSocial: datos.razonSocial,
                 direccion: datos.direccion,
                 telefono: datos.telefono,
                 correo: datos.correo,
-            };
+            }
 
-            const respuestaEntidad : EntidadSalud = await entidadSaludService.crearEntidadSalud(datosEntidad);
-            console.log("Registro entidad exitoso:", respuestaEntidad);
+            const respuestaEntidad: EntidadSalud = await entidadSaludService.crearEntidadSalud(datosEntidad)
+            console.log("Registro entidad exitoso:", respuestaEntidad)
 
-            if (!respuestaEntidad) {
+            if (respuestaEntidad.id === undefined) {
                 setError("Error al registrar la entidad. Por favor, verifica los datos e intenta nuevamente.")
                 setCargando(false)
                 return
@@ -105,13 +98,11 @@ export default function RegistroEntidadForm(): JSX.Element {
                 clave: datos.clave,
                 celular: datos.telefono,
                 estaActivo: true,
-                rolId: ROLES.ENTIDAD_SALUD,
-                entidadSaludId: respuestaEntidad.id ?? 0,
-                entidadSalud: null
-            };
+                rolId: ROLES.ENTIDAD_SALUD
+            }
 
-            const respuesta = await registroUsuario(datosRegistro);
-            console.log("Registro exitoso:", respuesta);
+            const respuesta = await registroUsuario(datosRegistro)
+            console.log("Registro exitoso:", respuesta)
 
             // Marcar como exitoso
             setExitoso(true)

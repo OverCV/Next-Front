@@ -1,11 +1,11 @@
 import { useState, useCallback } from "react"
 
 import { ROLES, TiposIdentificacionEnum, TipoSangreEnum } from "@/src/constants"
-import apiClient from "@/src/services/api"
+import apiSpringClient from "@/src/services/api"
 import { ENDPOINTS } from "@/src/services/auth/endpoints"
 import { pacientesService } from "@/src/services/domain/pacientes.service"
-import { usuariosService } from "@/src/services/usuarios"
-import { Usuario, GeneroBiologico, Campana, CampanaAPI } from "@/src/types"
+import { usuariosService } from "@/src/services/domain/usuarios.service"
+import { Usuario, GeneroBiologico, Campana, EstadoCampana } from "@/src/types"
 
 export interface DatosRegistroCompleto {
 	// Datos del Usuario
@@ -25,6 +25,9 @@ export interface DatosRegistroCompleto {
 
 	// Datos de Campaña (opcional)
 	campanaId?: number
+
+	// ID de quien crea el paciente (requerido)
+	creadoPorId: number
 }
 
 export const useRegistroPaciente = () => {
@@ -34,22 +37,22 @@ export const useRegistroPaciente = () => {
 	const [campanasDisponibles, setCampanasDisponibles] = useState<Campana[]>([])
 	const [cargandoCampanas, setCargandoCampanas] = useState(false)
 
-	// Función para convertir CampanaAPI a Campana (adaptador)
-	const convertirCampanaAPI = (campanaAPI: CampanaAPI): Campana => {
+	// Función para convertir CampanaAPI a Campana (adaptador)???
+	const convertirCampanaAPI = (campana: Campana): Campana => {
 		return {
-			id: campanaAPI.id,
-			nombre: campanaAPI.nombre,
-			descripcion: campanaAPI.descripcion,
-			fechaInicio: campanaAPI.fechaInicio,
-			fechaLimite: campanaAPI.fechaLimite || campanaAPI.fechaLimiteInscripcion,
-			minParticipantes: campanaAPI.minParticipantes,
-			maxParticipantes: campanaAPI.maxParticipantes,
-			entidadId: campanaAPI.entidadId,
-			estatus: campanaAPI.estado.toLowerCase() as "postulada" | "ejecucion" | "finalizada" | "cancelada",
-			estado: campanaAPI.estado,
-			fechaCreacion: campanaAPI.fechaInicio, // Usar fechaInicio como fallback
+			id: campana.id,
+			nombre: campana.nombre,
+			descripcion: campana.descripcion,
+			fechaInicio: campana.fechaInicio,
+			fechaLimite: campana.fechaLimite || campana.fechaLimiteInscripcion,
+			fechaLimiteInscripcion: campana.fechaLimite || campana.fechaLimiteInscripcion,
+			minParticipantes: campana.minParticipantes,
+			maxParticipantes: campana.maxParticipantes,
+			entidadId: campana.entidadId,
+			estado: campana.estado,
+			fechaCreacion: campana.fechaInicio, // Usar fechaInicio como fallback
 			localizacion: undefined, // No viene en la API, se puede cargar después si es necesario
-			pacientes: 0 // No viene en la API
+			// pacientes: 0 // No viene en la API
 		}
 	}
 
@@ -59,29 +62,18 @@ export const useRegistroPaciente = () => {
 		try {
 			console.log("🔍 Cargando campañas disponibles desde API...")
 
-			const response = await apiClient.get(ENDPOINTS.CAMPANAS.TODAS)
-			const campanasAPI: CampanaAPI[] = response.data
+			const response = await apiSpringClient.get(ENDPOINTS.CAMPANAS.TODAS)
+			const campanasResponse: Campana[] = response.data
 
 			// Filtrar solo campañas activas (POSTULADA o EJECUCION)
-			const campanasActivas = campanasAPI
-				.filter(c => c.estado === 'POSTULADA' || c.estado === 'EJECUCION')
+			const campanasActivas = campanasResponse
+				.filter(c => c.estado === EstadoCampana.POSTULADA || c.estado === EstadoCampana.EJECUCION)
 				.map(convertirCampanaAPI)
 
 			setCampanasDisponibles(campanasActivas)
 			console.log("✅ Campañas disponibles cargadas desde API:", campanasActivas.length)
-
 		} catch (err) {
 			console.error("❌ Error al cargar campañas desde API:", err)
-			console.log("🔄 Fallback: usando campañas mock...")
-
-			// Fallback a mock en caso de error
-			try {
-				const { CAMPANAS_MOCK } = await import("@/src/constants")
-				setCampanasDisponibles(CAMPANAS_MOCK.filter(c => c.estatus === 'postulada' || c.estatus === 'ejecucion') as Campana[])
-			} catch (mockErr) {
-				console.error("❌ Error incluso con mock:", mockErr)
-				setCampanasDisponibles([])
-			}
 		} finally {
 			setCargandoCampanas(false)
 		}
@@ -95,8 +87,8 @@ export const useRegistroPaciente = () => {
 		try {
 			console.log("🚀 HOOK: Iniciando registro completo de paciente")
 
-			// PASO 1: Crear Usuario
-			const datosUsuario: Usuario = {
+			// PASO 1: Crear Usuario (sin creadoPorId en la interfaz Usuario)
+			const datosUsuario = {
 				tipoIdentificacion: datos.tipoIdentificacion,
 				identificacion: datos.identificacion,
 				nombres: datos.nombres,
