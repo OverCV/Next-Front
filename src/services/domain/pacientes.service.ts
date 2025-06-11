@@ -1,6 +1,7 @@
-import { ENDPOINTS } from "../auth/endpoints"
-import apiClient from "../api"
 import { CrearInscripcionCampana, InscripcionCampana } from "@/src/types"
+
+import apiClient from "../api"
+import { ENDPOINTS } from "../auth/endpoints"
 
 export const pacientesService = {
 	crearPaciente: async (datos: {

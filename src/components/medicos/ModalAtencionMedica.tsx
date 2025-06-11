@@ -1,6 +1,6 @@
 "use client"
 
-import { Save, AlertCircle, RefreshCw, User, Calendar, Activity, CheckCircle } from 'lucide-react'
+import { AlertCircle, RefreshCw, User, Calendar, Activity, CheckCircle } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
@@ -110,7 +110,7 @@ export default function ModalAtencionMedica({
         )
     }
 
-    const { usuario, paciente, triajes, datosClinicosRecientes } = pacienteCompleto
+    const { usuario, triajes, datosClinicosRecientes } = pacienteCompleto
     console.log("Triajes:", triajes)
     const ultimoTriaje = triajes[0] // El más reciente
 

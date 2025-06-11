@@ -13,9 +13,9 @@ import { Button } from "@/src/components/ui/button"
 import { Form } from "@/src/components/ui/form"
 import { SelectItem } from "@/src/components/ui/select"
 import { TIPOS_IDENTIFICACION_PACIENTE, TiposIdentificacionEnum, OPCIONES_GENERO, TIPOS_SANGRE, GeneroBiologicoEnum, TipoSangreEnum } from "@/src/constants"
+import { useRegistroPaciente, DatosRegistroCompleto } from "@/src/lib/hooks/useRegistroPaciente"
 import { useAuth } from "@/src/providers/auth-provider"
 import { localizacionesService } from "@/src/services/domain/localizaciones.service"
-import { useRegistroPaciente, DatosRegistroCompleto } from "@/src/lib/hooks/useRegistroPaciente"
 import { Localizacion } from "@/src/types"
 
 // Esquema completo - Usuario + Paciente + Campaña (opcional)
