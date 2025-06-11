@@ -13,7 +13,7 @@ import { Form } from "@/src/components/ui/form"
 import { SelectItem } from "@/src/components/ui/select"
 import { ROLES, TIPOS_IDENTIFICACION_PACIENTE, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
-import { usuariosService } from "@/src/services/usuarios"
+import { usuariosService } from "@/src/services/domain/usuarios.service"
 import { Usuario, UsuarioAccedido } from "@/src/types"
 
 // Esquema de validación SOLO para datos de Usuario
@@ -93,8 +93,6 @@ export default function RegistroUsuarioPacienteForm({ onUsuarioCreado }: Registr
                 celular: datos.celular,
                 estaActivo: true,
                 rolId: ROLES.PACIENTE,
-                entidadSalud: null,
-                entidadSaludId: null
             }
 
             // Usar usuarios.service con token de autenticación

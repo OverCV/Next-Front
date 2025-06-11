@@ -1,6 +1,7 @@
-import { ENDPOINTS } from "../auth/endpoints"
-import apiClient from "../api"
 import { CrearInscripcionCampana, InscripcionCampana } from "@/src/types"
+
+import apiSpringClient from "../api"
+import { ENDPOINTS } from "../auth/endpoints"
 
 export const pacientesService = {
 	crearPaciente: async (datos: {
@@ -12,7 +13,7 @@ export const pacientesService = {
 		usuarioId: number
 	}) => {
 		try {
-			const response = await apiClient.post(ENDPOINTS.PACIENTES.BASE, {
+			const response = await apiSpringClient.post(ENDPOINTS.PACIENTES.BASE, {
 				fechaNacimiento: datos.fechaNacimiento.toISOString().split('T')[0],
 				genero: datos.genero,
 				direccion: datos.direccion,
@@ -30,7 +31,7 @@ export const pacientesService = {
 
 	obtenerPacientePorUsuarioId: async (usuarioId: number) => {
 		try {
-			const response = await apiClient.get(ENDPOINTS.PACIENTES.PERFIL(usuarioId))
+			const response = await apiSpringClient.get(ENDPOINTS.PACIENTES.PERFIL(usuarioId))
 			return response.data
 		} catch (error: any) {
 			// Si es 404, significa que no existe el paciente
@@ -46,7 +47,7 @@ export const pacientesService = {
 		try {
 			console.log("🔍 PACIENTES-SERVICE: Verificando paciente para usuario:", usuarioId)
 
-			const response = await apiClient.get(ENDPOINTS.PACIENTES.PERFIL(usuarioId))
+			const response = await apiSpringClient.get(ENDPOINTS.PACIENTES.PERFIL(usuarioId))
 
 			console.log("✅ PACIENTES-SERVICE: Paciente encontrado:", response.data)
 			return { existe: true, id: response.data.id, datos: response.data }
@@ -82,7 +83,7 @@ export const pacientesService = {
 		descripcion?: string
 	}) => {
 		try {
-			const response = await apiClient.post(ENDPOINTS.PACIENTES.CREAR_TRIAJE, {
+			const response = await apiSpringClient.post(ENDPOINTS.PACIENTES.CREAR_TRIAJE, {
 				pacienteId: datos.pacienteId,
 				edad: datos.edad,
 				peso: datos.peso,
@@ -110,7 +111,7 @@ export const pacientesService = {
 
 	verificarTriaje: async (pacienteId: number) => {
 		try {
-			const response = await apiClient.get(ENDPOINTS.TRIAJES.POR_PACIENTE(pacienteId))
+			const response = await apiSpringClient.get(ENDPOINTS.TRIAJES.POR_PACIENTE(pacienteId))
 
 			// El backend retorna un array de triajes, verificamos si tiene elementos
 			const triajes = response.data
@@ -194,7 +195,7 @@ export const pacientesService = {
 		try {
 			console.log("📝 Inscribiendo usuario a campaña:", datos)
 
-			const response = await apiClient.post(
+			const response = await apiSpringClient.post(
 				ENDPOINTS.CAMPANAS.INSCRIPCIONES.CREAR, {
 				usuarioId: datos.usuarioId,
 				campanaId: datos.campanaId,
