@@ -22,7 +22,7 @@ export interface CrearCampanaParams {
   localizacionId?: number;
   serviciosIds?: number[];
   factoresIds?: number[];
-  entidadId: number | undefined;
+  entidadId: number | null;
 }
 
 // Interfaz para datos de actualización de campaña
