@@ -98,7 +98,6 @@ export default function RegistroEmbajadorForm() {
                 celular: datos.telefono,
                 estaActivo: true,
                 rolId: ROLES.EMBAJADOR,
-                creadoPorId: usuario.id
             }
 
             // Llamar al mismo endpoint de registro que usamos para las entidades y pacientes

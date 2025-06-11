@@ -4,6 +4,7 @@ import { CampanaService } from '@/src/services/domain/campana.service'
 import EmbajadorEntidadService from '@/src/services/domain/embajador-entidad.service'
 import { usuariosService } from '@/src/services/domain/usuarios.service'
 import { Campana, Embajador, UsuarioAccedido } from '@/src/types'
+import { entidadSaludService } from '@/src/services/domain/entidad-salud.service'
 
 export function useEntidadData() {
 	const [embajadores, setEmbajadores] = useState<Embajador[]>([])
@@ -22,7 +23,7 @@ export function useEntidadData() {
 		}
 	}
 
-	// Cargar embajadores creados por esta entidad usando creadoPorId
+	// Cargar embajadores asociados a la entidad del usuario actual
 	const cargarEmbajadores = useCallback(async () => {
 		const usuario = obtenerUsuarioActual()
 		if (!usuario) {
@@ -31,35 +32,40 @@ export function useEntidadData() {
 		}
 
 		try {
-			// Obtener todos los usuarios creados por esta entidad (creadoPorId)
-			const usuariosCreados = await usuariosService.obtenerUsuariosPorCreador(usuario.id)
+			// PASO 1: Obtener la entidad de salud del usuario actual
+			const entidadSalud = await entidadSaludService.obtenerEntidadPorUsuarioId(usuario.id)
 
-			// Filtrar solo los embajadores (rol 7 según el ejemplo)
-			const embajadoresIds = usuariosCreados
-				.filter(user => user.rolId === 7) // Rol embajador
-				.map(user => user.id)
+			if (!entidadSalud || !entidadSalud.id) {
+				setError('No se encontró la entidad de salud asociada al usuario')
+				return
+			}
 
-			// Obtener datos completos de embajadores
+			console.log('✅ Entidad de salud encontrada:', entidadSalud.id)
+
+			// PASO 2: Obtener todos los embajadores asociados a esta entidad
+			const embajadoresEntidad = await EmbajadorEntidadService.obtenerEmbajadoresPorEntidadId(entidadSalud.id)
+
+			// PASO 3: Obtener datos completos de cada embajador
 			const embajadoresData: Embajador[] = []
-			for (const userId of embajadoresIds) {
+			for (const embajadorEntidad of embajadoresEntidad) {
 				try {
-					const embajadorCompleto = await EmbajadorEntidadService.obtenerEmbajadorPorUsuarioId(userId)
-					if (embajadorCompleto) {
-						embajadoresData.push(embajadorCompleto)
+					if (embajadorEntidad.embajador) {
+						embajadoresData.push(embajadorEntidad.embajador)
 					}
 				} catch (err) {
-					console.warn(`No se pudo cargar embajador para usuario ${userId}:`, err)
+					console.warn(`No se pudo cargar embajador ${embajadorEntidad.embajadorId}:`, err)
 				}
 			}
 
 			setEmbajadores(embajadoresData)
+			console.log('✅ Embajadores cargados:', embajadoresData.length)
 		} catch (err: any) {
 			console.error('Error al cargar embajadores:', err)
-			setError('No se pudieron cargar los embajadores creados por esta entidad')
+			setError('No se pudieron cargar los embajadores de esta entidad')
 		}
 	}, [])
 
-	// Cargar campañas creadas por usuarios de esta entidad usando creadoPorId
+	// Cargar campañas de la entidad del usuario actual
 	const cargarCampanas = useCallback(async () => {
 		const usuario = obtenerUsuarioActual()
 		if (!usuario) {
@@ -68,22 +74,19 @@ export function useEntidadData() {
 		}
 
 		try {
-			// Obtener todas las campañas
-			const todasLasCampanas = await CampanaService.obtenerTodasCampanas()
+			// PASO 1: Obtener la entidad de salud del usuario actual
+			const entidadSalud = await entidadSaludService.obtenerEntidadPorUsuarioId(usuario.id)
 
-			// Obtener todos los usuarios creados por esta entidad
-			const usuariosCreados = await usuariosService.obtenerUsuariosPorCreador(usuario.id)
-			const usuariosIds = usuariosCreados.map(user => user.id)
+			if (!entidadSalud || !entidadSalud.id) {
+				setError('No se encontró la entidad de salud asociada al usuario')
+				return
+			}
 
-			// Filtrar campañas creadas por usuarios de esta entidad
-			// Asumiendo que las campañas tienen un campo creadoPorId o similar
-			const campanasDeEntidad = todasLasCampanas.filter(campana =>
-				// Aquí debería ser campana.creadoPorId, pero si no existe en la API,
-				// usaremos entidadId como fallback temporal
-				usuariosIds.includes(campana.entidadId) || campana.entidadId === usuario.id
-			)
+			// PASO 2: Obtener todas las campañas de esta entidad
+			const campanasDeEntidad = await CampanaService.obtenerCampanasPorEntidad(entidadSalud.id)
 
 			setCampanas(campanasDeEntidad)
+			console.log('✅ Campañas cargadas:', campanasDeEntidad.length)
 		} catch (err: any) {
 			console.error('Error al cargar campañas:', err)
 			setError('No se pudieron cargar las campañas de esta entidad')

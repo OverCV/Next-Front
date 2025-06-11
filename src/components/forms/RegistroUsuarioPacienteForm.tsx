@@ -93,7 +93,6 @@ export default function RegistroUsuarioPacienteForm({ onUsuarioCreado }: Registr
                 celular: datos.celular,
                 estaActivo: true,
                 rolId: ROLES.PACIENTE,
-                creadoPorId: usuario.id
             }
 
             // Usar usuarios.service con token de autenticación

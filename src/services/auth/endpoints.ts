@@ -52,7 +52,8 @@ export const ENDPOINTS = {
 		POR_IDS: (ids: number[]) => `${API_SPRINGBOOT_URL}/embajadores/ids?ids=${ids.join(",")}`,
 		ENTIDADES: {
 			BASE: `${API_SPRINGBOOT_URL}/embajadores-entidades`,
-			POR_EMBAJADOR: (embajadorId: number) => `${API_SPRINGBOOT_URL}/embajadores-entidades/embajador/${embajadorId}`
+			POR_EMBAJADOR: (embajadorId: number) => `${API_SPRINGBOOT_URL}/embajadores-entidades/embajador/${embajadorId}`,
+			POR_ENTIDAD: (entidadId: number) => `${API_SPRINGBOOT_URL}/embajadores-entidades/entidad/${entidadId}`
 		}
 	},
 
@@ -72,7 +73,8 @@ export const ENDPOINTS = {
 	// Entidades de Salud
 	ENTIDADES_SALUD: {
 		BASE: `${API_SPRINGBOOT_URL}/entidades-salud`,
-		POR_ID: (entidadId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/${entidadId}`
+		POR_ID: (entidadId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/${entidadId}`,
+		POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/entidad/${usuarioId}`
 	},
 
 	// Personal Médico

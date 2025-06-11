@@ -15,7 +15,7 @@ import { FactorRiesgoServicio } from '@/src/services/domain/factor-riesgo.servic
 import { localizacionesService } from '@/src/services/domain/localizaciones.service'
 import { ServicioCampanaService } from '@/src/services/domain/servicio-campana.service'
 import { ServicioMedicoService } from '@/src/services/domain/servicio-medico.service'
-import { FactorRiesgo, Localizacion, ServicioMedico, Usuario, CrearCampanaParams as CrearCampana, EstadoCampana, UsuarioAccedido } from '@/src/types'
+import { FactorRiesgo, Localizacion, ServicioMedico, CrearCampanaParams as CrearCampana, EstadoCampana, UsuarioAccedido } from '@/src/types'
 
 import { BasicInformationSection } from './campaign-creation/BasicInformationSection'
 import { DatesSection } from './campaign-creation/DatesSection'

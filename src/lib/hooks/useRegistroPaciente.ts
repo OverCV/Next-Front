@@ -87,8 +87,8 @@ export const useRegistroPaciente = () => {
 		try {
 			console.log("🚀 HOOK: Iniciando registro completo de paciente")
 
-			// PASO 1: Crear Usuario
-			const datosUsuario: Usuario = {
+			// PASO 1: Crear Usuario (sin creadoPorId en la interfaz Usuario)
+			const datosUsuario = {
 				tipoIdentificacion: datos.tipoIdentificacion,
 				identificacion: datos.identificacion,
 				nombres: datos.nombres,
@@ -98,7 +98,6 @@ export const useRegistroPaciente = () => {
 				celular: datos.celular,
 				estaActivo: true,
 				rolId: ROLES.PACIENTE,
-				creadoPorId: datos.creadoPorId
 			}
 
 			console.log("🔸 PASO 1: Creando usuario...")

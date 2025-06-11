@@ -165,7 +165,10 @@ export const useRegistroPacienteEmbajador = () => {
 				localizacion_id: datos.localizacion_id,
 
 				// Datos de Campaña (opcional)
-				campanaId: datos.campanaId
+				campanaId: datos.campanaId,
+
+				// ID de quien crea el paciente
+				creadoPorId: usuario?.id ?? 0
 			}
 
 			await registrarPacienteCompleto(datosCompletos, token)
