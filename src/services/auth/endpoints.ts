@@ -34,7 +34,7 @@ export const ENDPOINTS = {
 
 	// Campañas e Inscripciones
 	CAMPANAS: {
-		BASE: `${API_SPRINGBOOT_URL}/campanas`,
+		BASE: `${API_SPRINGBOOT_URL}/campana`,
 		TODAS: `${API_SPRINGBOOT_URL}/campana`,
 		POR_ID: (campanaId: number) => `${API_SPRINGBOOT_URL}/campana/${campanaId}`,
 		POR_ENTIDAD: (entidadId: number) => `${API_SPRINGBOOT_URL}/campana/entidad/${entidadId}`,
