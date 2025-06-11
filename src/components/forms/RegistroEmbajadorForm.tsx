@@ -120,15 +120,6 @@ export default function RegistroEmbajadorForm() {
                 return
             }
 
-            // const datosEmbajadoresEntidad: EmbajadorEntidad = {
-            //     entidadId: usuario.id,
-            //     embajadorId: respuestaEmbajador.id ?? 0,
-            //     entidad: null,
-            //     embajador: null,
-            // }
-
-            // await EmbajadorEntidadService.crearEmbajadoresEntidad(datosEmbajadoresEntidad)
-
             setExitoso(true)
 
             // Redirigir después de 2 segundos

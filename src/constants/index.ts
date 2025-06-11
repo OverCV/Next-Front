@@ -54,7 +54,7 @@ export const TIPOS_IDENTIFICACION: TipoIdentificacion[] = [
   { valor: TiposIdentificacionEnum.RCN, etiqueta: "Registro Civil de Nacimiento" },
 ]
 
-export const TIPOS_IDENTIFICACION_PACIENTE: TipoIdentificacion[] = [
+export const TIPOS_IDENTIFICACION_USUARIO: TipoIdentificacion[] = [
   { valor: TiposIdentificacionEnum.CC, etiqueta: "Cédula de Ciudadanía" },
   { valor: TiposIdentificacionEnum.TI, etiqueta: "Tarjeta de Identidad" },
   { valor: TiposIdentificacionEnum.RCN, etiqueta: "Registro Civil de Nacimiento" },

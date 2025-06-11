@@ -7,6 +7,7 @@ import { StatCard } from '@/src/components/StatCard'
 interface EstadisticasEntidadProps {
     estadisticas: {
         embajadoresRegistrados: number
+        auxiliaresRegistrados: number
         campanasPostuladas: number
         campanasEnEjecucion: number
     }
@@ -14,12 +15,19 @@ interface EstadisticasEntidadProps {
 
 export function EstadisticasEntidad({ estadisticas }: EstadisticasEntidadProps) {
     return (
-        <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard
                 type="ejecucion"
                 count={estadisticas.embajadoresRegistrados}
                 label="Embajadores Registrados"
                 icon="/assets/icons/people.svg"
+            />
+
+            <StatCard
+                type="ejecucion"
+                count={estadisticas.auxiliaresRegistrados}
+                label="Auxiliares Registrados"
+                icon="/assets/icons/user.svg"
             />
 
             <StatCard

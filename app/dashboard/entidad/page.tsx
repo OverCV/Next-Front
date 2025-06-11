@@ -10,6 +10,7 @@ import {
     TablaCampanas,
     useEntidadData
 } from '@/src/components/entidad'
+import TablaAuxiliares from '@/src/components/entidad/TablaAuxiliares'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { DashboardSkeleton } from '@/src/components/ui/skeletons'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
@@ -20,6 +21,7 @@ export default function EntidadPage() {
     // Hook personalizado para manejar toda la lógica de datos
     const {
         embajadores,
+        auxiliares,
         campanas,
         estadisticas,
         cargando,
@@ -59,10 +61,11 @@ export default function EntidadPage() {
                 </Alert>
             )}
 
-            {/* Tabs para Embajadores y Campañas */}
+            {/* Tabs para Embajadores, Auxiliares y Campañas */}
             <Tabs defaultValue="embajadores" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="embajadores">Embajadores</TabsTrigger>
+                    <TabsTrigger value="auxiliares">Auxiliares</TabsTrigger>
                     <TabsTrigger value="campanas">Campañas</TabsTrigger>
                 </TabsList>
 
@@ -72,6 +75,14 @@ export default function EntidadPage() {
                         embajadores={embajadores}
                         cargando={cargando}
                         busqueda={busqueda}
+                    />
+                </TabsContent>
+
+                {/* Contenido de Auxiliares */}
+                <TabsContent value="auxiliares" className="mt-4">
+                    <TablaAuxiliares
+                        auxiliares={auxiliares}
+                        onRefresh={recargarDatos}
                     />
                 </TabsContent>
 

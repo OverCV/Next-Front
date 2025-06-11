@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import {
-	TIPOS_IDENTIFICACION_PACIENTE,
+	TIPOS_IDENTIFICACION_USUARIO,
 	TiposIdentificacionEnum,
 	OPCIONES_GENERO,
 	TIPOS_SANGRE,
@@ -180,7 +180,7 @@ export const useRegistroPacienteEmbajador = () => {
 
 	// Constantes para los formularios
 	const constantesFormulario = {
-		TIPOS_IDENTIFICACION_PACIENTE,
+		TIPOS_IDENTIFICACION_PACIENTE: TIPOS_IDENTIFICACION_USUARIO,
 		OPCIONES_GENERO,
 		TIPOS_SANGRE
 	}

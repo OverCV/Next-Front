@@ -65,9 +65,9 @@ export const useRegistroPaciente = () => {
 			const response = await apiSpringClient.get(ENDPOINTS.CAMPANAS.TODAS)
 			const campanasResponse: Campana[] = response.data
 
-			// Filtrar solo campañas activas (POSTULADA o EJECUCION)
+			// Filtrar solo campañas (POSTULADA)
 			const campanasActivas = campanasResponse
-				.filter(c => c.estado === EstadoCampana.POSTULADA || c.estado === EstadoCampana.EJECUCION)
+				.filter(c => c.estado === EstadoCampana.POSTULADA)
 				.map(convertirCampanaAPI)
 
 			setCampanasDisponibles(campanasActivas)

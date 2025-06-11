@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from "@/src/components/ui/alert"
 import { Button } from "@/src/components/ui/button"
 import { Form } from "@/src/components/ui/form"
 import { SelectItem } from "@/src/components/ui/select"
-import { ROLES, TIPOS_IDENTIFICACION_PACIENTE, TiposIdentificacionEnum } from "@/src/constants"
+import { ROLES, TIPOS_IDENTIFICACION_USUARIO, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
 import { usuariosService } from "@/src/services/domain/usuarios.service"
 import { Usuario, UsuarioAccedido } from "@/src/types"
@@ -164,7 +164,7 @@ export default function RegistroUsuarioPacienteForm({ onUsuarioCreado }: Registr
                             label="Tipo de Identificación"
                             placeholder="Selecciona tipo"
                         >
-                            {TIPOS_IDENTIFICACION_PACIENTE.map((tipo) => (
+                            {TIPOS_IDENTIFICACION_USUARIO.map((tipo) => (
                                 <SelectItem key={tipo.valor} value={tipo.valor}>
                                     {tipo.etiqueta}
                                 </SelectItem>

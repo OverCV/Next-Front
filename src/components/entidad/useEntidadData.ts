@@ -2,12 +2,14 @@ import { useState, useEffect, useCallback } from 'react'
 
 import { CampanaService } from '@/src/services/domain/campana.service'
 import { entidadSaludService } from '@/src/services/domain/entidad-salud.service'
+import { usuariosService } from '@/src/services/domain/usuarios.service'
 import { useAuth } from '@/src/providers/auth-provider'
-import { Campana, Embajador } from '@/src/types'
+import { Campana, Embajador, UsuarioAccedido } from '@/src/types'
 
 export function useEntidadData() {
 	const { usuario } = useAuth()
 	const [embajadores, setEmbajadores] = useState<Embajador[]>([])
+	const [auxiliares, setAuxiliares] = useState<UsuarioAccedido[]>([])
 	const [campanas, setCampanas] = useState<Campana[]>([])
 	const [cargando, setCargando] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -32,6 +34,30 @@ export function useEntidadData() {
 			setError('No se pudieron cargar los embajadores de esta entidad')
 		}
 	}, [usuario?.identificacion])
+
+	// Cargar auxiliares creados por el usuario actual
+	const cargarAuxiliares = useCallback(async () => {
+		if (!usuario?.id) {
+			setError('No hay una sesión activa')
+			return
+		}
+
+		try {
+			console.log('🔍 Cargando auxiliares creados por usuario:', usuario.id)
+
+			// Obtener todos los usuarios creados por esta entidad
+			const usuariosCreados = await usuariosService.obtenerUsuariosPorCreador(usuario.id)
+
+			// Filtrar solo auxiliares (ROL_ID = 5)
+			const auxiliaresFiltrados = usuariosCreados.filter(u => u.rolId === 5)
+
+			setAuxiliares(auxiliaresFiltrados)
+			console.log('✅ Auxiliares cargados:', auxiliaresFiltrados.length)
+		} catch (err: any) {
+			console.error('Error al cargar auxiliares:', err)
+			setError('No se pudieron cargar los auxiliares de esta entidad')
+		}
+	}, [usuario?.id])
 
 	// Cargar campañas de la entidad del usuario actual
 	const cargarCampanas = useCallback(async () => {
@@ -68,13 +94,13 @@ export function useEntidadData() {
 		setError(null)
 
 		try {
-			await Promise.all([cargarEmbajadores(), cargarCampanas()])
+			await Promise.all([cargarEmbajadores(), cargarAuxiliares(), cargarCampanas()])
 		} catch (err) {
 			console.error('Error al cargar datos:', err)
 		} finally {
 			setCargando(false)
 		}
-	}, [cargarEmbajadores, cargarCampanas])
+	}, [cargarEmbajadores, cargarAuxiliares, cargarCampanas])
 
 	// Recargar datos
 	const recargarDatos = useCallback(() => {
@@ -84,6 +110,7 @@ export function useEntidadData() {
 	// Calcular estadísticas
 	const estadisticas = {
 		embajadoresRegistrados: embajadores.length,
+		auxiliaresRegistrados: auxiliares.length,
 		campanasPostuladas: campanas.filter(c => c.estado.toLowerCase() === 'postulada').length,
 		campanasEnEjecucion: campanas.filter(c => c.estado.toLowerCase() === 'ejecucion').length
 	}
@@ -95,6 +122,7 @@ export function useEntidadData() {
 
 	return {
 		embajadores,
+		auxiliares,
 		campanas,
 		estadisticas,
 		cargando,
