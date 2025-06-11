@@ -34,11 +34,11 @@ export const ENDPOINTS = {
 
 	// Campañas e Inscripciones
 	CAMPANAS: {
-		BASE: `${API_SPRINGBOOT_URL}/campanas`,
+		BASE: `${API_SPRINGBOOT_URL}/campana`,
 		TODAS: `${API_SPRINGBOOT_URL}/campana`,
 		POR_ID: (campanaId: number) => `${API_SPRINGBOOT_URL}/campana/${campanaId}`,
 		POR_ENTIDAD: (entidadId: number) => `${API_SPRINGBOOT_URL}/campana/entidad/${entidadId}`,
-		CAMBIAR_ESTADO: (campanaId: number) => `${API_SPRINGBOOT_URL}/campanas/${campanaId}/estatus`,
+		// CAMBIAR_ESTADO: (campanaId: number) => `${API_SPRINGBOOT_URL}/campanas/${campanaId}/estatus`,
 		INSCRIPCIONES: {
 			BASE: `${API_SPRINGBOOT_URL}/inscripciones-campana`,
 			POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/inscripciones-campana/usuario/${usuarioId}`,

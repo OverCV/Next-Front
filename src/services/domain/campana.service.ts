@@ -85,7 +85,7 @@ export const CampanaService = {
   ): Promise<Campana> => {
     try {
       const response = await apiSpringClient.patch(
-        ENDPOINTS.CAMPANAS.CAMBIAR_ESTADO(campanaId),
+        `${ENDPOINTS.CAMPANAS.BASE}/${campanaId}/estatus`,
         { estatus }
       )
       return response.data

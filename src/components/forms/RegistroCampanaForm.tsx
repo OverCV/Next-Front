@@ -22,6 +22,7 @@ import { DatesSection } from './campaign-creation/DatesSection'
 import { ParticipantsSection } from './campaign-creation/ParticipantsSection'
 import { ServicesAndFactorsSection } from './campaign-creation/ServicesAndFactorsSection'
 import { CampanaFormValues } from './campaign-creation/types'
+import entidadSaludService from '@/src/services/domain/entidad-salud.service'
 
 interface CampaignCreationFormProps {
   onSuccess?: () => void
@@ -120,45 +121,59 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
     setError(null)
 
     try {
-      // Preparar datos para envío
-      const campanaData: CrearCampana = {
-        nombre: data.nombre,
-        descripcion: data.descripcion,
-        fechaInicio: data.fechaInicio.toISOString().split('T')[0],
-        fechaLimite: data.fechaLimite.toISOString().split('T')[0],
-        fechaLimiteInscripcion: data.fechaLimiteInscripcion.toISOString().split('T')[0],
-        minParticipantes: data.minParticipantes,
-        maxParticipantes: data.maxParticipantes,
-        localizacionId: data.localizacionId,
-        estado: EstadoCampana.POSTULADA,
-        entidadId: usuario.id
+      const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(usuario.id)
+
+      if (!entidad || !entidad.id) {
+        setError('No se encontró una entidad de salud asociada al usuario')
+        return
       }
 
-      // Crear campaña
-      const result = await CampanaService.crearCampana(campanaData)
+      try {
+        // Preparar datos para envío
+        const campanaData: CrearCampana = {
+          nombre: data.nombre,
+          descripcion: data.descripcion,
+          fechaInicio: data.fechaInicio.toISOString().split('T')[0],
+          fechaLimite: data.fechaLimite.toISOString().split('T')[0],
+          fechaLimiteInscripcion: data.fechaLimiteInscripcion.toISOString().split('T')[0],
+          minParticipantes: data.minParticipantes,
+          maxParticipantes: data.maxParticipantes,
+          localizacionId: data.localizacionId,
+          estado: EstadoCampana.POSTULADA,
+          entidadId: entidad.id
+        }
 
-      // Asociar servicios y factores
-      await enviarDatosAsociados(data.serviciosIds, data.factoresIds, result?.id)
+        // Crear campaña
+        const result = await CampanaService.crearCampana(campanaData)
 
-      // Resetear formulario y notificar éxito
-      reset()
-      if (onSuccess) {
-        onSuccess()
+        // Asociar servicios y factores
+        await enviarDatosAsociados(data.serviciosIds, data.factoresIds, result?.id)
+
+        // Resetear formulario y notificar éxito
+        reset()
+        if (onSuccess) {
+          onSuccess()
+        }
+      } catch (err: any) {
+        console.error('Error al crear campaña:', err)
+
+        let errorMessage = 'Ocurrió un error al crear la campaña. Por favor, intente nuevamente.'
+        if (err.message) {
+          if (err.message.includes('servicios médicos')) {
+            errorMessage = 'La campaña se creó pero hubo un error al asociar los servicios médicos.'
+          } else if (err.message.includes('factores de riesgo')) {
+            errorMessage = 'La campaña se creó pero hubo un error al asociar los factores de riesgo.'
+          } else {
+            errorMessage = err.message
+          }
+        }
+        setError(errorMessage)
+      } finally {
+        setIsSubmitting(false)
       }
     } catch (err: any) {
       console.error('Error al crear campaña:', err)
-
-      let errorMessage = 'Ocurrió un error al crear la campaña. Por favor, intente nuevamente.'
-      if (err.message) {
-        if (err.message.includes('servicios médicos')) {
-          errorMessage = 'La campaña se creó pero hubo un error al asociar los servicios médicos.'
-        } else if (err.message.includes('factores de riesgo')) {
-          errorMessage = 'La campaña se creó pero hubo un error al asociar los factores de riesgo.'
-        } else {
-          errorMessage = err.message
-        }
-      }
-      setError(errorMessage)
+      setError('Ocurrió un error al crear la campaña. Por favor, intente nuevamente.')
     } finally {
       setIsSubmitting(false)
     }
