@@ -49,13 +49,13 @@ export const CampanaService = {
     entidadId: number
   ): Promise<CampanaModel[] | undefined> => {
     let response = undefined;
-    await httpGet(CAMPANA_RUTA + entidadId)
+    await httpGet(CAMPANA_RUTA + `/entidad/${entidadId}`)
       .then((res) => {
         if (res !== undefined) {
           response = res;
         }
       })
-      .then((err) => {
+      .catch((err) => {
         console.log("error obteniendo una entidad", err);
       });
     return response;
