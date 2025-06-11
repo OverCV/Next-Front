@@ -34,11 +34,11 @@ export default function EntidadPage() {
         setCargando(true);
         setError(null);
         try {
-            if (!usuario) {
+            if (!usuario || !usuario.entidadSaludId) {
                 setError('No hay una sesión activa. Inicie sesión nuevamente.');
                 return;
             }
-            const embajadoresEntidadData = await EmbajadorEntidadService.obtenerEmbajadoresPorEntidadId(usuario.entidadSaludId);
+            const embajadoresEntidadData = await EmbajadorEntidadService.obtenerEmbajadoresPorEntidadId(usuario?.entidadSaludId);
 
             let embajadoresData = undefined;
             if (embajadoresEntidadData !== undefined) {
@@ -58,12 +58,12 @@ export default function EntidadPage() {
         setCargando(true);
         setError(null);
         try {
-            if (!usuario) {
+            if (!usuario || !usuario?.entidadSaludId) {
                 setError('No hay una sesión activa. Inicie sesión nuevamente.');
                 return;
             }
 
-            const campanasData = await CampanaService.obtenerCampanasPorEntidad(usuario.entidadSaludId);
+            const campanasData = await CampanaService.obtenerCampanasPorEntidad(usuario?.entidadSaludId);
 
             if (campanasData !== undefined && campanasData.length > 0) {
                 setCampanas(campanasData);
