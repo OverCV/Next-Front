@@ -9,14 +9,18 @@ export const FactorCampanaService = {
    */
   asociarFactoresRiesgo: async (
     campanaId: number,
-    factoresIds: number[]
+    factoresId: number[]
   ): Promise<FactoresRiesgoCampana[]> => {
     try {
-      const response = await apiSpringClient.post(
-        `${ENDPOINTS.FACTORES_RIESGO.CAMPANA}/campana/${campanaId}/factores`,
-        factoresIds
-      )
-      return response.data
+      const factoresAsociados: FactoresRiesgoCampana[] = []
+      for (const factorId of factoresId) {
+        const response = await apiSpringClient.post(
+          `${ENDPOINTS.FACTORES_RIESGO.CAMPANA}`,
+          { campanaId, factorId }
+        )
+        factoresAsociados.push(response.data)
+      }
+      return factoresAsociados
     } catch (error) {
       console.error("Error al asociar factores de riesgo a campaña:", error)
       throw error
