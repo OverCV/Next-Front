@@ -85,7 +85,7 @@ interface CampaignCreationFormProps {
 }
 
 function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps) {
-  const { usuario } = useAuth() as { usuario: Usuario };
+  const { usuario } = useAuth() as { usuario: Usuario | undefined };
   const [localizaciones, setLocalizaciones] = useState<Localizacion[]>([]);
   const [servicios, setServicios] = useState<ServicioMedicoModel[]>([]);
   const [factores, setFactores] = useState<FactorRiesgoModel[]>([]);
