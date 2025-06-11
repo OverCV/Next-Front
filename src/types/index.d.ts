@@ -84,7 +84,7 @@ export interface CampanaModel {
   minParticipantes: number;
   maxParticipantes: number;
   entidadId: number;
-  estatus: Estatus;
+  estado: Estatus;
   fechaCreacion: string;
   pacientes?: number; // Número de pacientes inscritos
   servicios?: ServicioMedico[];
@@ -170,22 +170,7 @@ export interface Usuario extends DatosAcceso {
   estaActivo: boolean;
   rolId: number;
   entidadSalud: EntidadSalud | null;
-  entidadSaludId: number | null;
-}
-
-export interface Usuario {
-  id: number;
-  tipoIdentificacion: TiposIdentificacionEnum;
-  identificacion: string;
-  nombres: string;
-  apellidos: string;
-  correo: string;
-  celular: string;
-  estaActivo: boolean;
-  rolId: number;
-  token?: string;
   entidadSaludId: number;
-  entidadSalud?: object;
 }
 export interface UsuarioAccedido extends Usuario {
   id: number;
@@ -193,12 +178,11 @@ export interface UsuarioAccedido extends Usuario {
 }
 
 export interface EntidadSalud {
-  id?: number;
+  id: number;
   razonSocial: string;
   direccion: string;
   telefono: string;
   correo: string;
-  //usuarioId: number
 }
 
 export interface RespuestaAuth {
