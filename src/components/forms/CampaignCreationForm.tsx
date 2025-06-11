@@ -107,7 +107,7 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
     defaultValues: {
       nombre: '',
       descripcion: '',
-      localizacionId: 0,
+      localizacionId: undefined,
       fechaInicio: new Date(Date.now() + 86400000), // Mañana
       fechaLimite: new Date(Date.now() + 604800000), // Una semana después
       fechaLimiteInscripcion: new Date(Date.now() + 432000000), // 5 días después
@@ -439,15 +439,15 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
         {/* Localización */}
         <div className="space-y-2">
           <Label htmlFor="localizacionId" className={errors.localizacionId ? 'text-red-500' : ''}>
-            Localización
+            Localización*
           </Label>
           <Controller
             control={control}
             name="localizacionId"
             render={({ field }) => (
               <Select
-                value={field.value?.toString()}
-                onValueChange={(value) => field.onChange(Number(value))}
+                value={field.value?.toString() || ""}
+                onValueChange={(value) => field.onChange(value ? Number(value) : undefined)}
               >
                 <SelectTrigger className={errors.localizacionId ? 'border-red-500' : ''}>
                   <SelectValue placeholder="Seleccione una localización" />
