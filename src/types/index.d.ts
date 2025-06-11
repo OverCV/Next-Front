@@ -170,7 +170,7 @@ export interface Usuario extends DatosAcceso {
   estaActivo: boolean;
   rolId: number;
   entidadSalud: EntidadSalud | null;
-  entidadSaludId: number;
+  entidadSaludId: number | null;
 }
 export interface UsuarioAccedido extends Usuario {
   id: number;
