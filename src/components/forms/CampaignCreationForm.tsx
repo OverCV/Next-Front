@@ -167,7 +167,7 @@ function CampaignCreationForm({ onSuccess, onCancel }: CampaignCreationFormProps
         maxParticipantes: data.maxParticipantes,
         localizacionId: data.localizacionId,
         estado: "POSTULADA",
-        entidadId: usuario.entidadSaludId
+        entidadId: usuario?.entidadSaludId
       };
       // Enviar datos al servidor
       let result = await CampanaService.crearCampana(campanaData);
