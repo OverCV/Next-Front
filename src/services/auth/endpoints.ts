@@ -99,9 +99,11 @@ export const ENDPOINTS = {
 	// Citaciones Médicas
 	CITACIONES: {
 		BASE: `${API_SPRINGBOOT_URL}/citaciones-medicas`,
+		POR_ID: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}`,
 		POR_MEDICO: (medicoId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/medico/${medicoId}`,
 		POR_CAMPANA: (campanaId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/campana/${campanaId}`,
-		ACTUALIZAR_ESTADO: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}/estado`
+		ACTUALIZAR_ESTADO: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}/estado`,
+		ACTUALIZAR: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}`
 	},
 
 	// Datos Clínicos

@@ -96,6 +96,11 @@ export interface Campana {
   factores?: FactorRiesgo[]
 }
 
+export enum EstadoCitacion {
+  AGENDADA = "AGENDADA",
+  ATENDIDA = "ATENDIDA",
+  CANCELADA = "CANCELADA",
+}
 
 // Interfaz para citaciones
 export interface Citacion {
@@ -106,7 +111,7 @@ export interface Citacion {
   horaProgramada: string
   horaAtencion?: string
   duracionEstimada: number // en minutos
-  estado: "AGENDADA" | "ATENDIDA" | "CANCELADA"
+  estado: EstadoCitacion
   prediccionAsistencia?: number // 0-100%
   prioridad: number // 1-5
   notas?: string
@@ -121,7 +126,7 @@ export interface CitacionMedica {
   horaProgramada: string
   horaAtencion?: string
   duracionEstimada: number
-  estado: 'PROGRAMADA' | 'ATENDIDA' | 'CANCELADA' | 'NO_ASISTIO'
+  estado: EstadoCitacion
   prediccionAsistencia: number
   codigoTicket: string
   notas?: string

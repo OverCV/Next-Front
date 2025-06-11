@@ -4,6 +4,7 @@ import { AlertCircle } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
+import { citacionesService } from '@/src/services/domain/citaciones.service'
 import { medicosService } from '@/src/services/domain/medicos.service'
 import { PacienteCompleto } from '@/src/types'
 
@@ -58,7 +59,7 @@ export default function ModalAtencionMedica({
         setError(null)
 
         try {
-            const citacionActualizada = await medicosService.atenderCitacion(citacion.id)
+            const citacionActualizada = await citacionesService.atenderCitacion(citacion.id)
             console.log('✅ Citación marcada como atendida')
             setExito(true)
 
@@ -134,11 +135,6 @@ export default function ModalAtencionMedica({
                     <TriajeSection triaje={ultimoTriaje} />
                 </TabsContent>
 
-                {/* Tab de historial */}
-                <TabsContent value="historial" className="mt-6">
-                    <HistorialSection datosClinicosRecientes={datosClinicosRecientes} />
-                </TabsContent>
-
                 {/* Tab de predicción de riesgo CV */}
                 <TabsContent value="prediccion" className="mt-6">
                     <PredecirRiesgoCV
@@ -146,7 +142,15 @@ export default function ModalAtencionMedica({
                         campanaId={citacion.campanaId}
                     />
                 </TabsContent>
+
+                {/* Tab de diagnosticos médicos */}
+                <TabsContent value="diagnosticos" className="mt-6">
+                    <HistorialSection datosClinicosRecientes={datosClinicosRecientes} />
+                </TabsContent>
+
             </Tabs>
+
+            {/* A lo mejor otro botón??? */}
 
             {/* Botón para marcar como atendida */}
             <AtenderCitacionButton

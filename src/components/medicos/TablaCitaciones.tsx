@@ -16,7 +16,7 @@ export default function TablaCitaciones({ citaciones, onAbrirCitacion }: TablaCi
     // Obtener color del estado
     const obtenerColorEstado = (estado: string) => {
         switch (estado) {
-            case 'PROGRAMADA':
+            case 'AGENDADA':
                 return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
             case 'ATENDIDA':
                 return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
@@ -104,10 +104,12 @@ export default function TablaCitaciones({ citaciones, onAbrirCitacion }: TablaCi
                                     variant="outline"
                                     size="sm"
                                     onClick={() => onAbrirCitacion(citacion)}
+                                    disabled={citacion.estado === 'CANCELADA'}
                                     className="gap-2"
                                 >
                                     <FileText className="size-4" />
-                                    {citacion.estado === 'ATENDIDA' ? 'Ver Atención' : 'Atender'}
+                                    {citacion.estado === 'ATENDIDA' ? 'Ver Atención' :
+                                        citacion.estado === 'CANCELADA' ? 'Cancelada' : 'Atender'}
                                 </Button>
                             </td>
                         </tr>

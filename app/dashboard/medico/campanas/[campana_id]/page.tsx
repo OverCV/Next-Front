@@ -13,7 +13,7 @@ import { Button } from '@/src/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog'
 import apiSpringClient from '@/src/services/api'
 import { ENDPOINTS } from '@/src/services/auth/endpoints'
-import { medicosService } from '@/src/services/domain/medicos.service'
+import { citacionesService } from '@/src/services/domain/citaciones.service'
 import { Campana, CitacionMedica } from '@/src/types'
 
 export default function CampanasPage() {
@@ -61,7 +61,7 @@ export default function CampanasPage() {
 
 		setCargandoCitaciones(true)
 		try {
-			const citacionesData = await medicosService.obtenerCitacionesPorCampana(campanaId)
+			const citacionesData = await citacionesService.obtenerCitacionesPorCampana(campanaId)
 			setCitaciones(citacionesData)
 			console.log('✅ Citaciones cargadas:', citacionesData.length)
 		} catch (err: any) {
