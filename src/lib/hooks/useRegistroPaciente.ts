@@ -98,6 +98,8 @@ export const useRegistroPaciente = () => {
 				celular: datos.celular,
 				estaActivo: true,
 				rolId: ROLES.PACIENTE,
+				entidadSaludId: null,
+				entidadSalud: null,
 			}
 
 			console.log("🔸 PASO 1: Creando usuario...")

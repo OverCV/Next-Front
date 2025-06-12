@@ -183,7 +183,7 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
+                </div>
                     </CardContent>
                 </Card>
             )}
@@ -200,7 +200,7 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                             <Label htmlFor="presionSistolica">Presión Sistólica (mmHg)</Label>
                             <Input
                                 id="presionSistolica"
-                                type="number"
+                            type="number"
                                 min="80"
                                 max="300"
                                 value={nuevosDatos.presionSistolica}
@@ -211,21 +211,21 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                             <Label htmlFor="presionDiastolica">Presión Diastólica (mmHg)</Label>
                             <Input
                                 id="presionDiastolica"
-                                type="number"
+                            type="number"
                                 min="40"
                                 max="150"
                                 value={nuevosDatos.presionDiastolica}
                                 onChange={(e) => manejarCambio('presionDiastolica', parseInt(e.target.value) || 0)}
-                            />
-                        </div>
+                        />
                     </div>
+                </div>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="frecuenciaCardiacaMin">Frecuencia Cardíaca Mín (bpm)</Label>
                             <Input
                                 id="frecuenciaCardiacaMin"
-                                type="number"
+                            type="number"
                                 min="40"
                                 max="200"
                                 value={nuevosDatos.frecuenciaCardiacaMin}
@@ -236,21 +236,21 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                             <Label htmlFor="frecuenciaCardiacaMax">Frecuencia Cardíaca Máx (bpm)</Label>
                             <Input
                                 id="frecuenciaCardiacaMax"
-                                type="number"
+                            type="number"
                                 min="40"
                                 max="200"
                                 value={nuevosDatos.frecuenciaCardiacaMax}
                                 onChange={(e) => manejarCambio('frecuenciaCardiacaMax', parseInt(e.target.value) || 0)}
-                            />
-                        </div>
+                        />
                     </div>
+                </div>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="temperatura">Temperatura (°C)</Label>
                             <Input
                                 id="temperatura"
-                                type="number"
+                            type="number"
                                 step="0.1"
                                 min="30"
                                 max="45"
@@ -262,14 +262,14 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                             <Label htmlFor="saturacionOxigeno">Saturación O2 (%)</Label>
                             <Input
                                 id="saturacionOxigeno"
-                                type="number"
+                            type="number"
                                 min="70"
                                 max="100"
                                 value={nuevosDatos.saturacionOxigeno}
                                 onChange={(e) => manejarCambio('saturacionOxigeno', parseInt(e.target.value) || 0)}
-                            />
-                        </div>
+                        />
                     </div>
+                </div>
 
                     {/* Laboratorios */}
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -288,7 +288,7 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                             <Label htmlFor="hdl">HDL (mg/dL)</Label>
                             <Input
                                 id="hdl"
-                                type="number"
+                            type="number"
                                 min="20"
                                 max="100"
                                 value={nuevosDatos.hdl}
@@ -317,23 +317,23 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                             value={nuevosDatos.observaciones}
                             onChange={(e) => manejarCambio('observaciones', e.target.value)}
                         />
-                    </div>
+                </div>
 
                     {/* Botón de guardar */}
                     <div className="flex justify-end pt-4">
-                        <Button
+                    <Button
                             onClick={guardarDatos}
                             disabled={guardando}
-                            className="gap-2"
-                        >
+                        className="gap-2"
+                    >
                             {guardando ? (
                                 <RefreshCw className="size-4 animate-spin" />
                             ) : (
                                 <Save className="size-4" />
                             )}
                             {guardando ? 'Guardando...' : 'Guardar Datos Clínicos'}
-                        </Button>
-                    </div>
+                    </Button>
+                </div>
                 </CardContent>
             </Card>
         </div>
