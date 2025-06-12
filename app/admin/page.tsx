@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { RegistroEntidadSaludButton } from "@/src/components/auth/RegistroEntidadSaludButton"
+import NotificacionPrueba from "@/src/components/notificacionPrueba"
 import PasskeyModal from "@/src/components/PasskeyModal"
 import { StatCard } from "@/src/components/StatCard"
 import { Button } from "@/src/components/ui/button"
@@ -96,8 +97,16 @@ const AdminPage = () => {
           />
         </section>
 
-        {/* Componente de prueba para notificaciones SMS */}
-        {/*<NotificacionPrueba />*/}
+        Componente de notificaciones deshabilitado temporalmente
+        <NotificacionPrueba />
+
+
+        {/* <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <h3 className="mb-2 text-lg font-semibold">🚧 Notificaciones</h3>
+          <p className="text-slate-500">
+            Panel de notificaciones SMS/Email en desarrollo
+          </p>
+        </div> */}
       </main>
 
       <RegistroEntidadSaludButton />

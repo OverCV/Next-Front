@@ -181,6 +181,7 @@ export interface EntidadSalud {
   direccion: string
   telefono: string
   correo: string
+  usuarioId: number
 }
 
 export interface Embajador {
