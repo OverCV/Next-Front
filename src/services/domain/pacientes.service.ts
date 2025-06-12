@@ -207,5 +207,42 @@ export const pacientesService = {
 			console.error("❌ Error al inscribir usuario a campaña:", error)
 			throw error
 		}
+	},
+
+	// Obtener datos de contacto del paciente para notificaciones
+	obtenerDatosContactoPaciente: async (pacienteId: number): Promise<{
+		nombres: string;
+		apellidos: string;
+		telefono: string;
+		correo: string;
+	}> => {
+		try {
+			console.log("📞 Obteniendo datos de contacto para paciente:", pacienteId)
+
+			// Obtener información del paciente
+			const pacienteResponse = await apiSpringClient.get(ENDPOINTS.PACIENTES.POR_ID(pacienteId))
+			const paciente = pacienteResponse.data
+
+			// Obtener información del usuario asociado
+			const usuarioResponse = await apiSpringClient.get(ENDPOINTS.USUARIOS.PERFIL(paciente.usuarioId))
+			const usuario = usuarioResponse.data
+
+			console.log("✅ Datos de contacto obtenidos:", {
+				nombres: usuario.nombres,
+				apellidos: usuario.apellidos,
+				telefono: usuario.celular,
+				correo: usuario.correo
+			})
+
+			return {
+				nombres: usuario.nombres || '',
+				apellidos: usuario.apellidos || '',
+				telefono: usuario.celular || '',
+				correo: usuario.correo || ''
+			}
+		} catch (error: any) {
+			console.error("❌ Error al obtener datos de contacto del paciente:", error)
+			throw error
+		}
 	}
 }

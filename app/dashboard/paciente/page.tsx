@@ -5,6 +5,7 @@ import React from 'react'
 
 import EstadisticasPaciente from '@/src/components/pacientes/EstadisticasPaciente'
 import TablaCampanasPaciente from '@/src/components/pacientes/TablaCampanasPaciente'
+import CitacionesPaciente from '@/src/components/pacientes/CitacionesPaciente'
 import SeguimientosWidget from '@/src/components/SeguimientosWidget'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { DashboardSkeleton } from '@/src/components/ui/skeletons'
@@ -18,6 +19,7 @@ export default function PacientePage() {
     const {
         // Estados principales
         campanas,
+        usuarioId, // ID real del paciente
 
         // Estados de carga
         cargandoTriaje,
@@ -57,8 +59,8 @@ export default function PacientePage() {
             <EstadisticasPaciente estadisticas={estadisticas} />
 
             {/* 🎯 Widget de Seguimientos - PASO 3 */}
-            {usuario?.id && (
-                <SeguimientosWidget pacienteId={usuario.id} />
+            {usuarioId && (
+                <SeguimientosWidget pacienteId={usuarioId} />
             )}
 
             {/* Mis Campañas */}
@@ -67,6 +69,11 @@ export default function PacientePage() {
                 cargandoCampanas={cargandoCampanas}
                 cargarMisCampanas={cargarMisCampanas}
             />
+
+            {/* Citaciones */}
+            {usuarioId && (
+                <CitacionesPaciente pacienteId={usuarioId} />
+            )}
         </div>
     )
 }

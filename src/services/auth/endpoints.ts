@@ -164,7 +164,12 @@ export const ENDPOINTS = {
 	FASTAPI: {
 		HEALTH: `${API_FASTAPI_URL}/`,
 		PREDECIR_RIESGO: (pacienteId: number, campanaId: number) =>
-			`${API_FASTAPI_URL}/api/riesgo-cardiovascular/predecir/${pacienteId}/${campanaId}`
+			`${API_FASTAPI_URL}/api/riesgo-cardiovascular/predecir/${pacienteId}/${campanaId}`,
+		PRIORIZACION: {
+			ACTUALIZAR_POR_TRIAJE: `${API_FASTAPI_URL}/api/priorizacion/actualizar-por-triaje`,
+			CAMPANA_PACIENTES: (campanaId: number) => `${API_FASTAPI_URL}/api/priorizacion/campana/${campanaId}/pacientes`,
+			CITACIONES_PACIENTE: (pacienteId: number) => `${API_FASTAPI_URL}/api/priorizacion/paciente/${pacienteId}/citaciones`
+		}
 	},
 
 	// Predicciones (Backend Spring)
