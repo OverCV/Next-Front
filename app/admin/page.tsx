@@ -98,7 +98,7 @@ const AdminPage = () => {
         </section>
 
         {/* Componente de prueba para notificaciones SMS */}
-        <NotificacionPrueba />
+        {/*<NotificacionPrueba />*/}
       </main>
 
       <RegistroEntidadSaludButton />
