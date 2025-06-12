@@ -1,4 +1,4 @@
-import { API } from '@/src/services/api'
+import  API  from '@/src/services/api'
 import { ENDPOINTS } from '@/src/services/auth/endpoints'
 import { Medico } from '@/src/types'
 
