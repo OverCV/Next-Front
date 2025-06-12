@@ -8,7 +8,8 @@ import {
     AccionesEntidad,
     TablaEmbajadores,
     TablaCampanas,
-    useEntidadData
+    useEntidadData,
+    TablaMedicos
 } from '@/src/components/entidad'
 import TablaAuxiliares from '@/src/components/entidad/TablaAuxiliares'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
@@ -22,6 +23,7 @@ export default function EntidadPage() {
     const {
         embajadores,
         auxiliares,
+        medicos,
         campanas,
         estadisticas,
         cargando,
@@ -63,11 +65,12 @@ export default function EntidadPage() {
                 </Alert>
             )}
 
-            {/* Tabs para Embajadores, Auxiliares y Campañas */}
+            {/* Tabs para Embajadores, Auxiliares, Médicos y Campañas */}
             <Tabs defaultValue="embajadores" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="embajadores">Embajadores</TabsTrigger>
                     <TabsTrigger value="auxiliares">Auxiliares</TabsTrigger>
+                    <TabsTrigger value="medicos">Médicos</TabsTrigger>
                     <TabsTrigger value="campanas">Campañas</TabsTrigger>
                 </TabsList>
 
@@ -84,6 +87,16 @@ export default function EntidadPage() {
                 <TabsContent value="auxiliares" className="mt-4">
                     <TablaAuxiliares
                         auxiliares={auxiliares}
+                        onRefresh={recargarDatos}
+                    />
+                </TabsContent>
+
+                {/* Contenido de Médicos */}
+                <TabsContent value="medicos" className="mt-4">
+                    <TablaMedicos
+                        medicos={medicos}
+                        cargando={cargando}
+                        busqueda={busqueda}
                         onRefresh={recargarDatos}
                     />
                 </TabsContent>

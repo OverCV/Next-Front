@@ -8,6 +8,7 @@ interface EstadisticasEntidadProps {
     estadisticas: {
         embajadoresRegistrados: number
         auxiliaresRegistrados: number
+        medicosRegistrados: number
         campanasPostuladas: number
         campanasEnEjecucion: number
     }
@@ -15,7 +16,7 @@ interface EstadisticasEntidadProps {
 
 export function EstadisticasEntidad({ estadisticas }: EstadisticasEntidadProps) {
     return (
-        <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             <StatCard
                 type="ejecucion"
                 count={estadisticas.embajadoresRegistrados}
@@ -28,6 +29,13 @@ export function EstadisticasEntidad({ estadisticas }: EstadisticasEntidadProps) 
                 count={estadisticas.auxiliaresRegistrados}
                 label="Auxiliares Registrados"
                 icon="/assets/icons/user.svg"
+            />
+
+            <StatCard
+                type="ejecucion"
+                count={estadisticas.medicosRegistrados}
+                label="Médicos Registrados"
+                icon="/assets/icons/doctor.svg"
             />
 
             <StatCard

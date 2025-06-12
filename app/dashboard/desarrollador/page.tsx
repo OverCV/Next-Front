@@ -1,6 +1,6 @@
-// src/app/dashboard/desarrollador/page.tsx
+"use client"
 
-import { RegistroEntidadSaludButton } from "@/src/components/auth/RegistroEntidadSaludButton";
+// import { RegistroEntidadSaludButton } from "@/src/components/auth/RegistroEntidadButton";
 
 export default function DesarrolladorPage() {
     return <div className="space-y-6">

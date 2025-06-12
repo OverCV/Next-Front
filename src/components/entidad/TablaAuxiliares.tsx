@@ -1,13 +1,13 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+
 import { Button } from '@/src/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/src/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { useAuxiliares } from '@/src/lib/hooks/useAuxiliares'
-import { useAuth } from '@/src/providers/auth-provider'
-import { Campana, UsuarioAccedido } from '@/src/types'
-import { useState, useEffect } from 'react'
+import { UsuarioAccedido } from '@/src/types'
 
 interface TablaAuxiliaresProps {
     auxiliares: UsuarioAccedido[]
@@ -15,11 +15,9 @@ interface TablaAuxiliaresProps {
 }
 
 export default function TablaAuxiliares({ auxiliares, onRefresh }: TablaAuxiliaresProps) {
-    const { usuario } = useAuth()
     const {
         campanas,
         inscripciones,
-        cargando,
         error,
         cargarCampanas,
         cargarInscripcionesAuxiliar,
@@ -95,7 +93,7 @@ export default function TablaAuxiliares({ auxiliares, onRefresh }: TablaAuxiliar
 
     return (
         <>
-            <div className="rounded-lg border border-slate-200 overflow-hidden">
+            <div className="overflow-hidden rounded-lg border border-slate-200">
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-slate-50">
@@ -142,8 +140,8 @@ export default function TablaAuxiliares({ auxiliares, onRefresh }: TablaAuxiliar
                     </DialogHeader>
 
                     {error && (
-                        <div className="rounded-lg bg-red-50 p-3 border border-red-200">
-                            <p className="text-red-800 text-sm">{error}</p>
+                        <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                            <p className="text-sm text-red-800">{error}</p>
                         </div>
                     )}
 
@@ -174,7 +172,7 @@ export default function TablaAuxiliares({ auxiliares, onRefresh }: TablaAuxiliar
                                     </Button>
                                 </div>
                             ) : (
-                                <p className="text-slate-500 text-sm">
+                                <p className="text-sm text-slate-500">
                                     No hay campañas disponibles para inscripción
                                 </p>
                             )}
@@ -190,7 +188,7 @@ export default function TablaAuxiliares({ auxiliares, onRefresh }: TablaAuxiliar
                                         const campana = campanas.find(c => c.id === inscripcion.campanaId)
                                         return (
                                             <div key={inscripcion.id}
-                                                className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                                                className="flex items-center justify-between rounded-lg bg-slate-50 p-3">
                                                 <div>
                                                     <p className="font-medium">{campana?.nombre || 'Campaña no encontrada'}</p>
                                                     <p className="text-sm text-slate-600">
@@ -210,7 +208,7 @@ export default function TablaAuxiliares({ auxiliares, onRefresh }: TablaAuxiliar
                                     })}
                                 </div>
                             ) : (
-                                <p className="text-slate-500 text-sm">
+                                <p className="text-sm text-slate-500">
                                     No tiene inscripciones activas
                                 </p>
                             )}

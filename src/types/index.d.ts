@@ -193,6 +193,20 @@ export interface Embajador {
   correo: string
 }
 
+export interface Medico {
+  id?: number
+  usuarioId: number
+  entidadId: number
+  especialidad: string
+  // Campos de Usuario (pueden venir en un join)
+  nombreCompleto?: string
+  identificacion?: string
+  correo?: string
+  telefono?: string
+  // Campos de Entidad (pueden venir en un join)
+  entidadSalud?: EntidadSalud
+}
+
 export interface EmbajadorEntidad {
   id?: number
   entidadId: number
@@ -200,14 +214,6 @@ export interface EmbajadorEntidad {
   entidad: EntidadSalud | null
   embajador: Embajador | null
 }
-
-// export interface EmbajadorEntidad {
-//   id?: number
-//   entidadId: number
-//   embajadorId: number
-//   entidad: EntidadSalud | null
-//   embajador: Embajador | null
-// }
 
 // Interfaces autenticación y usuario
 export interface DatosAcceso {

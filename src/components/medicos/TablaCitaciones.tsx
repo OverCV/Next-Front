@@ -2,10 +2,16 @@
 
 import { Calendar, FileText } from 'lucide-react'
 import React from 'react'
+import { useRouter } from "next/navigation"
 
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
-import { Citacion, EstadoCampana, EstadoCitacion } from '@/src/types'
+import { Citacion, EstadoCitacion } from '@/src/types'
+import {
+    getBackgroundColor,
+    getHoverBackgroundColor,
+    getTextColor
+} from "@/src/lib/utils"
 
 interface TablaCitacionesProps {
     citaciones: Citacion[]

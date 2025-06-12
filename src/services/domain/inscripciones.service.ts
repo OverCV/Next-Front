@@ -1,38 +1,6 @@
+import { InscripcionCampana, CampanaConLocalizacion } from '@/src/types';
 import apiSpringClient from '../api'
 import { ENDPOINTS } from '../auth/endpoints'
-
-// Interfaces para las inscripciones
-export interface InscripcionCampana {
-	id: number
-	usuarioId: number
-	campanaId: number
-	fechaInscripcion: string
-	estado: 'INSCRITO' | 'RETIRADO' | 'FINALIZADO'
-	motivoRetiro?: string
-}
-
-export interface CampanaConLocalizacion {
-	id: number
-	nombre: string
-	descripcion: string
-	localizacionId: number
-	fechaLimiteInscripcion: string
-	fechaInicio: string
-	fechaLimite: string
-	minParticipantes: number
-	maxParticipantes: number
-	entidadId: number
-	estado: 'POSTULADA' | 'EJECUCION' | 'FINALIZADA' | 'CANCELADA'
-	localizacion?: {
-		id: number
-		departamento: string
-		municipio: string
-		vereda?: string
-		localidad?: string
-		latitud: number
-		longitud: number
-	}
-}
 
 export interface InscripcionCompleta {
 	inscripcion: InscripcionCampana

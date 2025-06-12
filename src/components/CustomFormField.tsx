@@ -104,13 +104,16 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
       return (
         <FormControl>
           <PhoneInput
-            defaultCountry="US"
+            defaultCountry="CO"
             placeholder={props.placeholder}
             international
             withCountryCallingCode
             value={field.value as E164Number | undefined}
             onChange={field.onChange}
             className="input-phone"
+            countrySelectProps={{
+              disabled: true
+            }}
           />
         </FormControl>
       );

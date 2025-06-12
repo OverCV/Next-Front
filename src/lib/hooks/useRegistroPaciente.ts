@@ -5,7 +5,8 @@ import apiSpringClient from "@/src/services/api"
 import { ENDPOINTS } from "@/src/services/auth/endpoints"
 import { pacientesService } from "@/src/services/domain/pacientes.service"
 import { usuariosService } from "@/src/services/domain/usuarios.service"
-import { Usuario, GeneroBiologico, Campana, EstadoCampana } from "@/src/types"
+// import { Usuario } from "@/src/types"
+import { GeneroBiologico, Campana, EstadoCampana } from "@/src/types"
 
 export interface DatosRegistroCompleto {
 	// Datos del Usuario

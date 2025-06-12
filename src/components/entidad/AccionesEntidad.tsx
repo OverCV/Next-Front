@@ -1,6 +1,6 @@
 "use client"
 
-import { UserPlus, RefreshCw, Search, PlusCircle, UserCheck } from 'lucide-react'
+import { UserPlus, RefreshCw, Search, PlusCircle, UserCheck, Stethoscope } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import { Button } from '@/src/components/ui/button'
@@ -29,6 +29,10 @@ export function AccionesEntidad({
         router.push('/dashboard/entidad/registrar-auxiliar')
     }
 
+    const irARegistroMedico = () => {
+        router.push('/dashboard/entidad/registrar-medico')
+    }
+
     const irAPostularCampana = () => {
         router.push('/dashboard/entidad/postular-campana')
     }
@@ -51,6 +55,15 @@ export function AccionesEntidad({
                 >
                     <UserCheck className="size-4" />
                     Registrar Auxiliar
+                </Button>
+
+                <Button
+                    onClick={irARegistroMedico}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                >
+                    <Stethoscope className="size-4" />
+                    Registrar Médico
                 </Button>
 
                 <Button

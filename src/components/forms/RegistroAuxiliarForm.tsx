@@ -9,7 +9,7 @@ import { z } from "zod"
 import { Button } from "@/src/components/ui/button"
 import { Form } from "@/src/components/ui/form"
 import { SelectItem } from "@/src/components/ui/select"
-import { ROLES, TIPOS_IDENTIFICACION, TIPOS_IDENTIFICACION_USUARIO, TiposIdentificacionEnum } from "@/src/constants"
+import { ROLES, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
 import { Usuario, UsuarioAccedido } from "@/src/types"
 
