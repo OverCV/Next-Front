@@ -108,11 +108,12 @@ El dashboard del paciente muestra:
    - Estado actual
 
 ### 3.3 Triaje
-#### Completar Triaje Inicial
-1. Acceda a la sección "Triaje"
+#### Completar Triaje Inicial Paciente
+1. Cuando el paciente inicia sesión se le solicita realizar el trijae inicial
 2. Complete el formulario de triaje inicial
 3. Proporcione la información médica requerida
 4. Guarde y envíe el formulario
+![](../images/TriajeInicial.png)
 
 ## 4. Panel de Embajador
 
@@ -172,10 +173,15 @@ El dashboard de la entidad muestra:
 ### 5.3 Gestión de Embajadores
 #### Asignar Embajadores a Campañas
 Una vez el embajador es creado desde el Dashboard de la Entidad de Salud, se asigna la Campaña a la cual quedará inscrito.
+![](../images/InscripcionCampañaEmbajador.jpg)
 
+## 6. Panel Paciente
 
+![](../images/DashboardPaciente.png)
 
-
+### 6.1 Triaje Inicial
+- Una evz el usuario inicia sesión por priemra vez se le solicta el diligenciamiento de un Triaje inicial
+![](../images/TriajeInicial.png)
 
 ## 6. Funcionalidades Comunes
 
@@ -190,29 +196,6 @@ El sistema envía notificaciones para:
 - Actualizaciones de estado
 - Recordatorios importantes
 - Mensajes del sistema
-
-## 7. Solución de Problemas
-
-### 7.1 Preguntas Frecuentes
-1. **¿Cómo puedo recuperar mi contraseña?**
-   - Utilice la opción "¿Olvidó su contraseña?" en la pantalla de inicio de sesión
-   - Siga las instrucciones enviadas a su correo electrónico
-
-2. **¿Cómo actualizo mi información personal?**
-   - Acceda a su perfil de usuario
-   - Haga clic en "Editar Perfil"
-   - Actualice la información necesaria
-
-3. **¿Qué hago si no puedo acceder a una campaña?**
-   - Verifique que cumple con los requisitos
-   - Contacte al embajador asignado
-   - Comuníquese con soporte técnico
-
-### 7.2 Contacto de Soporte
-Para asistencia técnica:
-- Email: soporte@sistema.com
-- Teléfono: (123) 456-7890
-- Horario de atención: Lunes a Viernes, 8:00 AM - 6:00 PM
 
 ---
 
