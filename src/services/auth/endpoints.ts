@@ -6,9 +6,12 @@ import { API_SPRINGBOOT_URL, API_FASTAPI_URL } from '@/src/config/env'
 export const ENDPOINTS = {
 	// Autenticación
 	AUTH: {
+		BASE: `${API_SPRINGBOOT_URL}/auth`,
 		REGISTRO: `${API_SPRINGBOOT_URL}/auth/registro`,
 		ACCESO: `${API_SPRINGBOOT_URL}/auth/acceso`,
 		SALIR: `${API_SPRINGBOOT_URL}/auth/salir`,
+		SOLICITAR_RECUPERACION: `${API_SPRINGBOOT_URL}/auth/solicitar-recuperacion`,
+		CAMBIAR_CONTRASEÑA: `${API_SPRINGBOOT_URL}/auth/cambiar-contraseña`
 	},
 
 	// Usuarios

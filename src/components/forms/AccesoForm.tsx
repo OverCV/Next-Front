@@ -1,9 +1,9 @@
-// src\components\forms\AccesoForm.tsx
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AlertCircle } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -160,6 +160,16 @@ export default function AccesoForm(): JSX.Element {
 						>
 							{cargando ? "Accediendo..." : "Iniciar Sesión"}
 						</Button>
+
+						{/* Enlace para recuperar contraseña */}
+						<div className="text-center">
+							<Link
+								href="/recuperar-contraseña"
+								className="text-sm text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+							>
+								¿Olvidaste tu contraseña?
+							</Link>
+						</div>
 					</form>
 				</Form>
 			</div>

@@ -112,7 +112,7 @@ export default function RegistrarPacientePage() {
 
                         {/* Sección: Datos del Usuario */}
                         <DatosUsuario
-                            control={form.control}
+                                    control={form.control}
                             constantesFormulario={constantesFormulario}
                         />
 
@@ -121,7 +121,7 @@ export default function RegistrarPacientePage() {
 
                         {/* Sección: Datos del Paciente */}
                         <DatosPaciente
-                            control={form.control}
+                                    control={form.control}
                             constantesFormulario={constantesFormulario}
                             localizaciones={localizaciones}
                             cargandoLocalizaciones={cargandoLocalizaciones}
@@ -132,7 +132,7 @@ export default function RegistrarPacientePage() {
 
                         {/* Sección: Inscripción a Campaña */}
                         <InscripcionCampana
-                            control={form.control}
+                                    control={form.control}
                             campanasDisponibles={campanasDisponibles}
                             cargandoCampanas={cargandoCampanas}
                         />
