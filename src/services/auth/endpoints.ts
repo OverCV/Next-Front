@@ -164,7 +164,8 @@ export const ENDPOINTS = {
 		PRIORIZACION: {
 			ACTUALIZAR_POR_TRIAJE: `${API_FASTAPI_URL}/api/priorizacion/actualizar-por-triaje`,
 			CAMPANA_PACIENTES: (campanaId: number) => `${API_FASTAPI_URL}/api/priorizacion/campana/${campanaId}/pacientes`,
-			CITACIONES_PACIENTE: (pacienteId: number) => `${API_FASTAPI_URL}/api/priorizacion/paciente/${pacienteId}/citaciones`
+			CITACIONES_PACIENTE: (pacienteId: number) => `${API_FASTAPI_URL}/api/priorizacion/paciente/${pacienteId}/citaciones`,
+			GENERAR_MANUAL: (campanaId: number) => `${API_FASTAPI_URL}/api/priorizacion/priorizacion/campana/${campanaId}/generar`
 		}
 	},
 

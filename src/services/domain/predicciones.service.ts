@@ -29,7 +29,7 @@ export const prediccionesService = {
 	},
 
 	// Predecir riesgo cardiovascular (FastAPI)
-	predecirRiesgoCardiovascular: async (pacienteId: number, campanaId: number): Promise<PredictionResponse> => {
+	predecirRiesgoCardiovascular: async (pacienteId: number, campanaId: number): Promise<any> => {
 		console.log('🔮 Prediciendo riesgo cardiovascular...')
 		try {
 			const response = await fetch(ENDPOINTS.FASTAPI.PREDECIR_RIESGO(pacienteId, campanaId), {
@@ -52,15 +52,16 @@ export const prediccionesService = {
 		}
 	},
 
-	// Actualizar priorización después del triaje
+	// Actualizar priorización por triaje (FastAPI)
 	actualizarPriorizacionPorTriaje: async (pacienteId: number): Promise<any> => {
-		console.log('🔄 Actualizando priorización después del triaje para paciente:', pacienteId)
+		console.log('🔄 Actualizando priorización por triaje para paciente:', pacienteId)
 		try {
-			const response = await fetch(`${ENDPOINTS.FASTAPI.PRIORIZACION.ACTUALIZAR_POR_TRIAJE}?paciente_id=${pacienteId}`, {
+			const response = await fetch(ENDPOINTS.FASTAPI.PRIORIZACION.ACTUALIZAR_POR_TRIAJE, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
+				body: JSON.stringify({ paciente_id: pacienteId }),
 			})
 
 			if (!response.ok) {
@@ -72,15 +73,13 @@ export const prediccionesService = {
 			return data
 		} catch (error) {
 			console.error('❌ Error al actualizar priorización:', error)
-			// No lanzamos el error para que no afecte el flujo principal del triaje
-			console.warn('⚠️ La priorización no se pudo actualizar, pero el triaje fue exitoso')
-			return null
+			throw error
 		}
 	},
 
-	// Obtener priorización de pacientes para una campaña
-	obtenerPriorizacionCampana: async (campanaId: number): Promise<any> => {
-		console.log('📊 Obteniendo priorización para campaña:', campanaId)
+	// Obtener pacientes priorizados de una campaña (FastAPI)
+	obtenerPacientesPriorizados: async (campanaId: number): Promise<any> => {
+		console.log('📊 Obteniendo pacientes priorizados para campaña:', campanaId)
 		try {
 			const response = await fetch(ENDPOINTS.FASTAPI.PRIORIZACION.CAMPANA_PACIENTES(campanaId), {
 				method: 'GET',
@@ -94,10 +93,34 @@ export const prediccionesService = {
 			}
 
 			const data = await response.json()
-			console.log('✅ Priorización obtenida:', data)
+			console.log('✅ Pacientes priorizados obtenidos:', data)
 			return data
 		} catch (error) {
-			console.error('❌ Error al obtener priorización:', error)
+			console.error('❌ Error al obtener pacientes priorizados:', error)
+			throw error
+		}
+	},
+
+	// Generar priorización manual (FastAPI)
+	generarPriorizacionManual: async (campanaId: number): Promise<any> => {
+		console.log('🔧 Generando priorización manual para campaña:', campanaId)
+		try {
+			const response = await fetch(ENDPOINTS.FASTAPI.PRIORIZACION.GENERAR_MANUAL(campanaId), {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			})
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`)
+			}
+
+			const data = await response.json()
+			console.log('✅ Priorización manual generada:', data)
+			return data
+		} catch (error) {
+			console.error('❌ Error al generar priorización manual:', error)
 			throw error
 		}
 	},
