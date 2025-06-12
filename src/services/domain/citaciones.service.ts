@@ -69,11 +69,13 @@ export const citacionesService = {
 		}
 	},
 
-	// Actualizar solo estado de citación (PATCH) - método alternativo más simple
-	actualizarEstadoCitacion: async (citacionId: number, estado: string): Promise<Citacion> => {
-		console.log('🔄 Actualizando estado de citación:', citacionId, estado)
+	// Actualizar estado de citación (auxiliares/médicos)
+	actualizarEstadoCitacion: async (citacionId: number, nuevoEstado: EstadoCitacion): Promise<any> => {
+		console.log('🔄 Actualizando estado de citación:', citacionId, nuevoEstado)
 		try {
-			const response = await apiSpringClient.patch(ENDPOINTS.CITACIONES.ACTUALIZAR_ESTADO(citacionId), { estado })
+			const response = await apiSpringClient.put(`/api/citaciones-medicas/${citacionId}/estado`, {
+				estado: nuevoEstado
+			})
 			console.log('✅ Estado de citación actualizado')
 			return response.data
 		} catch (error) {
@@ -126,26 +128,29 @@ export const citacionesService = {
 		}
 	},
 
-	// Marcar citación como atendida (médicos)
-	atenderCitacion: async (citacionId: number): Promise<Citacion> => {
-		console.log('👨‍⚕️ Marcando citación como atendida:', citacionId)
+	// Marcar citación como atendida con seguimientos automáticos (médicos)
+	marcarComoAtendida: async (citacionId: number): Promise<any> => {
+		console.log('🩺 Marcando citación como atendida:', citacionId)
 		try {
-			// Obtener la citación completa primero
-			const citacionActual = await citacionesService.obtenerCitacionPorId(citacionId)
-
-			// Actualizar estado y hora de atención
-			const horaAtencion = new Date().toISOString()
-			const citacionActualizada = {
-				...citacionActual,
-				estado: 'ATENDIDA' as const,
-				horaAtencion
-			}
-
-			const response = await apiSpringClient.put(ENDPOINTS.CITACIONES.ACTUALIZAR(citacionId), citacionActualizada)
-			console.log('✅ Citación marcada como atendida')
+			const response = await apiSpringClient.put(`/api/citaciones-medicas/${citacionId}/marcar-atendida`)
+			console.log('✅ Citación marcada como atendida - Seguimientos iniciados')
 			return response.data
 		} catch (error) {
 			console.error('❌ Error al marcar citación como atendida:', error)
+			throw error
+		}
+	},
+
+	// Completar atención médica con hora específica
+	completarAtencion: async (citacionId: number, horaAtencion?: string): Promise<any> => {
+		console.log('📋 Completando atención médica:', citacionId)
+		try {
+			const payload = horaAtencion ? { hora_atencion: horaAtencion } : {}
+			const response = await apiSpringClient.put(`/api/citaciones-medicas/${citacionId}/completar-atencion`, payload)
+			console.log('✅ Atención médica completada')
+			return response.data
+		} catch (error) {
+			console.error('❌ Error al completar atención médica:', error)
 			throw error
 		}
 	}

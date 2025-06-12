@@ -1,4 +1,4 @@
-import  API  from '@/src/services/api'
+import apiSpringClient from '@/src/services/api'
 import { ENDPOINTS } from '@/src/services/auth/endpoints'
 import { Medico } from '@/src/types'
 
@@ -16,7 +16,7 @@ const MedicoService = {
 	 * @returns El médico creado.
 	 */
 	crearMedico: async (payload: CrearMedicoPayload): Promise<Medico> => {
-		const { data } = await API.post<Medico>(ENDPOINTS.PERSONAL_MEDICO.BASE, payload);
+		const { data } = await apiSpringClient.post<Medico>(ENDPOINTS.PERSONAL_MEDICO.BASE, payload);
 		return data;
 	},
 
@@ -26,7 +26,7 @@ const MedicoService = {
 	 * @returns Un array de médicos.
 	 */
 	obtenerMedicosPorEntidad: async (entidadId: number): Promise<Medico[]> => {
-		const { data } = await API.get<Medico[]>(ENDPOINTS.PERSONAL_MEDICO.POR_ENTIDAD(entidadId));
+		const { data } = await apiSpringClient.get<Medico[]>(ENDPOINTS.PERSONAL_MEDICO.POR_ENTIDAD(entidadId));
 		return data;
 	},
 
@@ -36,7 +36,7 @@ const MedicoService = {
 	 * @returns El objeto del médico.
 	 */
 	obtenerMedicoPorId: async (medicoId: number): Promise<Medico> => {
-		const { data } = await API.get<Medico>(ENDPOINTS.PERSONAL_MEDICO.POR_ID(medicoId));
+		const { data } = await apiSpringClient.get<Medico>(ENDPOINTS.PERSONAL_MEDICO.POR_ID(medicoId));
 		return data;
 	},
 
@@ -45,7 +45,7 @@ const MedicoService = {
 	 * @param medicoId - El ID del médico a eliminar.
 	 */
 	eliminarMedico: async (medicoId: number): Promise<void> => {
-		await API.delete(ENDPOINTS.PERSONAL_MEDICO.POR_ID(medicoId));
+		await apiSpringClient.delete(ENDPOINTS.PERSONAL_MEDICO.POR_ID(medicoId));
 	}
 };
 
