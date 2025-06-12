@@ -41,11 +41,11 @@ El sistema cuenta con cinco tipos de usuarios principales:
 
 2. **Registro de Embajadores y Personal Médico**
    - Solo las Entidades de Salud pueden registrar tanto los embajadores como el personal médico (Médicos y Auxiliares)
-   
+
    - Proceso:
      1. La entidad accede a su panel de gestión
      ![](../images/PanelEntidadSalud.png)
-     2. Selecciona: 
+     2. Selecciona:
          - Registrar Embajador
       ![](../images/RegistroEmbajador.png)
          - Registrar Médico
@@ -57,6 +57,10 @@ El sistema cuenta con cinco tipos de usuarios principales:
         - Área de especialización en el caso de médico
         - Zona
      4. Tanto el embajador como el personal médico recibe credenciales de acceso
+     5. Así mismo mismo se tiene que asignar una campaña a la cual se inscribirá.
+     ![Asociación embajador a campaña](../images/embajador-inscripcion.jpg)
+     7. Así mismo se puede eliminar la referencia
+     ![Eliminación de referencia](../images/embajador-quitai-inscripcion.jpg)
 
 3. **Registro de Pacientes**
    - Solo los Embajadores pueden registrar pacientes
