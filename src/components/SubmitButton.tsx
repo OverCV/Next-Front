@@ -24,6 +24,7 @@ const SubmitButton = ({ isLoading, className, children }: ButtonProps) => {
             width={24}
             height={24}
             className="animate-spin"
+            style={{ height: "auto", width: "24px" }}
           />
           Loading...
         </div>

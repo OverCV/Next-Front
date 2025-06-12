@@ -4,19 +4,21 @@ import { AlertCircle } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
+import { citacionesService } from '@/src/services/domain/citaciones.service'
 import { medicosService } from '@/src/services/domain/medicos.service'
-import { PacienteCompleto } from '@/src/types'
+import { Citacion, PacienteCompleto } from '@/src/types'
 
 import DatosClinicosForm from '../forms/DatosClinicosForm'
 
 import {
     PacienteHeader,
     TriajeSection,
-    HistorialSection,
     StatusMessages,
     AtenderCitacionButton,
     LoadingModal,
-    ModalAtencionMedicaProps
+    ModalAtencionMedicaProps,
+    HistorialAtencionesSection,
+    DiagnosticoMedicoSection
 } from './modal-atencion'
 import PredecirRiesgoCV from './PredecirRiesgoCV'
 
@@ -27,7 +29,6 @@ export default function ModalAtencionMedica({
 }: ModalAtencionMedicaProps) {
     const [pacienteCompleto, setPacienteCompleto] = useState<PacienteCompleto | null>(null)
     const [cargandoPaciente, setCargandoPaciente] = useState(true)
-    const [atendiendoCitacion, setAtendiendoCitacion] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [exito, setExito] = useState(false)
 
@@ -52,35 +53,21 @@ export default function ModalAtencionMedica({
         cargarPacienteCompleto()
     }, [citacion.pacienteId])
 
-    // Marcar citación como atendida
-    const atenderCitacion = async () => {
-        setAtendiendoCitacion(true)
-        setError(null)
+    // Manejar citación atendida (callback del botón)
+    const manejarCitacionAtendida = (citacionActualizada: Citacion) => {
+        setExito(true)
+        onCitacionAtendida(citacionActualizada)
 
-        try {
-            const citacionActualizada = await medicosService.atenderCitacion(citacion.id)
-            console.log('✅ Citación marcada como atendida')
-            setExito(true)
-
-            // Notificar al componente padre
-            onCitacionAtendida(citacionActualizada)
-
-            // Cerrar modal después de un momento
-            setTimeout(() => {
-                onCerrar()
-            }, 1500)
-
-        } catch (err: any) {
-            console.error('❌ Error al marcar citación como atendida:', err)
-            setError('No se pudo marcar la citación como atendida')
-        } finally {
-            setAtendiendoCitacion(false)
-        }
+        // Cerrar modal después de un momento
+        setTimeout(() => {
+            onCerrar()
+        }, 1500)
     }
 
-    // Manejar guardado de datos clínicos y atender citación
-    const manejarGuardadoDatos = async () => {
-        await atenderCitacion()
+    // Callback para el formulario (sin parámetros)
+    const manejarGuardadoDatos = () => {
+        console.log('📝 Datos clínicos guardados')
+        // El formulario solo guarda datos, no atiende la citación
     }
 
     // Estado de carga
@@ -101,7 +88,7 @@ export default function ModalAtencionMedica({
         )
     }
 
-    const { usuario, triajes, datosClinicosRecientes } = pacienteCompleto
+    const { usuario, triajes } = pacienteCompleto
     const ultimoTriaje = triajes[0] // El más reciente
 
     return (
@@ -114,10 +101,11 @@ export default function ModalAtencionMedica({
 
             {/* Contenido principal con tabs */}
             <Tabs defaultValue="datos-clinicos" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="datos-clinicos">Datos Clínicos</TabsTrigger>
                     <TabsTrigger value="triaje">Triaje Inicial</TabsTrigger>
                     <TabsTrigger value="historial">Historial</TabsTrigger>
+                    <TabsTrigger value="diagnostico">Diagnóstico</TabsTrigger>
                     <TabsTrigger value="prediccion">Predecir Riesgo CV</TabsTrigger>
                 </TabsList>
 
@@ -134,9 +122,17 @@ export default function ModalAtencionMedica({
                     <TriajeSection triaje={ultimoTriaje} />
                 </TabsContent>
 
-                {/* Tab de historial */}
+                {/* Tab de historial de atenciones médicas */}
                 <TabsContent value="historial" className="mt-6">
-                    <HistorialSection datosClinicosRecientes={datosClinicosRecientes} />
+                    <HistorialAtencionesSection citacionId={citacion.id} />
+                </TabsContent>
+
+                {/* Tab de diagnóstico médico */}
+                <TabsContent value="diagnostico" className="mt-6">
+                    <DiagnosticoMedicoSection
+                        citacionId={citacion.id}
+                        pacienteId={citacion.pacienteId}
+                    />
                 </TabsContent>
 
                 {/* Tab de predicción de riesgo CV */}
@@ -151,8 +147,7 @@ export default function ModalAtencionMedica({
             {/* Botón para marcar como atendida */}
             <AtenderCitacionButton
                 citacion={citacion}
-                atendiendoCitacion={atendiendoCitacion}
-                onAtender={atenderCitacion}
+                onCitacionAtendida={manejarCitacionAtendida}
             />
         </div>
     )

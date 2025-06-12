@@ -13,8 +13,8 @@ import { Button } from '@/src/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog'
 import apiSpringClient from '@/src/services/api'
 import { ENDPOINTS } from '@/src/services/auth/endpoints'
-import { medicosService } from '@/src/services/domain/medicos.service'
-import { Campana, CitacionMedica } from '@/src/types'
+import { citacionesService } from '@/src/services/domain/citaciones.service'
+import { Campana, Citacion } from '@/src/types'
 
 export default function CampanasPage() {
 	const params = useParams()
@@ -22,8 +22,8 @@ export default function CampanasPage() {
 	const campanaId = Number(params.campana_id)
 
 	const [campana, setCampana] = useState<Campana | null>(null)
-	const [citaciones, setCitaciones] = useState<CitacionMedica[]>([])
-	const [citacionSeleccionada, setCitacionSeleccionada] = useState<CitacionMedica | null>(null)
+	const [citaciones, setCitaciones] = useState<Citacion[]>([])
+	const [citacionSeleccionada, setCitacionSeleccionada] = useState<Citacion | null>(null)
 	const [modalAbierto, setModalAbierto] = useState(false)
 
 	const [cargandoCampana, setCargandoCampana] = useState(true)
@@ -61,7 +61,7 @@ export default function CampanasPage() {
 
 		setCargandoCitaciones(true)
 		try {
-			const citacionesData = await medicosService.obtenerCitacionesPorCampana(campanaId)
+			const citacionesData = await citacionesService.obtenerCitacionesPorCampana(campanaId)
 			setCitaciones(citacionesData)
 			console.log('✅ Citaciones cargadas:', citacionesData.length)
 		} catch (err: any) {
@@ -73,7 +73,7 @@ export default function CampanasPage() {
 	}
 
 	// Abrir modal de atención médica
-	const abrirModalAtencion = (citacion: CitacionMedica) => {
+	const abrirModalAtencion = (citacion: Citacion) => {
 		setCitacionSeleccionada(citacion)
 		setModalAbierto(true)
 	}
@@ -85,7 +85,7 @@ export default function CampanasPage() {
 	}
 
 	// Manejar citación atendida
-	const manejarCitacionAtendida = (citacionActualizada: CitacionMedica) => {
+	const manejarCitacionAtendida = (citacionActualizada: Citacion) => {
 		// Actualizar la citación en el estado
 		setCitaciones(prev =>
 			prev.map(c =>

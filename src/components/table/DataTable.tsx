@@ -110,6 +110,7 @@ export function DataTable<TData, TValue>({
             width={24}
             height={24}
             alt="arrow"
+            style={{ height: "auto", width: "24px" }}
           />
         </Button>
         <Button
@@ -125,6 +126,7 @@ export function DataTable<TData, TValue>({
             height={24}
             alt="arrow "
             className="rotate-180"
+            style={{ height: "auto", width: "24px" }}
           />
         </Button>
       </div>

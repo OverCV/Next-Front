@@ -1,61 +1,31 @@
 import { useState, useEffect, useCallback } from 'react'
 
 import { CampanaService } from '@/src/services/domain/campana.service'
-import EmbajadorEntidadService from '@/src/services/domain/embajador-entidad.service'
-import { usuariosService } from '@/src/services/domain/usuarios.service'
-import { Campana, Embajador, UsuarioAccedido } from '@/src/types'
 import { entidadSaludService } from '@/src/services/domain/entidad-salud.service'
+import { usuariosService } from '@/src/services/domain/usuarios.service'
+import { useAuth } from '@/src/providers/auth-provider'
+import { Campana, Embajador, UsuarioAccedido } from '@/src/types'
 
 export function useEntidadData() {
+	const { usuario } = useAuth()
 	const [embajadores, setEmbajadores] = useState<Embajador[]>([])
+	const [auxiliares, setAuxiliares] = useState<UsuarioAccedido[]>([])
 	const [campanas, setCampanas] = useState<Campana[]>([])
 	const [cargando, setCargando] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 
-	// Obtener el usuario actual
-	const obtenerUsuarioActual = (): UsuarioAccedido | null => {
-		try {
-			const userStr = localStorage.getItem("usuario")
-			if (!userStr) return null
-			return JSON.parse(userStr)
-		} catch {
-			return null
-		}
-	}
-
-	// Cargar embajadores asociados a la entidad del usuario actual
+	// Cargar embajadores usando el NIT del usuario actual
 	const cargarEmbajadores = useCallback(async () => {
-		const usuario = obtenerUsuarioActual()
-		if (!usuario) {
-			setError('No hay una sesión activa. Inicie sesión nuevamente')
+		if (!usuario?.identificacion) {
+			setError('No hay una sesión activa o el usuario no tiene NIT')
 			return
 		}
 
 		try {
-			// PASO 1: Obtener la entidad de salud del usuario actual
-			const entidadSalud = await entidadSaludService.obtenerEntidadPorUsuarioId(usuario.id)
+			console.log('🔍 Cargando embajadores por NIT:', usuario.identificacion)
 
-			if (!entidadSalud || !entidadSalud.id) {
-				setError('No se encontró la entidad de salud asociada al usuario')
-				return
-			}
-
-			console.log('✅ Entidad de salud encontrada:', entidadSalud.id)
-
-			// PASO 2: Obtener todos los embajadores asociados a esta entidad
-			const embajadoresEntidad = await EmbajadorEntidadService.obtenerEmbajadoresPorEntidadId(entidadSalud.id)
-
-			// PASO 3: Obtener datos completos de cada embajador
-			const embajadoresData: Embajador[] = []
-			for (const embajadorEntidad of embajadoresEntidad) {
-				try {
-					if (embajadorEntidad.embajador) {
-						embajadoresData.push(embajadorEntidad.embajador)
-					}
-				} catch (err) {
-					console.warn(`No se pudo cargar embajador ${embajadorEntidad.embajadorId}:`, err)
-				}
-			}
+			// Usar el endpoint que funciona: /api/entidades-salud/embajadores-nit/{nit}
+			const embajadoresData = await entidadSaludService.obtenerEmbajadoresPorNIT(usuario.identificacion)
 
 			setEmbajadores(embajadoresData)
 			console.log('✅ Embajadores cargados:', embajadoresData.length)
@@ -63,21 +33,46 @@ export function useEntidadData() {
 			console.error('Error al cargar embajadores:', err)
 			setError('No se pudieron cargar los embajadores de esta entidad')
 		}
-	}, [])
+	}, [usuario?.identificacion])
 
-	// Cargar campañas de la entidad del usuario actual
-	const cargarCampanas = useCallback(async () => {
-		const usuario = obtenerUsuarioActual()
-		if (!usuario) {
-			setError('No hay una sesión activa. Inicie sesión nuevamente')
+	// Cargar auxiliares creados por el usuario actual
+	const cargarAuxiliares = useCallback(async () => {
+		if (!usuario?.id) {
+			setError('No hay una sesión activa')
 			return
 		}
 
 		try {
+			console.log('🔍 Cargando auxiliares creados por usuario:', usuario.id)
+
+			// Obtener todos los usuarios creados por esta entidad
+			const usuariosCreados = await usuariosService.obtenerUsuariosPorCreador(usuario.id)
+
+			// Filtrar solo auxiliares (ROL_ID = 5)
+			const auxiliaresFiltrados = usuariosCreados.filter(u => u.rolId === 5)
+
+			setAuxiliares(auxiliaresFiltrados)
+			console.log('✅ Auxiliares cargados:', auxiliaresFiltrados.length)
+		} catch (err: any) {
+			console.error('Error al cargar auxiliares:', err)
+			setError('No se pudieron cargar los auxiliares de esta entidad')
+		}
+	}, [usuario?.id])
+
+	// Cargar campañas de la entidad del usuario actual
+	const cargarCampanas = useCallback(async () => {
+		if (!usuario?.id) {
+			setError('No hay una sesión activa')
+			return
+		}
+
+		try {
+			console.log('🔍 Cargando campañas para usuario ID:', usuario.id)
+
 			// PASO 1: Obtener la entidad de salud del usuario actual
 			const entidadSalud = await entidadSaludService.obtenerEntidadPorUsuarioId(usuario.id)
 
-			if (!entidadSalud || !entidadSalud.id) {
+			if (!entidadSalud?.id) {
 				setError('No se encontró la entidad de salud asociada al usuario')
 				return
 			}
@@ -91,7 +86,7 @@ export function useEntidadData() {
 			console.error('Error al cargar campañas:', err)
 			setError('No se pudieron cargar las campañas de esta entidad')
 		}
-	}, [])
+	}, [usuario?.id])
 
 	// Cargar todos los datos
 	const cargarDatos = useCallback(async () => {
@@ -99,13 +94,13 @@ export function useEntidadData() {
 		setError(null)
 
 		try {
-			await Promise.all([cargarEmbajadores(), cargarCampanas()])
+			await Promise.all([cargarEmbajadores(), cargarAuxiliares(), cargarCampanas()])
 		} catch (err) {
 			console.error('Error al cargar datos:', err)
 		} finally {
 			setCargando(false)
 		}
-	}, [cargarEmbajadores, cargarCampanas])
+	}, [cargarEmbajadores, cargarAuxiliares, cargarCampanas])
 
 	// Recargar datos
 	const recargarDatos = useCallback(() => {
@@ -115,6 +110,7 @@ export function useEntidadData() {
 	// Calcular estadísticas
 	const estadisticas = {
 		embajadoresRegistrados: embajadores.length,
+		auxiliaresRegistrados: auxiliares.length,
 		campanasPostuladas: campanas.filter(c => c.estado.toLowerCase() === 'postulada').length,
 		campanasEnEjecucion: campanas.filter(c => c.estado.toLowerCase() === 'ejecucion').length
 	}
@@ -126,6 +122,7 @@ export function useEntidadData() {
 
 	return {
 		embajadores,
+		auxiliares,
 		campanas,
 		estadisticas,
 		cargando,
