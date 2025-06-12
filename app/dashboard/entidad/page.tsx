@@ -40,6 +40,8 @@ export default function EntidadPage() {
         )
     }
 
+    console.log('')
+
     return (
         <div className="space-y-8">
             {/* Estadísticas con iconos reales */}

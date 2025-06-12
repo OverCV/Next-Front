@@ -31,11 +31,11 @@ const cambiarContraseñaSchema = z.object({
 
 type CambiarContraseñaValues = z.infer<typeof cambiarContraseñaSchema>
 
-interface CambiarContraseñaFormProps {
+interface CambiarContrasenaFormProps {
     token: string
 }
 
-export default function CambiarContraseñaForm({ token }: CambiarContraseñaFormProps) {
+export default function CambiarContrasenaForm({ token }: CambiarContrasenaFormProps) {
     const router = useRouter()
     const [cambiando, setCambiando] = useState(false)
     const [cambiado, setCambiado] = useState(false)
@@ -56,11 +56,36 @@ export default function CambiarContraseñaForm({ token }: CambiarContraseñaForm
             setCambiando(true)
             setError(null)
 
+            // Validar token localmente primero
+            const datosRecuperacion = localStorage.getItem('recuperacion_temp')
+            if (!datosRecuperacion) {
+                setError("El enlace de recuperación no es válido o ha expirado")
+                return
+            }
+
+            const { token: tokenLocal, email, expiracion } = JSON.parse(datosRecuperacion)
+
+            // Verificar si el token coincide
+            if (tokenLocal !== token) {
+                setError("El enlace de recuperación no es válido")
+                return
+            }
+
+            // Verificar si no ha expirado (24 horas)
+            if (Date.now() > expiracion) {
+                setError("El enlace de recuperación ha expirado. Solicita uno nuevo.")
+                localStorage.removeItem('recuperacion_temp')
+                return
+            }
+
+            // Si la validación local pasa, enviar al backend
             await authService.cambiarContraseñaConToken({
-                token,
+                email,
                 nuevaContraseña: datos.nuevaContraseña
             })
 
+            // Limpiar datos temporales
+            localStorage.removeItem('recuperacion_temp')
             setCambiado(true)
             console.log('✅ Contraseña cambiada exitosamente')
 
@@ -73,9 +98,9 @@ export default function CambiarContraseñaForm({ token }: CambiarContraseñaForm
             console.error('❌ Error al cambiar contraseña:', err)
 
             if (err.response?.status === 400) {
-                setError("El enlace de recuperación ha expirado o no es válido")
+                setError("Error al procesar la solicitud")
             } else if (err.response?.status === 404) {
-                setError("El enlace de recuperación no es válido")
+                setError("Usuario no encontrado")
             } else {
                 setError("Error al cambiar la contraseña. Intenta nuevamente.")
             }
@@ -217,7 +242,7 @@ export default function CambiarContraseñaForm({ token }: CambiarContraseñaForm
                                 href="/acceso"
                                 className="text-sm text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
                             >
-                                ← Volver al Inicio de Sesión
+                                Volver al Inicio de Sesión
                             </Link>
                         </div>
                     </form>

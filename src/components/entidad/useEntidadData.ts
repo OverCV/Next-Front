@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 
+import { useAuth } from '@/src/providers/auth-provider'
 import { CampanaService } from '@/src/services/domain/campana.service'
 import { entidadSaludService } from '@/src/services/domain/entidad-salud.service'
 import { usuariosService } from '@/src/services/domain/usuarios.service'
-import { useAuth } from '@/src/providers/auth-provider'
 import { Campana, Embajador, UsuarioAccedido } from '@/src/types'
 
 export function useEntidadData() {

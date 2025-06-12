@@ -25,6 +25,8 @@ const recuperacionSchema = z.object({
 type SolicitarRecuperacionValues = z.infer<typeof recuperacionSchema>
 
 export default function SolicitarRecuperacionForm() {
+    console.log('🚀 SolicitarRecuperacionForm renderizando...')
+
     const [enviando, setEnviando] = useState(false)
     const [enviado, setEnviado] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -41,7 +43,7 @@ export default function SolicitarRecuperacionForm() {
             setEnviando(true)
             setError(null)
 
-            await authService.solicitarRecuperacionContraseña(datos.email)
+            await authService.solicitarRecuperacionContrasena(datos.email)
 
             setEnviado(true)
             console.log('✅ Solicitud de recuperación enviada')

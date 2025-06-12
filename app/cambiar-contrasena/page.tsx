@@ -4,7 +4,7 @@ import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 
-import CambiarContraseñaForm from "@/src/components/forms/CambiarContraseñaForm"
+import CambiarContrasenaForm from "@/src/components/forms/CambiarContrasenaForm"
 import { Alert, AlertDescription } from "@/src/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 
@@ -47,7 +47,7 @@ export default function CambiarContraseñaPage(): JSX.Element {
 
                                 <div className="text-center">
                                     <button
-                                        onClick={() => router.push('/recuperar-contraseña')}
+                                        onClick={() => router.push('/recuperar-contrasena')}
                                         className="text-sm text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
                                     >
                                         Solicitar Nuevo Enlace
@@ -93,7 +93,7 @@ export default function CambiarContraseñaPage(): JSX.Element {
                         className="mb-6 h-10 w-fit"
                     />
 
-                    <CambiarContraseñaForm token={token} />
+                    <CambiarContrasenaForm token={token} />
                 </div>
             </section>
 
