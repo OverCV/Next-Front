@@ -11,6 +11,7 @@ import { Form } from "@/src/components/ui/form"
 import { SelectItem } from "@/src/components/ui/select"
 import { ROLES, TIPOS_IDENTIFICACION_USUARIO, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
+import { notificacionesService } from "@/src/services/notificaciones"
 import { Usuario, UsuarioAccedido } from "@/src/types"
 
 import CustomFormField, { FormFieldType } from "../CustomFormField"
@@ -39,6 +40,7 @@ export default function RegistroAuxiliarForm() {
     const [error, setError] = useState<string | null>(null)
     const [cargando, setCargando] = useState<boolean>(false)
     const [exitoso, setExitoso] = useState<boolean>(false)
+    const [enviandoSMS, setEnviandoSMS] = useState<boolean>(false)
 
     const form = useForm<RegistroAuxiliarFormValues>({
         resolver: zodResolver(registroAuxiliarSchema),
@@ -53,6 +55,21 @@ export default function RegistroAuxiliarForm() {
             confirmarClave: ""
         }
     })
+
+    // Función para enviar SMS de bienvenida
+    const enviarSMSBienvenida = async (telefono: string, nombres: string, identificacion: string): Promise<void> => {
+        try {
+            setEnviandoSMS(true)
+            const mensaje = `¡Hola ${nombres}! 🏥 Bienvenido al equipo auxiliar de HealInk. Tu cuenta ha sido creada. Usuario: ${identificacion} | Accede con la contraseña que definiste en healink.com`
+
+            await notificacionesService.enviarSMS(telefono, mensaje)
+            console.log("✅ SMS de bienvenida auxiliar enviado exitosamente")
+        } catch (err) {
+            console.error("⚠️ Error al enviar SMS de bienvenida auxiliar:", err)
+        } finally {
+            setEnviandoSMS(false)
+        }
+    }
 
     const onSubmit = async (datos: RegistroAuxiliarFormValues): Promise<void> => {
         setCargando(true)
@@ -83,6 +100,10 @@ export default function RegistroAuxiliarForm() {
             await registroUsuario(datosRegistro)
 
             setExitoso(true)
+
+            // Enviar SMS de bienvenida de forma asíncrona
+            enviarSMSBienvenida(datos.telefono, datos.nombres, datos.identificacion)
+
             form.reset()
 
             // Redirigir después de 2 segundos
@@ -111,6 +132,7 @@ export default function RegistroAuxiliarForm() {
                 <div className="rounded-lg bg-green-50 p-4 border border-green-200">
                     <p className="text-green-800 font-medium">
                         ✅ Auxiliar registrado exitosamente
+                        {enviandoSMS && " | Enviando SMS de bienvenida..."}
                     </p>
                     <p className="text-green-600 text-sm mt-1">
                         Redirigiendo al dashboard...

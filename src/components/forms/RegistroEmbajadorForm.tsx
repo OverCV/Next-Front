@@ -14,6 +14,7 @@ import { Form } from "@/src/components/ui/form"
 import { SelectItem } from "@/src/components/ui/select"
 import { ROLES, TIPOS_IDENTIFICACION, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
+import { notificacionesService } from "@/src/services/notificaciones"
 // import EmbajadorEntidadService from "@/src/services/domain/embajador-entidad.service"
 import EmbajadorService from "@/src/services/domain/embajador.service"
 import { Embajador, Usuario, UsuarioAccedido } from "@/src/types"
@@ -59,6 +60,7 @@ export default function RegistroEmbajadorForm() {
     const [error, setError] = useState<string | null>(null)
     const [cargando, setCargando] = useState<boolean>(false)
     const [exitoso, setExitoso] = useState<boolean>(false)
+    const [enviandoSMS, setEnviandoSMS] = useState<boolean>(false)
 
     const form = useForm<RegistroEmbajadorFormValues>({
         resolver: zodResolver(registroEmbajadorSchema),
@@ -74,6 +76,21 @@ export default function RegistroEmbajadorForm() {
             localidad: "",
         },
     })
+
+    // Función para enviar SMS de bienvenida
+    const enviarSMSBienvenida = async (telefono: string, nombres: string, identificacion: string): Promise<void> => {
+        try {
+            setEnviandoSMS(true)
+            const mensaje = `¡Hola ${nombres}! 🏥 Bienvenido como embajador de HealInk. Tu cuenta ha sido creada. Usuario: ${identificacion} | Accede con tu contraseña en healink.com para empezar a ayudar a tu comunidad.`
+
+            await notificacionesService.enviarSMS(telefono, mensaje)
+            console.log("✅ SMS de bienvenida embajador enviado exitosamente")
+        } catch (err) {
+            console.error("⚠️ Error al enviar SMS de bienvenida embajador:", err)
+        } finally {
+            setEnviandoSMS(false)
+        }
+    }
 
     const onSubmit = async (datos: RegistroEmbajadorFormValues): Promise<void> => {
         setCargando(true)
@@ -122,6 +139,9 @@ export default function RegistroEmbajadorForm() {
 
             setExitoso(true)
 
+            // Enviar SMS de bienvenida de forma asíncrona
+            enviarSMSBienvenida(datos.telefono, datos.nombres, datos.identificacion)
+
             // Redirigir después de 2 segundos
             setTimeout(() => {
                 router.push('/dashboard/entidad')
@@ -158,6 +178,7 @@ export default function RegistroEmbajadorForm() {
                 <Alert className="mb-6 bg-green-50 text-green-800 dark:bg-green-900 dark:text-green-50">
                     <AlertDescription>
                         Embajador registrado exitosamente. Serás redirigido al listado...
+                        {enviandoSMS && " | Enviando SMS de bienvenida..."}
                     </AlertDescription>
                 </Alert>
             )}
