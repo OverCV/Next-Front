@@ -1,115 +1,87 @@
 // src/components/PasskeyModal.tsx
 "use client";
 
-import Image from "next/image";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation"
+import { useState } from "react"
 
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/src/components/ui/alert-dialog";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/src/components/ui/input-otp";
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/src/components/ui/dialog"
 
-// Función simple de encriptación/desencriptación
-const encryptKey = (key: string): string => btoa(key);
-const decryptKey = (encryptedKey: string): string => {
-  try {
-    return atob(encryptedKey);
-  } catch (error) {
-    console.error("Error al desencriptar clave:", error);
-    return "";
-  }
-};
+import { Button } from "./ui/button"
 
-export const PasskeyModal = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+export default function PasskeyModal() {
+    const searchParams = useSearchParams()
+    const [isOpen, setIsOpen] = useState(searchParams.has("admin"))
+    const [error, setError] = useState("")
 
-  const [open, setOpen] = useState(false);
-  const [passkey, setPasskey] = useState("");
-  const [error, setError] = useState("");
-
-  // Comprobar si debemos mostrar el modal al cargar
-
-  const closeModal = () => {
-    setOpen(false);
-    router.push("/acceso");
-  };
-
-  const validatePasskey = () => {
-    const clavePase = process.env.NEXT_PUBLIC_PASSKEY || "111111";
-
-    if (passkey === clavePase) {
-      localStorage.setItem("accessKey", encryptKey(passkey));
-      setOpen(false);
-      router.push("/ruta-por-parametro?");
-    } else {
-      setError("Código de acceso inválido. Por favor, inténtelo de nuevo.");
+    const onClose = () => {
+        setIsOpen(false)
+        setError("")
     }
-  };
 
+    // Funciones placeholder para evitar errores (no implementadas)
+    const validatePasskey = async () => {
+        setError("Funcionalidad de Passkey no implementada")
+    }
 
-  return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogContent className="z-50">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-start justify-between">
-            Verificación de Acceso
-            <button onClick={closeModal} className="cursor-pointer">
-              <Image
-                src="/assets/icons/close.svg"
-                alt="close"
-                width={20}
-                height={20}
-                style={{ height: "auto", width: "20px" }}
-              />
-            </button>
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            Para acceder a la página, ingrese el código de acceso.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <div>
-          <InputOTP
-            maxLength={6}
-            value={passkey}
-            onChange={(value) => setPasskey(value)}
-          >
-            <InputOTPGroup>
-              <InputOTPSlot index={0} />
-              <InputOTPSlot index={1} />
-              <InputOTPSlot index={2} />
-              <InputOTPSlot index={3} />
-              <InputOTPSlot index={4} />
-              <InputOTPSlot index={5} />
-            </InputOTPGroup>
-          </InputOTP>
+    const createNewPasskey = async () => {
+        setError("Funcionalidad de Passkey no implementada")
+    }
 
-          {error && (
-            <p className="mt-4 text-center text-sm text-red-500">
-              {error}
-            </p>
-          )}
-        </div>
-        <AlertDialogFooter>
-          <AlertDialogAction
-            onClick={validatePasskey}
-            className="w-full"
-          >
-            Ingresar Código
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-};
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogContent className="shad-dialog">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center justify-between">
+                        Acceso de administrador verificado
+                        <Button
+                            type="button"
+                            className="text-dark-400"
+                            onClick={onClose}
+                        >
+                            ✕
+                        </Button>
+                    </DialogTitle>
+                    <DialogDescription>
+                        Para acceder a la página de administración, por favor, verifique su identidad.
+                    </DialogDescription>
+                </DialogHeader>
+
+                {error && <p className="text-red-500">{error}</p>}
+
+                <div className="flex flex-col gap-6">
+                    <div className="flex items-center justify-between gap-2">
+                        <div className="flex size-24 items-center justify-center rounded-lg bg-slate-100 text-4xl">
+                            🔐
+                        </div>
+                        <p className="text-dark-700">
+                            Verificación de Passkey requerida para continuar
+                        </p>
+                    </div>
+
+                    <Button
+                        type="button"
+                        className="shad-primary-btn w-full"
+                        onClick={validatePasskey}
+                        disabled
+                    >
+                        Verificar Passkey (No implementado)
+                    </Button>
+                    <Button
+                        type="button"
+                        className="shad-primary-btn w-full"
+                        onClick={createNewPasskey}
+                        disabled
+                    >
+                        Crear Nueva Passkey (No implementado)
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+    )
+}

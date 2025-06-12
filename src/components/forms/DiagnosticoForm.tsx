@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Pill,
-    ListChecks,
     Clock,
     Save,
     Dumbbell,

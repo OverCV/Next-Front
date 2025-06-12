@@ -9,6 +9,8 @@ export const metadata: Metadata = {
 }
 
 export default function RecuperarContraseñaPage(): JSX.Element {
+    console.log('📄 RecuperarContraseñaPage cargando...')
+    
     return (
         <div className="flex h-screen max-h-screen">
             <section className="remove-scrollbar container relative my-auto">

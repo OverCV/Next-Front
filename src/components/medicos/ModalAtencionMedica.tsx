@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/ta
 import { citacionesService } from '@/src/services/domain/citaciones.service'
 import { medicosService } from '@/src/services/domain/medicos.service'
 import { Citacion, PacienteCompleto } from '@/src/types'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 
 import DatosClinicosForm from '../forms/DatosClinicosForm'
 
@@ -19,7 +20,7 @@ import {
     ModalAtencionMedicaProps,
     HistorialAtencionesSection,
     DiagnosticoMedicoSection
-} from './modal-atencion'
+    } from './modal-atencion'
 import PredecirRiesgoCV from './PredecirRiesgoCV'
 
 export default function ModalAtencionMedica({

@@ -10,9 +10,9 @@ export default function GlobalError({
 }: {
   error: Error & { digest?: string };
 }) {
-  // useEffect(() => {
-  //   Sentry.captureException(error);
-  // }, [error]);
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
 
   return (
     <html>
@@ -21,7 +21,7 @@ export default function GlobalError({
         definition requires a `statusCode` prop. However, since the App Router
         does not expose status codes for errors, we simply pass 0 to render a
         generic error message. */}
-        <NextError statusCode={0} />
+        <NextError statusCode={500} title="Error" />
       </body>
     </html>
   );

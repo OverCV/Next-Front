@@ -14,12 +14,12 @@ const TOKEN_KEY = 'authToken'
 const USER_KEY = 'usuario'
 
 // Tipos para recuperación de contraseña
-interface SolicitudRecuperacion {
-	email: string
-}
+// interface SolicitudRecuperacion {
+// 	email: string
+// }
 
-interface CambiarContraseñaConToken {
-	token: string
+interface CambiarContrasenaConToken {
+	email: string
 	nuevaContraseña: string
 }
 
@@ -98,27 +98,73 @@ export const authService = {
 
 	/**
 	 * Solicita recuperación de contraseña por email
+	 * Genera token temporal y envía correo usando notificaciones.ts
 	 */
-	solicitarRecuperacionContraseña: async (email: string): Promise<void> => {
+	solicitarRecuperacionContrasena: async (email: string): Promise<void> => {
 		try {
-			console.log("🔐 AUTH-SERVICE: Solicitando recuperación de contraseña...")
+			console.log("🔐 AUTH-SERVICE: Generando token de recuperación...")
 
-			const solicitud: SolicitudRecuperacion = { email }
-			await apiSpringClient.post(ENDPOINTS.AUTH.SOLICITAR_RECUPERACION, solicitud)
+			// Generar token temporal (válido por 24h)
+			const tokenRecuperacion = crypto.randomUUID()
+			const expiracion = Date.now() + (24 * 60 * 60 * 1000) // 24 horas
 
-			console.log("✅ AUTH-SERVICE: Solicitud de recuperación enviada")
+			// Guardar token en localStorage temporal
+			const datosRecuperacion = {
+				token: tokenRecuperacion,
+				email,
+				expiracion
+			}
+			localStorage.setItem('recuperacion_temp', JSON.stringify(datosRecuperacion))
+
+			// Crear enlace de recuperación
+			const enlaceRecuperacion = `${window.location.origin}/cambiar-contrasena?token=${tokenRecuperacion}`
+
+			// Contenido del correo
+			const contenidoCorreo = `
+				<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+					<h2 style="color: #2563eb;">Recuperación de Contraseña</h2>
+					<p>Hola,</p>
+					<p>Recibimos una solicitud para restablecer la contraseña de tu cuenta.</p>
+					<p>Haz clic en el siguiente enlace para crear una nueva contraseña:</p>
+					<div style="text-align: center; margin: 30px 0;">
+						<a href="${enlaceRecuperacion}" 
+						   style="background-color: #2563eb; color: white; padding: 12px 24px; 
+						          text-decoration: none; border-radius: 6px; display: inline-block;">
+							Restablecer Contraseña
+						</a>
+					</div>
+					<p style="color: #666; font-size: 14px;">
+						Este enlace será válido por 24 horas.<br>
+						Si no solicitaste este cambio, puedes ignorar este correo.
+					</p>
+					<hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+					<p style="color: #999; font-size: 12px;">
+						Sistema de Campañas de Salud
+					</p>
+				</div>
+			`
+
+			// Enviar correo usando el servicio de notificaciones
+			const { notificacionesService } = await import('@/src/services/notificaciones')
+			await notificacionesService.enviarCorreo(
+				email,
+				"Recuperación de Contraseña - Sistema de Campañas",
+				contenidoCorreo
+			)
+
+			console.log("✅ AUTH-SERVICE: Correo de recuperación enviado")
 		} catch (error) {
-			console.error("❌ AUTH-SERVICE: Error al solicitar recuperación:", error)
+			console.error("❌ AUTH-SERVICE: Error al enviar recuperación:", error)
 			throw error
 		}
 	},
 
 	/**
-	 * Cambia la contraseña usando un token de recuperación
+	 * Cambia la contraseña usando email (validación de token ya hecha en frontend)
 	 */
-	cambiarContraseñaConToken: async (datos: CambiarContraseñaConToken): Promise<void> => {
+	cambiarContraseñaConToken: async (datos: CambiarContrasenaConToken): Promise<void> => {
 		try {
-			console.log("🔐 AUTH-SERVICE: Cambiando contraseña con token...")
+			console.log("🔐 AUTH-SERVICE: Cambiando contraseña...")
 
 			await apiSpringClient.post(ENDPOINTS.AUTH.CAMBIAR_CONTRASEÑA, datos)
 
