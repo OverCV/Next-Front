@@ -9,6 +9,7 @@ import { Campana, Embajador, Medico, UsuarioAccedido } from '@/src/types'
 
 export function useEntidadData() {
 	const { usuario } = useAuth()
+	const { usuario } = useAuth()
 	const [embajadores, setEmbajadores] = useState<Embajador[]>([])
 	const [auxiliares, setAuxiliares] = useState<UsuarioAccedido[]>([])
 	const [medicos, setMedicos] = useState<Medico[]>([])
@@ -17,13 +18,20 @@ export function useEntidadData() {
 	const [error, setError] = useState<string | null>(null)
 
 	// Cargar embajadores usando el NIT del usuario actual
+	// Cargar embajadores usando el NIT del usuario actual
 	const cargarEmbajadores = useCallback(async () => {
+		if (!usuario?.identificacion) {
+			setError('No hay una sesión activa o el usuario no tiene NIT')
 		if (!usuario?.identificacion) {
 			setError('No hay una sesión activa o el usuario no tiene NIT')
 			return
 		}
 
 		try {
+			console.log('🔍 Cargando embajadores por NIT:', usuario.identificacion)
+
+			// Usar el endpoint que funciona: /api/entidades-salud/embajadores-nit/{nit}
+			const embajadoresData = await entidadSaludService.obtenerEmbajadoresPorNIT(usuario.identificacion)
 			console.log('🔍 Cargando embajadores por NIT:', usuario.identificacion)
 
 			// Usar el endpoint que funciona: /api/entidades-salud/embajadores-nit/{nit}
@@ -112,6 +120,7 @@ export function useEntidadData() {
 			console.error('Error al cargar campañas:', err)
 			setError('No se pudieron cargar las campañas de esta entidad')
 		}
+	}, [usuario?.id])
 	}, [usuario?.id])
 
 	// Cargar todos los datos

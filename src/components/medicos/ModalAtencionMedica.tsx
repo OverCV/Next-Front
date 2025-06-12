@@ -4,7 +4,7 @@ import { AlertCircle } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
-// import { citacionesService } from '@/src/services/domain/citaciones.service'
+import { citacionesService } from '@/src/services/domain/citaciones.service'
 import { medicosService } from '@/src/services/domain/medicos.service'
 import { Citacion, PacienteCompleto } from '@/src/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
@@ -20,7 +20,7 @@ import {
     ModalAtencionMedicaProps,
     HistorialAtencionesSection,
     DiagnosticoMedicoSection
-} from './modal-atencion'
+    } from './modal-atencion'
 import PredecirRiesgoCV from './PredecirRiesgoCV'
 
 export default function ModalAtencionMedica({

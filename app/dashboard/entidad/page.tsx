@@ -12,6 +12,7 @@ import {
     TablaMedicos
 } from '@/src/components/entidad'
 import TablaAuxiliares from '@/src/components/entidad/TablaAuxiliares'
+import TablaAuxiliares from '@/src/components/entidad/TablaAuxiliares'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { DashboardSkeleton } from '@/src/components/ui/skeletons'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
