@@ -1,9 +1,9 @@
 "use client"
 
-import { Brain, AlertCircle, RefreshCw, TrendingUp, Calendar, Target, CheckCircle, Heart } from 'lucide-react'
+import { Brain, AlertCircle, RefreshCw, TrendingUp, CheckCircle, Heart } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 
-import { Alert, AlertDescription } from '@/src/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/src/components/ui/alert'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'

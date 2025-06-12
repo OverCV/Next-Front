@@ -14,9 +14,9 @@ import { Form } from "@/src/components/ui/form"
 import { SelectItem } from "@/src/components/ui/select"
 import { ROLES, TIPOS_IDENTIFICACION, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
-import EmbajadorEntidadService from "@/src/services/domain/embajador-entidad.service"
+// import EmbajadorEntidadService from "@/src/services/domain/embajador-entidad.service"
 import EmbajadorService from "@/src/services/domain/embajador.service"
-import { Embajador, EmbajadorEntidad, Usuario, UsuarioAccedido } from "@/src/types"
+import { Embajador, Usuario, UsuarioAccedido } from "@/src/types"
 
 // Esquema de validación
 const registroEmbajadorSchema = z.object({

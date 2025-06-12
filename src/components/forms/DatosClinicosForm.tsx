@@ -277,7 +277,7 @@ export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinic
                             <Label htmlFor="colesterolTotal">Colesterol Total (mg/dL)</Label>
                             <Input
                                 id="colesterolTotal"
-                                type="number"
+                            type="number"
                                 min="100"
                                 max="400"
                                 value={nuevosDatos.colesterolTotal}

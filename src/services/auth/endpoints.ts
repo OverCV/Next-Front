@@ -83,7 +83,12 @@ export const ENDPOINTS = {
 	// Personal Médico
 	PERSONAL_MEDICO: {
 		BASE: `${API_SPRINGBOOT_URL}/personal-medico`,
-		POR_ID: (medicoId: number) => `${API_SPRINGBOOT_URL}/personal-medico/${medicoId}`
+		POR_ID: (medicoId: number) => `${API_SPRINGBOOT_URL}/personal-medico/${medicoId}`,
+		POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/personal-medico/usuario/${usuarioId}`,
+		PAGINADO: `${API_SPRINGBOOT_URL}/personal-medico/paged`,
+		POR_ESPECIALIDAD: (especialidad: string) => `${API_SPRINGBOOT_URL}/personal-medico/especialidad/${especialidad}`,
+		POR_ENTIDAD: (entidadId: number) => `${API_SPRINGBOOT_URL}/personal-medico/entidad/${entidadId}`,
+		POR_ENTIDAD_Y_ESPECIALIDAD: (entidadId: number, especialidad: string) => `${API_SPRINGBOOT_URL}/personal-medico/entidad/${entidadId}/especialidad/${especialidad}`
 	},
 
 	// Localizaciones

@@ -1,27 +1,37 @@
 import { useState, useEffect, useCallback } from 'react'
 
+import { useAuth } from '@/src/providers/auth-provider'
 import { CampanaService } from '@/src/services/domain/campana.service'
 import { entidadSaludService } from '@/src/services/domain/entidad-salud.service'
+import MedicoService from '@/src/services/domain/medico.service'
 import { usuariosService } from '@/src/services/domain/usuarios.service'
-import { useAuth } from '@/src/providers/auth-provider'
-import { Campana, Embajador, UsuarioAccedido } from '@/src/types'
+import { Campana, Embajador, Medico, UsuarioAccedido } from '@/src/types'
 
 export function useEntidadData() {
 	const { usuario } = useAuth()
+	const { usuario } = useAuth()
 	const [embajadores, setEmbajadores] = useState<Embajador[]>([])
 	const [auxiliares, setAuxiliares] = useState<UsuarioAccedido[]>([])
+	const [medicos, setMedicos] = useState<Medico[]>([])
 	const [campanas, setCampanas] = useState<Campana[]>([])
 	const [cargando, setCargando] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 
 	// Cargar embajadores usando el NIT del usuario actual
+	// Cargar embajadores usando el NIT del usuario actual
 	const cargarEmbajadores = useCallback(async () => {
+		if (!usuario?.identificacion) {
+			setError('No hay una sesión activa o el usuario no tiene NIT')
 		if (!usuario?.identificacion) {
 			setError('No hay una sesión activa o el usuario no tiene NIT')
 			return
 		}
 
 		try {
+			console.log('🔍 Cargando embajadores por NIT:', usuario.identificacion)
+
+			// Usar el endpoint que funciona: /api/entidades-salud/embajadores-nit/{nit}
+			const embajadoresData = await entidadSaludService.obtenerEmbajadoresPorNIT(usuario.identificacion)
 			console.log('🔍 Cargando embajadores por NIT:', usuario.identificacion)
 
 			// Usar el endpoint que funciona: /api/entidades-salud/embajadores-nit/{nit}
@@ -59,6 +69,30 @@ export function useEntidadData() {
 		}
 	}, [usuario?.id])
 
+	// Cargar médicos de la entidad del usuario actual
+	const cargarMedicos = useCallback(async () => {
+		if (!usuario?.id) return;
+
+		try {
+			console.log('🔍 Cargando médicos para la entidad del usuario:', usuario.id)
+
+			// 1. Obtener la entidad de salud del usuario
+			const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(usuario.id)
+			if (!entidad?.id) {
+				throw new Error("No se encontró la entidad de salud del usuario.")
+			}
+
+			// 2. Obtener los médicos de esa entidad
+			const medicosData = await MedicoService.obtenerMedicosPorEntidad(entidad.id)
+
+			setMedicos(medicosData)
+			console.log('✅ Médicos cargados:', medicosData.length)
+		} catch (err: any) {
+			console.error('Error al cargar médicos:', err)
+			setError('No se pudieron cargar los médicos de esta entidad')
+		}
+	}, [usuario?.id])
+
 	// Cargar campañas de la entidad del usuario actual
 	const cargarCampanas = useCallback(async () => {
 		if (!usuario?.id) {
@@ -87,6 +121,7 @@ export function useEntidadData() {
 			setError('No se pudieron cargar las campañas de esta entidad')
 		}
 	}, [usuario?.id])
+	}, [usuario?.id])
 
 	// Cargar todos los datos
 	const cargarDatos = useCallback(async () => {
@@ -94,13 +129,13 @@ export function useEntidadData() {
 		setError(null)
 
 		try {
-			await Promise.all([cargarEmbajadores(), cargarAuxiliares(), cargarCampanas()])
+			await Promise.all([cargarEmbajadores(), cargarAuxiliares(), cargarMedicos(), cargarCampanas()])
 		} catch (err) {
 			console.error('Error al cargar datos:', err)
 		} finally {
 			setCargando(false)
 		}
-	}, [cargarEmbajadores, cargarAuxiliares, cargarCampanas])
+	}, [cargarEmbajadores, cargarAuxiliares, cargarMedicos, cargarCampanas])
 
 	// Recargar datos
 	const recargarDatos = useCallback(() => {
@@ -111,6 +146,7 @@ export function useEntidadData() {
 	const estadisticas = {
 		embajadoresRegistrados: embajadores.length,
 		auxiliaresRegistrados: auxiliares.length,
+		medicosRegistrados: medicos.length,
 		campanasPostuladas: campanas.filter(c => c.estado.toLowerCase() === 'postulada').length,
 		campanasEnEjecucion: campanas.filter(c => c.estado.toLowerCase() === 'ejecucion').length
 	}
@@ -123,6 +159,7 @@ export function useEntidadData() {
 	return {
 		embajadores,
 		auxiliares,
+		medicos,
 		campanas,
 		estadisticas,
 		cargando,

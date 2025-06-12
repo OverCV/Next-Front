@@ -164,7 +164,7 @@ export default function AccesoForm(): JSX.Element {
 						{/* Enlace para recuperar contraseña */}
 						<div className="text-center">
 							<Link
-								href="/recuperar-contraseña"
+								href="/recuperar-contrasena"
 								className="text-sm text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
 							>
 								¿Olvidaste tu contraseña?

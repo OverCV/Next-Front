@@ -2,12 +2,20 @@
 
 import { Calendar, FileText } from 'lucide-react'
 import React from 'react'
+import { useRouter } from "next/navigation"
 
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
-import { Citacion, EstadoCampana, EstadoCitacion } from '@/src/types'
+import { Citacion, EstadoCitacion } from '@/src/types'
+import {
+    getBackgroundColor,
+    getHoverBackgroundColor,
+    getTextColor
+} from "@/src/lib/utils"
 
 interface TablaCitacionesProps {
+    citaciones: Citacion[]
+    onAbrirCitacion: (citacion: Citacion) => void
     citaciones: Citacion[]
     onAbrirCitacion: (citacion: Citacion) => void
 }
@@ -16,6 +24,7 @@ export default function TablaCitaciones({ citaciones, onAbrirCitacion }: TablaCi
     // Obtener color del estado
     const obtenerColorEstado = (estado: string) => {
         switch (estado) {
+            case 'AGENDADA':
             case 'AGENDADA':
                 return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
             case 'ATENDIDA':
