@@ -97,8 +97,8 @@ export default function NotificacionPrueba() {
     };
 
     return (
-        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-            <h2 className="mb-4 text-xl font-semibold">Prueba de Notificaciones</h2>
+        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900 w-1/2">
+            <h2 className="mb-4 text-xl font-semibold">Envío de Notificaciones</h2>
 
             {resultado && (
                 <Alert

@@ -233,7 +233,7 @@ export default function RegistroEntidadForm(): JSX.Element {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => router.push("/acceso")}
+                                onClick={() => router.push("/admin")}
                                 className="w-full sm:w-auto"
                             >
                                 Cancelar

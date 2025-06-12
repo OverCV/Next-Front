@@ -13,7 +13,7 @@ export function RegistroEntidadSaludButton() {
     };
 
     return (
-        <div className="mt-1 text-center ">
+        <div className="mt-1 text-center w-full">
             <p className="mb-2 text-sm text-slate-500 dark:text-slate-400">
                 {/* ¿Eres una entidad de salud y necesitas registrarte? */}
             </p>

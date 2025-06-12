@@ -228,7 +228,7 @@ export interface Usuario extends DatosAcceso {
   apellidos: string
   correo: string
   celular: string
-  estaActivo: boolean
+  estado: string
   rolId: number
 }
 export interface UsuarioAccedido extends Usuario {
