@@ -21,6 +21,22 @@ export default function TablaCampanasMedico({
 }: TablaCampanasMedicoProps) {
     const router = useRouter()
 
+    // Función para obtener las clases CSS del estado de la campaña
+    const obtenerClasesEstado = (estado: string): string => {
+        const estadoLower = estado.toLowerCase()
+
+        switch (estadoLower) {
+            case 'postulada':
+                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+            case 'ejecucion':
+                return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+            case 'finalizada':
+                return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+            default:
+                return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+        }
+    }
+
     return (
         <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
             <div className="mb-4 flex items-center justify-between">
@@ -50,7 +66,7 @@ export default function TablaCampanasMedico({
                         <thead>
                             <tr className="border-b border-slate-200 dark:border-slate-700">
                                 <th className="py-3 text-left font-medium">Nombre</th>
-                                <th className="py-3 text-left font-medium">Descripción</th>
+                                <th className="py-2 text-left font-medium">Descripción</th>
                                 <th className="py-3 text-left font-medium">Pacientes</th>
                                 <th className="py-3 text-left font-medium">Fecha Inicio</th>
                                 <th className="py-3 text-left font-medium">Estado</th>
@@ -79,11 +95,7 @@ export default function TablaCampanasMedico({
                                         })}
                                     </td>
                                     <td className="py-4">
-                                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${campana.estado.toLowerCase() === 'postulada' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                                                campana.estado.toLowerCase() === 'ejecucion' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                                                    campana.estado.toLowerCase() === 'finalizada' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                                                        'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                            }`}>
+                                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${obtenerClasesEstado(campana.estado)}`}>
                                             {campana.estado}
                                         </span>
                                     </td>

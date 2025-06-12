@@ -8,10 +8,10 @@ import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { citacionesService } from '@/src/services/domain/citaciones.service'
-import { CitacionMedica, EstadoCitacion } from '@/src/types'
+import { Citacion, EstadoCitacion } from '@/src/types'
 
 interface TablaCitacionesAuxiliarProps {
-    citaciones: CitacionMedica[]
+    citaciones: Citacion[]
     onCitacionActualizada: () => void
 }
 

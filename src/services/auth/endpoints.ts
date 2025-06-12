@@ -106,20 +106,6 @@ export const ENDPOINTS = {
 		ACTUALIZAR: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}`
 	},
 
-	// Datos Clínicos
-	DATOS_CLINICOS: {
-		BASE: `${API_SPRINGBOOT_URL}/datos-clinicos`,
-		POR_PACIENTE: (pacienteId: number) => `${API_SPRINGBOOT_URL}/datos-clinicos/paciente/${pacienteId}`,
-		CREAR: `${API_SPRINGBOOT_URL}/datos-clinicos`,
-		ACTUALIZAR: (id: number) => `${API_SPRINGBOOT_URL}/datos-clinicos/${id}`
-	},
-
-	// Atenciones Médicas
-	ATENCIONES_MEDICAS: {
-		BASE: `${API_SPRINGBOOT_URL}/atenciones_medicas`,
-		POR_ID: (atencionId: number) => `${API_SPRINGBOOT_URL}/atenciones_medicas/${atencionId}`
-	},
-
 	// Diagnósticos
 	DIAGNOSTICOS: {
 		BASE: `${API_SPRINGBOOT_URL}/diagnosticos`,
@@ -180,5 +166,21 @@ export const ENDPOINTS = {
 	HEALTH: {
 		CHECK: `${API_SPRINGBOOT_URL.replace('/api', '')}/healthz`,
 		TEST: `${API_SPRINGBOOT_URL}/test`
+	},
+
+	// Atenciones Médicas
+	ATENCIONES_MEDICAS: {
+		BASE: `${API_SPRINGBOOT_URL}/atenciones-medicas`,
+		POR_ID: (atencionId: number) => `${API_SPRINGBOOT_URL}/atenciones-medicas/${atencionId}`,
+		POR_CITACION: (citacionId: number) => `${API_SPRINGBOOT_URL}/atenciones-medicas/citacion/${citacionId}`,
+		ACTUALIZAR: (atencionId: number) => `${API_SPRINGBOOT_URL}/atenciones-medicas/${atencionId}`
+	},
+
+	// Datos Clínicos
+	DATOS_CLINICOS: {
+		BASE: `${API_SPRINGBOOT_URL}/datos-clinicos`,
+		POR_PACIENTE: (pacienteId: number) => `${API_SPRINGBOOT_URL}/datos-clinicos/paciente/${pacienteId}`,
+		CREAR: `${API_SPRINGBOOT_URL}/datos-clinicos`,
+		ACTUALIZAR: (id: number) => `${API_SPRINGBOOT_URL}/datos-clinicos/${id}`
 	}
 } 

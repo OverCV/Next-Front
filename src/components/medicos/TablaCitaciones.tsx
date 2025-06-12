@@ -5,11 +5,11 @@ import React from 'react'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
-import { CitacionMedica } from '@/src/types'
+import { Citacion, EstadoCampana, EstadoCitacion } from '@/src/types'
 
 interface TablaCitacionesProps {
-    citaciones: CitacionMedica[]
-    onAbrirCitacion: (citacion: CitacionMedica) => void
+    citaciones: Citacion[]
+    onAbrirCitacion: (citacion: Citacion) => void
 }
 
 export default function TablaCitaciones({ citaciones, onAbrirCitacion }: TablaCitacionesProps) {
@@ -104,12 +104,13 @@ export default function TablaCitaciones({ citaciones, onAbrirCitacion }: TablaCi
                                     variant="outline"
                                     size="sm"
                                     onClick={() => onAbrirCitacion(citacion)}
-                                    disabled={citacion.estado === 'CANCELADA'}
+                                    disabled={citacion.estado === EstadoCitacion.CANCELADA}
                                     className="gap-2"
                                 >
                                     <FileText className="size-4" />
-                                    {citacion.estado === 'ATENDIDA' ? 'Ver Atención' :
-                                        citacion.estado === 'CANCELADA' ? 'Cancelada' : 'Atender'}
+                                    {
+                                        citacion.estado === EstadoCitacion.ATENDIDA ? 'Ver Atención' :
+                                            citacion.estado === EstadoCitacion.CANCELADA ? 'Cancelada' : 'Atender'}
                                 </Button>
                             </td>
                         </tr>

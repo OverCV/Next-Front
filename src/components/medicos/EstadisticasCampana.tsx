@@ -3,16 +3,18 @@
 import { Calendar, Clock, User, Activity } from 'lucide-react'
 import React from 'react'
 
-import { CitacionMedica } from '@/src/services/domain/medicos.service'
+import { Citacion, EstadoCitacion } from '@/src/types'
 
 interface EstadisticasCampanaProps {
-    citaciones: CitacionMedica[]
+    citaciones: Citacion[]
 }
 
-export default function EstadisticasCampana({ citaciones }: EstadisticasCampanaProps) {
+export default function EstadisticasCampana(
+    { citaciones }: EstadisticasCampanaProps
+) {
     const totalCitas = citaciones.length
-    const citasProgramadas = citaciones.filter(c => c.estado === 'PROGRAMADA').length
-    const citasAtendidas = citaciones.filter(c => c.estado === 'ATENDIDA').length
+    const citasProgramadas = citaciones.filter(c => c.estado === EstadoCitacion.AGENDADA).length
+    const citasAtendidas = citaciones.filter(c => c.estado === EstadoCitacion.ATENDIDA).length
     const pacientesUnicos = new Set(citaciones.map(c => c.pacienteId)).size
 
     return (

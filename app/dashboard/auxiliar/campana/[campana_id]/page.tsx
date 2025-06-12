@@ -10,7 +10,7 @@ import { Button } from '@/src/components/ui/button'
 import apiSpringClient from '@/src/services/api'
 import { ENDPOINTS } from '@/src/services/auth/endpoints'
 import { citacionesService } from '@/src/services/domain/citaciones.service'
-import { Campana, CitacionMedica } from '@/src/types'
+import { Campana, Citacion } from '@/src/types'
 
 // Componente separado para la información de la campaña
 function InformacionCampana({ campana }: { campana: Campana }) {
@@ -46,7 +46,7 @@ export default function CampanaAuxiliarPage() {
     const campanaId = Number(params.campana_id)
 
     const [campana, setCampana] = useState<Campana | null>(null)
-    const [citaciones, setCitaciones] = useState<CitacionMedica[]>([])
+    const [citaciones, setCitaciones] = useState<Citacion[]>([])
     const [cargando, setCargando] = useState(true)
     const [cargandoCitaciones, setCargandoCitaciones] = useState(false)
     const [error, setError] = useState<string | null>(null)

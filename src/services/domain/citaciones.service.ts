@@ -1,11 +1,11 @@
-import { CitacionMedica } from '@/src/types'
+import { Citacion } from '@/src/types'
 
 import apiSpringClient from '../api'
 import { ENDPOINTS } from '../auth/endpoints'
 
 export const citacionesService = {
 	// Obtener citación por ID
-	obtenerCitacionPorId: async (citacionId: number): Promise<CitacionMedica> => {
+	obtenerCitacionPorId: async (citacionId: number): Promise<Citacion> => {
 		console.log('🔍 Obteniendo citación por ID:', citacionId)
 		try {
 			const response = await apiSpringClient.get(ENDPOINTS.CITACIONES.POR_ID(citacionId))
@@ -18,7 +18,7 @@ export const citacionesService = {
 	},
 
 	// Obtener todas las citaciones médicas
-	obtenerTodasCitaciones: async (): Promise<CitacionMedica[]> => {
+	obtenerTodasCitaciones: async (): Promise<Citacion[]> => {
 		console.log('🔍 Obteniendo todas las citaciones médicas...')
 		try {
 			const response = await apiSpringClient.get(ENDPOINTS.CITACIONES.BASE)
@@ -31,7 +31,7 @@ export const citacionesService = {
 	},
 
 	// Obtener citaciones por médico
-	obtenerCitacionesPorMedico: async (medicoId: number): Promise<CitacionMedica[]> => {
+	obtenerCitacionesPorMedico: async (medicoId: number): Promise<Citacion[]> => {
 		console.log('🔍 Obteniendo citaciones para médico:', medicoId)
 		try {
 			const response = await apiSpringClient.get(ENDPOINTS.CITACIONES.POR_MEDICO(medicoId))
@@ -44,7 +44,7 @@ export const citacionesService = {
 	},
 
 	// Obtener citaciones por campaña
-	obtenerCitacionesPorCampana: async (campanaId: number): Promise<CitacionMedica[]> => {
+	obtenerCitacionesPorCampana: async (campanaId: number): Promise<Citacion[]> => {
 		console.log('🔍 Obteniendo citaciones para campaña:', campanaId)
 		try {
 			const response = await apiSpringClient.get(ENDPOINTS.CITACIONES.POR_CAMPANA(campanaId))
@@ -57,7 +57,7 @@ export const citacionesService = {
 	},
 
 	// Actualizar citación completa (PUT) - método principal
-	actualizarCitacion: async (citacionId: number, citacionData: Partial<CitacionMedica>): Promise<CitacionMedica> => {
+	actualizarCitacion: async (citacionId: number, citacionData: Partial<Citacion>): Promise<Citacion> => {
 		console.log('🔄 Actualizando citación completa:', citacionId)
 		try {
 			const response = await apiSpringClient.put(ENDPOINTS.CITACIONES.ACTUALIZAR(citacionId), citacionData)
@@ -70,7 +70,7 @@ export const citacionesService = {
 	},
 
 	// Actualizar solo estado de citación (PATCH) - método alternativo más simple
-	actualizarEstadoCitacion: async (citacionId: number, estado: string): Promise<CitacionMedica> => {
+	actualizarEstadoCitacion: async (citacionId: number, estado: string): Promise<Citacion> => {
 		console.log('🔄 Actualizando estado de citación:', citacionId, estado)
 		try {
 			const response = await apiSpringClient.patch(ENDPOINTS.CITACIONES.ACTUALIZAR_ESTADO(citacionId), { estado })
@@ -83,7 +83,7 @@ export const citacionesService = {
 	},
 
 	// Cancelar citación (auxiliares) - obtiene primero y luego actualiza
-	cancelarCitacion: async (citacionId: number): Promise<CitacionMedica> => {
+	cancelarCitacion: async (citacionId: number): Promise<Citacion> => {
 		console.log('❌ Cancelando citación:', citacionId)
 		try {
 			// Obtener la citación completa primero
@@ -105,7 +105,7 @@ export const citacionesService = {
 	},
 
 	// Reprogramar citación (auxiliares) - obtiene primero y luego actualiza
-	reprogramarCitacion: async (citacionId: number): Promise<CitacionMedica> => {
+	reprogramarCitacion: async (citacionId: number): Promise<Citacion> => {
 		console.log('📅 Reprogramando citación:', citacionId)
 		try {
 			// Obtener la citación completa primero
@@ -127,7 +127,7 @@ export const citacionesService = {
 	},
 
 	// Marcar citación como atendida (médicos)
-	atenderCitacion: async (citacionId: number): Promise<CitacionMedica> => {
+	atenderCitacion: async (citacionId: number): Promise<Citacion> => {
 		console.log('👨‍⚕️ Marcando citación como atendida:', citacionId)
 		try {
 			// Obtener la citación completa primero

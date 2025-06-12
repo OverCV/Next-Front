@@ -96,13 +96,15 @@ export interface Campana {
   factores?: FactorRiesgo[]
 }
 
+// Estados de citaciones médicas
 export enum EstadoCitacion {
   AGENDADA = "AGENDADA",
   ATENDIDA = "ATENDIDA",
   CANCELADA = "CANCELADA",
 }
 
-// Interfaz para citaciones
+
+// Interfaz para citaciones médicas
 export interface Citacion {
   id: number
   pacienteId: number
@@ -112,24 +114,33 @@ export interface Citacion {
   horaAtencion?: string
   duracionEstimada: number // en minutos
   estado: EstadoCitacion
-  prediccionAsistencia?: number // 0-100%
-  prioridad: number // 1-5
+  prediccionAsistencia: number // 0-100%
+  codigoTicket: string
   notas?: string
 }
 
-// Interfaz para citaciones médicas (para médicos)
-export interface CitacionMedica {
+// Estados de atención médica
+export enum EstadoAtencion {
+  EN_PROCESO = "EN_PROCESO",
+  COMPLETADA = "COMPLETADA",
+  CANCELADA = "CANCELADA"
+}
+
+// Interfaz para atenciones médicas
+export interface AtencionMedica {
   id: number
-  pacienteId: number
-  campanaId: number
-  medicoId: number
-  horaProgramada: string
-  horaAtencion?: string
-  duracionEstimada: number
-  estado: EstadoCitacion
-  prediccionAsistencia: number
-  codigoTicket: string
-  notas?: string
+  citacionId: number
+  fechaHoraInicio: string
+  fechaHoraFin?: string
+  duracionReal?: number // en minutos
+  estado: EstadoAtencion
+}
+
+// Datos para crear atención médica
+export interface CrearAtencionMedica {
+  citacionId: number
+  fechaHoraInicio: string
+  estado: EstadoAtencion
 }
 
 // Interfaz para datos clínicos (para médicos)
