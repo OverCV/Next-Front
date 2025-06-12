@@ -8,8 +8,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { RegistroEntidadSaludButton } from "@/src/components/auth/RegistroEntidadSaludButton"
-import NotificacionPrueba from "@/src/components/notificacionPrueba"
-import { PasskeyModal } from "@/src/components/PasskeyModal"
+import PasskeyModal from "@/src/components/PasskeyModal"
 import { StatCard } from "@/src/components/StatCard"
 import { Button } from "@/src/components/ui/button"
 import { useAuth } from "@/src/providers/auth-provider"
@@ -81,24 +80,32 @@ const AdminPage = () => {
             type="postulada"
             count={3}
             label="Campañas postuladas"
-            icon={"/assets/icons/appointments.svg"}
+            icon="/assets/icons/postulada.svg"
           />
           <StatCard
             type="ejecucion"
             count={2}
             label="Campañas activas"
-            icon={"/assets/icons/activa.svg"}
+            icon="/assets/icons/activa.svg"
           />
           <StatCard
             type="finalizada"
             count={1}
             label="Campañas finalizadas"
-            icon={"/assets/icons/cancelada.svg"}
+            icon="/assets/icons/ambulancia.svg"
           />
         </section>
 
-        {/* Componente de prueba para notificaciones SMS */}
+        {/* Componente de notificaciones deshabilitado temporalmente
         <NotificacionPrueba />
+        */}
+
+        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <h3 className="text-lg font-semibold mb-2">🚧 Notificaciones</h3>
+          <p className="text-slate-500">
+            Panel de notificaciones SMS/Email en desarrollo
+          </p>
+        </div>
       </main>
 
       <RegistroEntidadSaludButton />
