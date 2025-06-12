@@ -8,8 +8,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { RegistroEntidadSaludButton } from "@/src/components/auth/RegistroEntidadSaludButton"
-import NotificacionPrueba from "@/src/components/notificacionPrueba"
-import { PasskeyModal } from "@/src/components/PasskeyModal"
+import PasskeyModal from "@/src/components/PasskeyModal"
 import { StatCard } from "@/src/components/StatCard"
 import { Button } from "@/src/components/ui/button"
 import { useAuth } from "@/src/providers/auth-provider"
@@ -81,19 +80,19 @@ const AdminPage = () => {
             type="postulada"
             count={3}
             label="Campañas postuladas"
-            icon={"/assets/icons/appointments.svg"}
+            icon="/assets/icons/postulada.svg"
           />
           <StatCard
             type="ejecucion"
             count={2}
             label="Campañas activas"
-            icon={"/assets/icons/activa.svg"}
+            icon="/assets/icons/activa.svg"
           />
           <StatCard
             type="finalizada"
             count={1}
             label="Campañas finalizadas"
-            icon={"/assets/icons/cancelada.svg"}
+            icon="/assets/icons/ambulancia.svg"
           />
         </section>
 
