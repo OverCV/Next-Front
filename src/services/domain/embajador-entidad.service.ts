@@ -4,9 +4,9 @@ import apiSpringClient from "../api"
 import { ENDPOINTS } from "../auth/endpoints"
 
 export const EmbajadorEntidadService = {
-  obtenerEmbajadoresPorEntidadId: async (entidadId: number): Promise<EmbajadorEntidad[]> => {
+  obtenerEmbajadoresPorEntidadNIT: async (identificadorNIT: string): Promise<EmbajadorEntidad[]> => {
     try {
-      const response = await apiSpringClient.get(`${ENDPOINTS.EMBAJADORES.ENTIDADES.BASE}/entidad/${entidadId}`)
+      const response = await apiSpringClient.get(`${ENDPOINTS.ENTIDADES_SALUD.BASE}/embajadores-nit/${identificadorNIT}`)
       return response.data
     } catch (error) {
       console.error("Error al obtener embajadores por entidad:", error)
@@ -24,9 +24,12 @@ export const EmbajadorEntidadService = {
     }
   },
 
-  crearEmbajadorEntidad: async (embajadorEntidad: EmbajadorEntidad): Promise<EmbajadorEntidad> => {
+  crearEmbajadoresEntidad: async (embajadorEntidad: EmbajadorEntidad): Promise<EmbajadorEntidad> => {
     try {
-      const response = await apiSpringClient.post(ENDPOINTS.EMBAJADORES.ENTIDADES.BASE, embajadorEntidad)
+      const response = await apiSpringClient.post(
+        ENDPOINTS.EMBAJADORES.ENTIDADES.BASE,
+        embajadorEntidad
+      )
       return response.data
     } catch (error) {
       console.error("Error al crear embajador-entidad:", error)

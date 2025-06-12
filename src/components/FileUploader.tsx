@@ -36,6 +36,7 @@ export const FileUploader = ({ files, onChange }: FileUploaderProps) => {
             width={40}
             height={40}
             alt="upload"
+            style={{ height: "auto", width: "40px" }}
           />
           <div className="file-upload_label">
             <p className="text-14-regular ">

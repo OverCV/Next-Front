@@ -129,9 +129,9 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
             const respuesta = await authService.registro(datos)
 
             // Guardar usuario en el estado del contexto SIN verificaciones automáticas
-            console.log("🚨 AUTH-PROVIDER: Usuario registrado, guardando en contexto:", respuesta.usuario.id)
-            setUsuario(respuesta.usuario)
-            console.log("🚨 AUTH-PROVIDER: Usuario guardado en contexto (sin verificaciones automáticas)")
+            // console.log("🚨 AUTH-PROVIDER: Usuario registrado, guardando en contexto:", respuesta.usuario.id)
+            // setUsuario(respuesta.usuario)
+            // console.log("🚨 AUTH-PROVIDER: Usuario guardado en contexto (sin verificaciones automáticas)")
 
             return respuesta.usuario
         } catch (error) {

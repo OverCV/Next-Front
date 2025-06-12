@@ -4,11 +4,11 @@ import { User, Calendar, Activity } from 'lucide-react'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Card, CardHeader, CardTitle } from '@/src/components/ui/card'
-import { CitacionMedica, UsuarioInfo } from '@/src/types'
+import { Citacion, UsuarioInfo } from '@/src/types'
 
 interface PacienteHeaderProps {
     usuario: UsuarioInfo
-    citacion: CitacionMedica
+    citacion: Citacion
 }
 
 export function PacienteHeader({ usuario, citacion }: PacienteHeaderProps) {

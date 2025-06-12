@@ -37,11 +37,11 @@ export const ENDPOINTS = {
 
 	// Campañas e Inscripciones
 	CAMPANAS: {
-		BASE: `${API_SPRINGBOOT_URL}/campanas`,
+		BASE: `${API_SPRINGBOOT_URL}/campana`,
 		TODAS: `${API_SPRINGBOOT_URL}/campana`,
 		POR_ID: (campanaId: number) => `${API_SPRINGBOOT_URL}/campana/${campanaId}`,
 		POR_ENTIDAD: (entidadId: number) => `${API_SPRINGBOOT_URL}/campana/entidad/${entidadId}`,
-		CAMBIAR_ESTADO: (campanaId: number) => `${API_SPRINGBOOT_URL}/campanas/${campanaId}/estatus`,
+		// CAMBIAR_ESTADO: (campanaId: number) => `${API_SPRINGBOOT_URL}/campanas/${campanaId}/estatus`,
 		INSCRIPCIONES: {
 			BASE: `${API_SPRINGBOOT_URL}/inscripciones-campana`,
 			POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/inscripciones-campana/usuario/${usuarioId}`,
@@ -77,7 +77,7 @@ export const ENDPOINTS = {
 	ENTIDADES_SALUD: {
 		BASE: `${API_SPRINGBOOT_URL}/entidades-salud`,
 		POR_ID: (entidadId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/${entidadId}`,
-		POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/entidad/${usuarioId}`
+		POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/entidad/${usuarioId}`,
 	},
 
 	// Personal Médico
@@ -102,23 +102,11 @@ export const ENDPOINTS = {
 	// Citaciones Médicas
 	CITACIONES: {
 		BASE: `${API_SPRINGBOOT_URL}/citaciones-medicas`,
+		POR_ID: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}`,
 		POR_MEDICO: (medicoId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/medico/${medicoId}`,
 		POR_CAMPANA: (campanaId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/campana/${campanaId}`,
-		ACTUALIZAR_ESTADO: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}/estado`
-	},
-
-	// Datos Clínicos
-	DATOS_CLINICOS: {
-		BASE: `${API_SPRINGBOOT_URL}/datos-clinicos`,
-		POR_PACIENTE: (pacienteId: number) => `${API_SPRINGBOOT_URL}/datos-clinicos/paciente/${pacienteId}`,
-		CREAR: `${API_SPRINGBOOT_URL}/datos-clinicos`,
-		ACTUALIZAR: (id: number) => `${API_SPRINGBOOT_URL}/datos-clinicos/${id}`
-	},
-
-	// Atenciones Médicas
-	ATENCIONES_MEDICAS: {
-		BASE: `${API_SPRINGBOOT_URL}/atenciones_medicas`,
-		POR_ID: (atencionId: number) => `${API_SPRINGBOOT_URL}/atenciones_medicas/${atencionId}`
+		ACTUALIZAR_ESTADO: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}/estado`,
+		ACTUALIZAR: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}`
 	},
 
 	// Diagnósticos
@@ -181,5 +169,21 @@ export const ENDPOINTS = {
 	HEALTH: {
 		CHECK: `${API_SPRINGBOOT_URL.replace('/api', '')}/healthz`,
 		TEST: `${API_SPRINGBOOT_URL}/test`
+	},
+
+	// Atenciones Médicas
+	ATENCIONES_MEDICAS: {
+		BASE: `${API_SPRINGBOOT_URL}/atenciones-medicas`,
+		POR_ID: (atencionId: number) => `${API_SPRINGBOOT_URL}/atenciones-medicas/${atencionId}`,
+		POR_CITACION: (citacionId: number) => `${API_SPRINGBOOT_URL}/atenciones-medicas/citacion/${citacionId}`,
+		ACTUALIZAR: (atencionId: number) => `${API_SPRINGBOOT_URL}/atenciones-medicas/${atencionId}`
+	},
+
+	// Datos Clínicos
+	DATOS_CLINICOS: {
+		BASE: `${API_SPRINGBOOT_URL}/datos-clinicos`,
+		POR_PACIENTE: (pacienteId: number) => `${API_SPRINGBOOT_URL}/datos-clinicos/paciente/${pacienteId}`,
+		CREAR: `${API_SPRINGBOOT_URL}/datos-clinicos`,
+		ACTUALIZAR: (id: number) => `${API_SPRINGBOOT_URL}/datos-clinicos/${id}`
 	}
 } 

@@ -57,6 +57,20 @@ export default function CitacionesCampana({
         }
     }
 
+    // Función para obtener el texto del estado
+    const obtenerTextoEstado = (estado: string): string => {
+        switch (estado) {
+            case 'AGENDADA':
+                return 'Pendiente'
+            case 'ATENDIDA':
+                return 'Atendido'
+            case 'CANCELADA':
+                return 'Cancelado'
+            default:
+                return estado
+        }
+    }
+
     if (cargando) {
         return (
             <div className="flex h-64 w-full items-center justify-center">
@@ -126,13 +140,12 @@ export default function CitacionesCampana({
                             </td>
                             <td className="py-3">
                                 <Badge className={obtenerClaseEstado(citacion.estado)}>
-                                    {citacion.estado === 'AGENDADA' ? 'Pendiente' :
-                                        citacion.estado === 'ATENDIDA' ? 'Atendido' : 'Cancelado'}
+                                    {obtenerTextoEstado(citacion.estado)}
                                 </Badge>
                             </td>
                             <td className="py-3">
-                                <Badge className={obtenerClasePrioridad(citacion.prioridad)}>
-                                    {citacion.prioridad}
+                                <Badge className={citacion.codigoTicket}>
+                                    {citacion.codigoTicket}
                                 </Badge>
                             </td>
                             <td className="py-3">

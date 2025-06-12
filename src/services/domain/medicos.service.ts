@@ -1,78 +1,9 @@
-import { CitacionMedica, DatoClinico, TriajePaciente, PacienteInfo, UsuarioInfo, PacienteCompleto } from '@/src/types'
+import { DatoClinico, TriajePaciente, PacienteInfo, UsuarioInfo, PacienteCompleto } from '@/src/types'
 
 import apiSpringClient from '../api'
 import { ENDPOINTS } from '../auth/endpoints'
 
 export const medicosService = {
-	// Obtener todas las citaciones médicas
-	obtenerCitacionesMedicas: async (): Promise<CitacionMedica[]> => {
-		console.log('🔍 Obteniendo citaciones médicas...')
-		try {
-			const response = await apiSpringClient.get(ENDPOINTS.CITACIONES.BASE)
-			console.log('✅ Citaciones obtenidas:', response.data.length)
-			return response.data
-		} catch (error) {
-			console.error('❌ Error al obtener citaciones:', error)
-			throw error
-		}
-	},
-
-	// Obtener citaciones por médico
-	obtenerCitacionesPorMedico: async (medicoId: number): Promise<CitacionMedica[]> => {
-		console.log('🔍 Obteniendo citaciones para médico:', medicoId)
-		try {
-			const response = await apiSpringClient.get(ENDPOINTS.CITACIONES.POR_MEDICO(medicoId))
-			console.log('✅ Citaciones del médico obtenidas:', response.data.length)
-			return response.data
-		} catch (error) {
-			console.error('❌ Error al obtener citaciones del médico:', error)
-			throw error
-		}
-	},
-
-	// Obtener citaciones por campaña
-	obtenerCitacionesPorCampana: async (campanaId: number): Promise<CitacionMedica[]> => {
-		console.log('🔍 Obteniendo citaciones para campaña:', campanaId)
-		try {
-			const response = await apiSpringClient.get(ENDPOINTS.CITACIONES.POR_CAMPANA(campanaId))
-			console.log('✅ Citaciones de la campaña obtenidas:', response.data.length)
-			return response.data
-		} catch (error) {
-			console.error('❌ Error al obtener citaciones de la campaña:', error)
-			throw error
-		}
-	},
-
-	// Actualizar estado de citación
-	actualizarEstadoCitacion: async (citacionId: number, estado: string): Promise<CitacionMedica> => {
-		console.log('🔄 Actualizando estado de citación:', citacionId, estado)
-		try {
-			const response = await apiSpringClient.patch(ENDPOINTS.CITACIONES.ACTUALIZAR_ESTADO(citacionId), { estado })
-			console.log('✅ Estado de citación actualizado')
-			return response.data
-		} catch (error) {
-			console.error('❌ Error al actualizar estado de citación:', error)
-			throw error
-		}
-	},
-
-	// Marcar citación como atendida
-	atenderCitacion: async (citacionId: number): Promise<CitacionMedica> => {
-		console.log('👨‍⚕️ Marcando citación como atendida:', citacionId)
-		try {
-			const horaAtencion = new Date().toISOString()
-			const response = await apiSpringClient.patch(ENDPOINTS.CITACIONES.ACTUALIZAR_ESTADO(citacionId), {
-				estado: 'ATENDIDA',
-				horaAtencion
-			})
-			console.log('✅ Citación marcada como atendida')
-			return response.data
-		} catch (error) {
-			console.error('❌ Error al marcar citación como atendida:', error)
-			throw error
-		}
-	},
-
 	// Obtener todos los datos clínicos
 	obtenerDatosClinicos: async (): Promise<DatoClinico[]> => {
 		console.log('🔍 Obteniendo datos clínicos...')

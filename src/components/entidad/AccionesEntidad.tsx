@@ -1,6 +1,6 @@
 "use client"
 
-import { UserPlus, RefreshCw, Search, PlusCircle } from 'lucide-react'
+import { UserPlus, RefreshCw, Search, PlusCircle, UserCheck } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import { Button } from '@/src/components/ui/button'
@@ -25,19 +25,32 @@ export function AccionesEntidad({
         router.push('/dashboard/entidad/registrar-embajador')
     }
 
+    const irARegistroAuxiliar = () => {
+        router.push('/dashboard/entidad/registrar-auxiliar')
+    }
+
     const irAPostularCampana = () => {
         router.push('/dashboard/entidad/postular-campana')
     }
 
     return (
         <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
                 <Button
                     onClick={irARegistroEmbajador}
                     className="flex items-center gap-2"
                 >
                     <UserPlus className="size-4" />
                     Registrar Embajador
+                </Button>
+
+                <Button
+                    onClick={irARegistroAuxiliar}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                >
+                    <UserCheck className="size-4" />
+                    Registrar Auxiliar
                 </Button>
 
                 <Button
@@ -54,7 +67,7 @@ export function AccionesEntidad({
                 <div className="relative w-full max-w-xs">
                     <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                     <Input
-                        placeholder="Buscar embajador..."
+                        placeholder="Buscar..."
                         value={busqueda}
                         onChange={(e) => setBusqueda(e.target.value)}
                         className="pl-10"

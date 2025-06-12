@@ -1,7 +1,7 @@
-import { CitacionMedica } from '@/src/types'
+import { Citacion } from '@/src/types'
 
 export interface ModalAtencionMedicaProps {
-	citacion: CitacionMedica
-	onCitacionAtendida: (citacionActualizada: CitacionMedica) => void
+	citacion: Citacion
+	onCitacionAtendida: (citacionActualizada: Citacion) => void
 	onCerrar: () => void
 } 

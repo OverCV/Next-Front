@@ -130,5 +130,17 @@ export const inscripcionesService = {
 			console.error('❌ Error al crear inscripción:', error)
 			throw error
 		}
+	},
+
+	// Eliminar inscripción por ID
+	eliminarInscripcion: async (inscripcionId: number): Promise<void> => {
+		console.log('🗑️ Eliminando inscripción ID:', inscripcionId)
+		try {
+			await apiSpringClient.delete(`${ENDPOINTS.CAMPANAS.INSCRIPCIONES.BASE}/${inscripcionId}`)
+			console.log('✅ Inscripción eliminada exitosamente')
+		} catch (error) {
+			console.error('❌ Error al eliminar inscripción:', error)
+			throw error
+		}
 	}
 } 

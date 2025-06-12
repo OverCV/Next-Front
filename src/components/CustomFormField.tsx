@@ -60,6 +60,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               width={24}
               alt={props.iconAlt || "icon"}
               className="ml-2"
+              style={{ height: "auto", width: "24px" }}
             />
           )}
           <FormControl>
@@ -138,6 +139,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               width={24}
               alt={props.iconAlt || "calendar"}
               className="ml-2"
+              style={{ height: "auto", width: "24px" }}
             />
           )}
           <FormControl>
