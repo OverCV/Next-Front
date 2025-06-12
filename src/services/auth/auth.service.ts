@@ -13,6 +13,16 @@ import { ENDPOINTS } from "./endpoints"
 const TOKEN_KEY = 'authToken'
 const USER_KEY = 'usuario'
 
+// Tipos para recuperación de contraseña
+interface SolicitudRecuperacion {
+	email: string
+}
+
+interface CambiarContraseñaConToken {
+	token: string
+	nuevaContraseña: string
+}
+
 /**
  * Servicio centralizado de autenticación
  */
@@ -82,6 +92,39 @@ export const authService = {
 			console.log("✅ AUTH-SERVICE: Sesión cerrada exitosamente")
 		} catch (error) {
 			console.error("❌ AUTH-SERVICE: Error al cerrar sesión:", error)
+			throw error
+		}
+	},
+
+	/**
+	 * Solicita recuperación de contraseña por email
+	 */
+	solicitarRecuperacionContraseña: async (email: string): Promise<void> => {
+		try {
+			console.log("🔐 AUTH-SERVICE: Solicitando recuperación de contraseña...")
+
+			const solicitud: SolicitudRecuperacion = { email }
+			await apiSpringClient.post(ENDPOINTS.AUTH.SOLICITAR_RECUPERACION, solicitud)
+
+			console.log("✅ AUTH-SERVICE: Solicitud de recuperación enviada")
+		} catch (error) {
+			console.error("❌ AUTH-SERVICE: Error al solicitar recuperación:", error)
+			throw error
+		}
+	},
+
+	/**
+	 * Cambia la contraseña usando un token de recuperación
+	 */
+	cambiarContraseñaConToken: async (datos: CambiarContraseñaConToken): Promise<void> => {
+		try {
+			console.log("🔐 AUTH-SERVICE: Cambiando contraseña con token...")
+
+			await apiSpringClient.post(ENDPOINTS.AUTH.CAMBIAR_CONTRASEÑA, datos)
+
+			console.log("✅ AUTH-SERVICE: Contraseña cambiada exitosamente")
+		} catch (error) {
+			console.error("❌ AUTH-SERVICE: Error al cambiar contraseña:", error)
 			throw error
 		}
 	},
