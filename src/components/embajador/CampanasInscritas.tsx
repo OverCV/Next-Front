@@ -171,17 +171,6 @@ export default function CampanasInscritas({
                                                 <span>Estado: {inscripcion.estado}</span>
                                             </div>
                                         </div>
-
-                                        {/* Acciones */}
-                                        <div className="ml-4">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => router.push(`/dashboard/embajador/campanas/${campana.id}`)}
-                                            >
-                                                Ver Detalles
-                                            </Button>
-                                        </div>
                                     </div>
                                 </div>
                             )
