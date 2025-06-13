@@ -9,10 +9,9 @@ import { Button } from '@/src/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { useAuth } from '@/src/providers/auth-provider'
 import {
-    prediccionesService,
-    PrediccionRiesgoCV,
-    PrediccionGuardada
+    prediccionesService
 } from '@/src/services/domain/predicciones.service'
+import { PrediccionGuardada, PrediccionRiesgoCV } from '@/src/types'
 
 interface PredecirRiesgoCVProps {
     pacienteId: number
@@ -84,7 +83,7 @@ export default function PredecirRiesgoCV({ pacienteId, campanaId }: PredecirRies
         setExito(false)
 
         try {
-            const prediccion = await prediccionesService.predecirRiesgoCV(
+            const prediccion = await prediccionesService.predecirRiesgoCardiovascular(
                 pacienteId,
                 campanaId,
                 usuario.token

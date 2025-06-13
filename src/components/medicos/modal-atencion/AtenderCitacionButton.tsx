@@ -60,11 +60,7 @@ export function AtenderCitacionButton({
 
         setProcesando(true)
         try {
-            // Finalizar la atención
-            await atencionesService.finalizarAtencion(atencionActual.id)
-
-            // Marcar la citación como atendida
-            const citacionActualizada = await citacionesService.atenderCitacion(citacion.id)
+            const citacionActualizada = await citacionesService.finalizarAtencion(citacion.id)
 
             // Notificar al componente padre
             onCitacionAtendida(citacionActualizada)
