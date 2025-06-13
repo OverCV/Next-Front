@@ -106,6 +106,97 @@ export const CancelAppointmentSchema = z.object({
     .max(500, "Reason must be at most 500 characters"),
 });
 
+export const CampaignCreationSchema = z
+  .object({
+    nombre: z
+      .string()
+      .min(1, "El nombre es requerido")
+      .min(3, "El nombre debe tener al menos 3 caracteres")
+      .max(100, "El nombre no puede exceder 100 caracteres"),
+
+    descripcion: z
+      .string()
+      .min(1, "La descripción es requerida")
+      .min(10, "La descripción debe tener al menos 10 caracteres")
+      .max(500, "La descripción no puede exceder 500 caracteres"),
+
+    localizacionId: z
+      .number({
+        required_error: "La localización de la campaña es requerida",
+        invalid_type_error: "Debe seleccionar una localización válida",
+      })
+      .min(1, "Debe seleccionar una localización")
+      .optional()
+      .refine((val) => val !== undefined && val !== null, "La localización es requerida"),
+
+    fechaInicio: z
+      .date({
+        required_error: "La fecha de inicio es requerida",
+        invalid_type_error: "Debe ser una fecha válida",
+      })
+      .refine(
+        (fecha) => fecha >= new Date(new Date().setHours(0, 0, 0, 0)),
+        "La fecha de inicio no puede ser anterior a hoy"
+      ),
+
+    fechaLimite: z.date({
+      required_error: "La fecha límite es requerida",
+      invalid_type_error: "Debe ser una fecha válida",
+    }),
+
+    fechaLimiteInscripcion: z.date({
+      required_error: "La fecha límite de inscripción es requerida",
+      invalid_type_error: "Debe ser una fecha válida",
+    }),
+
+    minParticipantes: z
+      .number({
+        required_error: "El mínimo de participantes es requerido",
+        invalid_type_error: "Debe ser un número válido",
+      })
+      .int("Debe ser un número entero")
+      .min(1, "Mínimo 1 participante")
+      .max(1000, "Máximo 1000 participantes"),
+
+    maxParticipantes: z
+      .number({
+        required_error: "El máximo de participantes es requerido",
+        invalid_type_error: "Debe ser un número válido",
+      })
+      .int("Debe ser un número entero")
+      .min(1, "Mínimo 1 participante")
+      .max(1000, "Máximo 1000 participantes"),
+
+    serviciosIds: z
+      .array(z.string())
+      .min(1, "Debe seleccionar al menos un servicio"),
+
+    factoresIds: z
+      .array(z.string())
+      .min(0, "Debe seleccionar al menos un factor"),
+  })
+  .refine((data) => data.fechaLimite > data.fechaInicio, {
+    message: "La fecha límite debe ser posterior a la fecha de inicio",
+    path: ["fechaLimite"],
+  })
+  .refine((data) => data.fechaLimiteInscripcion <= data.fechaLimite, {
+    message:
+      "La fecha límite de inscripción debe ser anterior o igual a la fecha límite de la campaña",
+    path: ["fechaLimiteInscripcion"],
+  })
+  .refine(
+    (data) =>
+      data.fechaLimiteInscripcion >= new Date(new Date().setHours(0, 0, 0, 0)),
+    {
+      message: "La fecha límite de inscripción no puede ser anterior a hoy",
+      path: ["fechaLimiteInscripcion"],
+    }
+  )
+  .refine((data) => data.maxParticipantes >= data.minParticipantes, {
+    message: "El máximo de participantes debe ser mayor o igual al mínimo",
+    path: ["maxParticipantes"],
+  });
+
 export function getAppointmentSchema(type: string) {
   switch (type) {
     case "create":

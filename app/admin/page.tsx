@@ -1,29 +1,30 @@
 // app\admin\page.tsx
-"use client";
+"use client"
 
-import { LogOut, Menu, X } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { LogOut, Menu, X } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
-import NotificacionPrueba from "@/src/components/notificacionPrueba";
-import { PasskeyModal } from "@/src/components/PasskeyModal";
-import { StatCard } from "@/src/components/StatCard";
-import { Button } from "@/src/components/ui/button";
-import { useAuth } from "@/src/providers/auth-provider";
+import { ListaEntidadesRegistradas } from "@/src/components/admin/ListaEntidadesRegistradas"
+import { RegistroEntidadSaludButton } from "@/src/components/auth/RegistroEntidadSaludButton"
+import PasskeyModal from "@/src/components/PasskeyModal"
+import { StatCard } from "@/src/components/StatCard"
+import { Button } from "@/src/components/ui/button"
+import { useAuth } from "@/src/providers/auth-provider"
 
 // Página de administración
 const AdminPage = () => {
-  const { cerrarSesion } = useAuth();
-  const router = useRouter();
+  const { cerrarSesion } = useAuth()
+  const router = useRouter()
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const handleLogout = async () => {
-    await cerrarSesion();
-    router.push("/acceso");
-  };
+    await cerrarSesion()
+    router.push("/acceso")
+  }
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col space-y-14">
@@ -40,7 +41,8 @@ const AdminPage = () => {
           />
         </Link>
 
-        <p className="text-16-semibold mr-8">Admin Dashboard</p>
+
+        <p className="text-16-semibold mr-8 ">Admin Dashboard</p>
 
         {/* Navegación para escritorio */}
         <nav className="mr-4 mt-1 hidden md:flex md:items-center md:space-x-4 lg:space-x-6">
@@ -80,27 +82,37 @@ const AdminPage = () => {
             type="postulada"
             count={3}
             label="Campañas postuladas"
-            icon={"/assets/icons/appointments.svg"}
+            icon="/assets/icons/postulada.svg"
           />
           <StatCard
             type="ejecucion"
             count={2}
             label="Campañas activas"
-            icon={"/assets/icons/activa.svg"}
+            icon="/assets/icons/activa.svg"
           />
           <StatCard
-            type="cancelada"
+            type="finalizada"
             count={1}
-            label="Campañas canceladas"
-            icon={"/assets/icons/cancelada.svg"}
+            label="Campañas finalizadas"
+            icon="/assets/icons/ambulancia.svg"
           />
         </section>
 
-        {/* Componente de prueba para notificaciones SMS */}
-        <NotificacionPrueba />
-      </main>
-    </div>
-  );
-};
+        {/* Acá el listado */}
+        <ListaEntidadesRegistradas />
 
-export default AdminPage;
+        {/* Componente de notificaciones deshabilitado temporalmente
+        <NotificacionPrueba /> */}
+
+        {/* <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900 ">
+          <h3 className="mb-2 text-lg font-semibold">Registrar Entidad de Salud</h3>
+        </div> */}
+      </main>
+
+      <RegistroEntidadSaludButton />
+
+    </div>
+  )
+}
+
+export default AdminPage

@@ -1,124 +1,54 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
-import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert"
-import { Button } from "@/src/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card"
+import TriajeInicialForm from "@/src/components/forms/TriajeInicialForm"
 import { ROLES, RUTAS_POR_ROL } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
-import { testFlujoPerfilTriaje } from "@/src/utils/debug"
 
 export default function TriajeInicialPage() {
     const router = useRouter()
-    const { usuario, cargando, necesitaTriajeInicial, necesitaCompletarPerfil, setNecesitaTriajeInicial } = useAuth()
-    const [debug, setDebug] = useState<boolean>(false)
-    const [debugInfo, setDebugInfo] = useState<any>(null)
+    const { usuario, cargando, necesitaTriajeInicial } = useAuth()
 
     useEffect(() => {
+        // Redirigir si no cumple condiciones
         if (!cargando) {
             if (!usuario) {
                 router.push("/acceso")
             } else if (usuario.rolId !== ROLES.PACIENTE) {
                 router.push(RUTAS_POR_ROL[usuario.rolId])
-            } else if (necesitaCompletarPerfil) {
-                router.push("/dashboard/paciente/completar-perfil")
             } else if (!necesitaTriajeInicial) {
                 router.push("/dashboard/paciente")
             }
         }
-    }, [cargando, usuario, router, necesitaTriajeInicial, necesitaCompletarPerfil])
+    }, [cargando, usuario, router, necesitaTriajeInicial])
 
-    const ejecutarDiagnostico = async () => {
-        setDebug(true)
-        setDebugInfo({ estado: "Ejecutando diagnóstico..." })
-
-        try {
-            if (usuario?.id) {
-                const result = await testFlujoPerfilTriaje(usuario.id)
-                setDebugInfo(result)
-            } else {
-                setDebugInfo({ error: "No hay usuario con ID" })
-            }
-        } catch (error) {
-            setDebugInfo({ error: String(error) })
-        }
-    }
-
-    const simularTriajeCompletado = () => {
-        // Esta función simplemente marca el triaje como completado para pruebas
-        setNecesitaTriajeInicial(false)
-
-        setTimeout(() => {
-            router.push("/dashboard/paciente")
-        }, 300)
-    }
-
+    // Mostrar loading mientras se valida
     if (cargando || !usuario) {
-        return <div>Cargando...</div>
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <div className="text-center">
+                    <div className="mx-auto mb-4 size-8 animate-spin rounded-full border-4 border-green-200 border-t-green-600"></div>
+                    <p className="text-slate-600">Verificando acceso...</p>
+                </div>
+            </div>
+        )
     }
 
     return (
         <div className="container mx-auto py-8">
             <div className="mx-auto max-w-3xl">
-                <h1 className="mb-8 text-center text-2xl font-bold">
-                    Triaje Inicial
-                </h1>
+                <div className="mb-8 text-center">
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                        Evaluación Inicial de Salud
+                    </h1>
+                    <p className="mt-2 text-slate-600 dark:text-slate-400">
+                        Complete esta evaluación para personalizar su experiencia de salud
+                    </p>
+                </div>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Triaje Inicial del Paciente</CardTitle>
-                        <CardDescription>
-                            Completa este cuestionario para que podamos conocer tu estado de salud
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Alert className="mb-6">
-                            <AlertTitle>En construcción</AlertTitle>
-                            <AlertDescription>
-                                Esta funcionalidad está en desarrollo. Pronto podrás completar tu triaje inicial.
-                            </AlertDescription>
-                        </Alert>
-
-                        <div className="flex flex-col space-y-4">
-                            <div className="flex justify-center space-x-4">
-                                <Button
-                                    onClick={() => router.push("/dashboard/paciente")}
-                                    variant="outline"
-                                >
-                                    Volver al inicio
-                                </Button>
-
-                                <Button
-                                    onClick={simularTriajeCompletado}
-                                >
-                                    Simular triaje completado
-                                </Button>
-                            </div>
-
-                            <div className="mt-6 flex justify-center">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={ejecutarDiagnostico}
-                                    className="text-xs"
-                                >
-                                    🔍 Diagnosticar Estado
-                                </Button>
-                            </div>
-
-                            {debug && debugInfo && (
-                                <div className="mt-4 rounded-md bg-gray-100 p-4 text-left text-xs">
-                                    <h4 className="mb-2 font-bold">Resultado del diagnóstico:</h4>
-                                    <pre className="overflow-auto text-xs">
-                                        {JSON.stringify(debugInfo, null, 2)}
-                                    </pre>
-                                </div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
+                <TriajeInicialForm />
             </div>
         </div>
     )

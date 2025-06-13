@@ -1,20 +1,20 @@
-"use client";
+"use client"
 
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { File, FileText, Clock, User, RefreshCw, Badge } from 'lucide-react';
+import { format } from 'date-fns'
+import { es } from 'date-fns/locale'
+import { File, FileText, Clock, User, RefreshCw, Badge } from 'lucide-react'
 
-import { Button } from '@/src/components/ui/button';
-import { Citacion } from '@/src/types';
+import { Button } from '@/src/components/ui/button'
+import { Citacion } from '@/src/types'
 
 
 type CitacionesCampanaProps = {
-    citaciones: Citacion[];
-    cargando: boolean;
-    onAtender?: (citacionId: number) => void;
-    onVerHistorial: (pacienteId: number) => void;
-    soloHistorial?: boolean;
-};
+    citaciones: Citacion[]
+    cargando: boolean
+    onAtender?: (citacionId: number) => void
+    onVerHistorial: (pacienteId: number) => void
+    soloHistorial?: boolean
+}
 
 export default function CitacionesCampana({
     citaciones,
@@ -27,34 +27,49 @@ export default function CitacionesCampana({
     // Función para formatear hora
     const formatearHora = (fecha: string) => {
         try {
-            return format(new Date(fecha), 'HH:mm', { locale: es });
+            return format(new Date(fecha), 'HH:mm', { locale: es })
         } catch (error) {
-            console.error('Error al formatear hora:', error);
-            return 'Hora no disponible';
+            console.error('Error al formatear hora:', error)
+            return 'Hora no disponible'
         }
-    };
+    }
 
     // Obtener nivel de prioridad (1-5)
-    const obtenerClasePrioridad = (prioridad: number) => {
-        switch (prioridad) {
-            case 1: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
-            case 2: return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-            case 3: return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-            case 4: return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
-            case 5: return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
-        }
-    };
+    // const obtenerClasePrioridad = (prioridad: number) => {
+    //     switch (prioridad) {
+    //         case 1: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+    //         case 2: return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+    //         case 3: return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+    //         case 4: return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300'
+    //         case 5: return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+    //         default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+    //     }
+    // }
 
     // Obtener clase para el estado
     const obtenerClaseEstado = (estado: string) => {
+        console.log("🔄 Estado llegada:", estado)
         switch (estado) {
-            case 'AGENDADA': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-            case 'ATENDIDA': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-            case 'CANCELADA': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+            case 'AGENDADA': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+            case 'ATENDIDA': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+            case 'CANCELADA': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+            default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
         }
-    };
+    }
+
+    // Función para obtener el texto del estado
+    const obtenerTextoEstado = (estado: string): string => {
+        switch (estado) {
+            case 'AGENDADA':
+                return 'Pendiente'
+            case 'ATENDIDA':
+                return 'Atendido'
+            case 'CANCELADA':
+                return 'Cancelado'
+            default:
+                return estado
+        }
+    }
 
     if (cargando) {
         return (
@@ -64,7 +79,7 @@ export default function CitacionesCampana({
                     <p className="mt-4 text-slate-500">Cargando citaciones...</p>
                 </div>
             </div>
-        );
+        )
     }
 
     if (citaciones.length === 0) {
@@ -78,7 +93,7 @@ export default function CitacionesCampana({
                         'No hay citaciones programadas para esta fecha.'}
                 </p>
             </div>
-        );
+        )
     }
 
     return (
@@ -125,13 +140,12 @@ export default function CitacionesCampana({
                             </td>
                             <td className="py-3">
                                 <Badge className={obtenerClaseEstado(citacion.estado)}>
-                                    {citacion.estado === 'AGENDADA' ? 'Pendiente' :
-                                        citacion.estado === 'ATENDIDA' ? 'Atendido' : 'Cancelado'}
+                                    {obtenerTextoEstado(citacion.estado)}
                                 </Badge>
                             </td>
                             <td className="py-3">
-                                <Badge className={obtenerClasePrioridad(citacion.prioridad)}>
-                                    {citacion.prioridad}
+                                <Badge className={citacion.codigoTicket}>
+                                    {citacion.codigoTicket}
                                 </Badge>
                             </td>
                             <td className="py-3">
@@ -184,7 +198,7 @@ export default function CitacionesCampana({
                 </tbody>
             </table>
         </div>
-    );
+    )
 }
 
 // Calendar icon component
@@ -207,5 +221,5 @@ function Calendar(props: React.SVGProps<SVGSVGElement>) {
             <line x1="8" x2="8" y1="2" y2="6" />
             <line x1="3" x2="21" y1="10" y2="10" />
         </svg>
-    );
+    )
 }

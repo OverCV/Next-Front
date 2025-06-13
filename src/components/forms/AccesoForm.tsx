@@ -1,9 +1,9 @@
-// src\components\forms\AccesoForm.tsx
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AlertCircle } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -50,38 +50,36 @@ export default function AccesoForm(): JSX.Element {
 	})
 
 	const onSubmit = async (datos: AccesoFormValues) => {
-		if (!form.formState.isValid) return;
-
 		try {
-			setCargando(true);
-			setError(null);
+			setCargando(true)
+			setError(null)
 
 			const credenciales: DatosAcceso = {
 				tipoIdentificacion: datos.tipoIdentificacion,
 				identificacion: datos.identificacion,
 				clave: datos.clave,
-			};
+			}
 
-			const usuarioRespuesta = await iniciarSesion(credenciales);
+			const usuarioRespuesta = await iniciarSesion(credenciales)
 
 			if (usuarioRespuesta?.rolId) {
-				router.push(RUTAS_POR_ROL[usuarioRespuesta.rolId] || "/dashboard/paciente");
+				router.push(RUTAS_POR_ROL[usuarioRespuesta.rolId] || "/dashboard/paciente")
 			} else {
-				setError("Error en la respuesta del servidor");
+				setError("Error en la respuesta del servidor")
 			}
 		} catch (err: any) {
 			// Manejar diferentes tipos de errores
 			if (err.response?.status === 401) {
-				setError("Credenciales incorrectas. Por favor verifica tus datos.");
+				setError("Credenciales incorrectas. Por favor verifica tus datos.")
 			} else if (err.response?.status === 404) {
-				setError("Usuario no encontrado");
+				setError("Usuario no encontrado")
 			} else {
-				setError("Error al iniciar sesión. Por favor intenta nuevamente.");
+				setError("Error al iniciar sesión. Por favor intenta nuevamente.")
 			}
 		} finally {
-			setCargando(false);
+			setCargando(false)
 		}
-	};
+	}
 
 	return (
 		<div className="flex flex-col items-center justify-center p-4 md:p-8">
@@ -114,14 +112,7 @@ export default function AccesoForm(): JSX.Element {
 
 				<Form {...form}>
 					<form
-						onSubmit={(e) => {
-							e.preventDefault();
-							if (!form.formState.isValid) {
-								setError("Por favor completa todos los campos correctamente");
-								return;
-							}
-							form.handleSubmit(onSubmit)(e);
-						}}
+						onSubmit={form.handleSubmit(onSubmit)}
 						className="space-y-6"
 						noValidate
 					>
@@ -167,8 +158,18 @@ export default function AccesoForm(): JSX.Element {
 							className="w-full"
 							disabled={cargando}
 						>
-							{cargando ? "Ingresando..." : "Iniciar Sesión"}
+							{cargando ? "Accediendo..." : "Iniciar Sesión"}
 						</Button>
+
+						{/* Enlace para recuperar contraseña */}
+						<div className="text-center">
+							<Link
+								href="/recuperar-contrasena"
+								className="text-sm text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+							>
+								¿Olvidaste tu contraseña?
+							</Link>
+						</div>
 					</form>
 				</Form>
 			</div>

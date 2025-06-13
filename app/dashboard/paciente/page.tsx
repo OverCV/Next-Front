@@ -1,279 +1,262 @@
-"use client";
+"use client"
 
-import { Calendar, AlertCircle, RefreshCw } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useAuth } from '@/src/providers/auth-provider'
+import { usePacienteDashboard } from '@/src/lib/hooks/usePacienteDashboard'
+import { ValidacionSeguimientosAlert } from '@/src/components/pacientes/ValidacionSeguimientosAlert'
 
-import TriajeForm from '@/src/components/forms/TriajeForm';
-import { StatCard } from '@/src/components/StatCard';
-import { Alert, AlertDescription } from '@/src/components/ui/alert';
-import { Button } from '@/src/components/ui/button';
-import { useAuth } from '@/src/providers/auth-provider';
-import apiClient from '@/src/services/api';
-import { Triaje, Campana } from '@/src/types';
+export default function PacienteDashboard() {
+    const { usuario } = useAuth()
+    const { 
+        datos, 
+        cargando, 
+        cargandoPaciente, 
+        error, 
+        validandoSeguimientos,
+        recargarDatos 
+    } = usePacienteDashboard(usuario?.id || null)
 
-// import TriajeForm from '@/src/components/forms/TriajeForm';
-// import { campanasService } from '@/src/services/campanas';
-// import { triajeService } from '@/src/services/triaje';
-
-// import CampanaCard from '@/src/components/CampanaCard';
-// import { Triaje, Campana } from '@/src/types';
-
-export default function PacientePage() {
-    const router = useRouter();
-    const { usuario } = useAuth();
-    const [triaje, setTriaje] = useState<Triaje | null>(null);
-    const [campanas, setCampanas] = useState<Campana[]>([]);
-    const [campanasDisponibles, setCampanasDisponibles] = useState<Campana[]>([]);
-    const [pacienteId, setPacienteId] = useState<number | null>(null);
-
-    const [cargandoTriaje, setCargandoTriaje] = useState(true);
-    const [cargandoCampanas, setCargandoCampanas] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [mostrarTriajeForm, setMostrarTriajeForm] = useState(false);
-
-    // Primero obtenemos el pacienteId
-    useEffect(() => {
-        const obtenerPaciente = async () => {
-            if (!usuario?.id) return;
-
-            try {
-                const response = await apiClient.get(`/pacientes/usuario/${usuario.id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${usuario.token}`
-                    }
-                });
-
-                setPacienteId(response.data.id);
-            } catch (err: any) {
-                console.error("Error al obtener paciente:", err);
-                if (err.response?.status === 404) {
-                    router.push('/dashboard/paciente/completar-perfil');
-                    return;
-                }
-                setError("Error al obtener datos del paciente");
-            }
-        };
-
-        obtenerPaciente();
-    }, [usuario?.id, router, usuario?.token]);
-
-    const cargarCampanas = async () => {
-        if (!pacienteId || !usuario?.token) return;
-
-        setCargandoCampanas(true);
-
-        try {
-            // Cargar todas las campañas disponibles
-            const responseCampanas = await apiClient.get('/campanas', {
-                headers: {
-                    'Authorization': `Bearer ${usuario.token}`
-                }
-            });
-            const todasCampanas = responseCampanas.data;
-            setCampanasDisponibles(todasCampanas);
-
-            // Cargar inscripciones del paciente
-            const responseInscripciones = await apiClient.get(`/inscripciones-campana/paciente/${pacienteId}`, {
-                headers: {
-                    'Authorization': `Bearer ${usuario.token}`
-                }
-            });
-            const inscripciones = responseInscripciones.data;
-
-            // Filtrar las campañas en las que está inscrito
-            const campanasInscritas = todasCampanas.filter((campana: Campana) =>
-                inscripciones.some((inscripcion: any) =>
-                    inscripcion.campanaId === campana.id &&
-                    inscripcion.estado === 'INSCRITO'
-                )
-            );
-            setCampanas(campanasInscritas);
-        } catch (err: any) {
-            console.error('Error al cargar campañas:', err);
-            setError('Error al cargar las campañas. Intente nuevamente.');
-        } finally {
-            setCargandoCampanas(false);
-        }
-    };
-
-    // Cargar campañas inicialmente
-    useEffect(() => {
-        cargarCampanas();
-    }, [pacienteId]);
-
-    // Cargar triaje inicial del paciente
-    useEffect(() => {
-        const cargarTriaje = async () => {
-            if (!pacienteId || !usuario?.token) return;
-
-            setCargandoTriaje(true);
-            setError(null);
-
-            try {
-                const response = await apiClient.get(`/triaje/paciente/${pacienteId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${usuario.token}`
-                    }
-                });
-
-                const triajes = response.data;
-                // Tomamos el triaje más reciente
-                const ultimoTriaje = triajes.length > 0 ? triajes[0] : null;
-                setTriaje(ultimoTriaje);
-
-                // Si no hay triaje, redirigir a crearlo
-                if (!ultimoTriaje) {
-                    router.push('/dashboard/paciente/triaje-inicial');
-                }
-            } catch (err: any) {
-                console.error('Error al cargar triaje:', err);
-                setError('No se pudo cargar la información médica. Intente nuevamente.');
-            } finally {
-                setCargandoTriaje(false);
-            }
-        };
-
-        cargarTriaje();
-    }, [pacienteId, router, usuario?.token]);
-
-    // Manejar envío del formulario de triaje
-    const handleTriajeSubmit = async (datosTriaje: any) => {
-        if (!pacienteId || !usuario?.token) return;
-
-        try {
-            const response = await apiClient.post('/triaje', {
-                ...datosTriaje,
-                pacienteId,
-                fechaTriaje: new Date()
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${usuario.token}`
-                }
-            });
-
-            const nuevoTriaje = response.data;
-            setTriaje(nuevoTriaje);
-            setMostrarTriajeForm(false);
-        } catch (err: any) {
-            console.error('Error al guardar triaje:', err);
-            setError('Error al guardar la información médica. Intente nuevamente.');
-        }
-    };
-
-    // Si el usuario aún no tiene triaje, mostrar el formulario
-    if (mostrarTriajeForm) {
+    if (cargando || cargandoPaciente) {
         return (
-            <div className="space-y-6">
-                <div className="bg-card rounded-lg border p-6 shadow-sm">
-                    <h2 className="mb-4 text-xl font-semibold">Evaluación Inicial de Salud</h2>
-                    <p className="text-muted-foreground mb-6">
-                        Antes de continuar, necesitamos recopilar información básica sobre su salud
-                        para brindarle la mejor atención posible.
-                    </p>
-                    {error && (
-                        <Alert variant="destructive" className="mb-6">
-                            <AlertCircle className="size-4" />
-                            <AlertDescription>{error}</AlertDescription>
-                        </Alert>
-                    )}
-                    <TriajeForm onSubmit={handleTriajeSubmit} />
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                        <p className="mt-4 text-gray-600">Cargando tu información de salud...</p>
+                    </div>
                 </div>
             </div>
-        );
+        )
     }
 
-    // Si está cargando, mostrar indicador
-    if (cargandoTriaje) {
+    if (error) {
         return (
-            <div className="flex h-[50vh] items-center justify-center">
-                <RefreshCw className="size-8 animate-spin text-slate-400" />
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+                        <strong className="font-bold">Error:</strong>
+                        <span className="block sm:inline"> {error}</span>
+                        <button 
+                            onClick={recargarDatos}
+                            className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                        >
+                            Reintentar
+                        </button>
+                    </div>
+                </div>
             </div>
-        );
+        )
+    }
+
+    if (!datos) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center text-gray-600">
+                        No se pudieron cargar los datos del paciente.
+                    </div>
+                </div>
+            </div>
+        )
     }
 
     return (
-        <div className="space-y-8">
-            {/* Mensaje de error */}
-            {error && (
-                <Alert variant="destructive">
-                    <AlertCircle className="size-4" />
-                    <AlertDescription>{error}</AlertDescription>
-                </Alert>
-            )}
-
-            {/* Estadísticas */}
-            <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <StatCard
-                    type="ejecucion"
-                    count={campanas.length}
-                    label="Campañas Activas"
-                    icon="/assets/icons/calendar.svg"
-                />
-
-                <StatCard
-                    type="postulada"
-                    count={campanasDisponibles.length}
-                    label="Campañas Disponibles"
-                    icon="/assets/icons/calendar.svg"
-                />
-
-                <StatCard
-                    type={triaje ? 'ejecucion' : 'cancelada'}
-                    count={triaje ? 1 : 0}
-                    label="Triajes Realizados"
-                    icon="/assets/icons/heart.svg"
-                />
-            </section>
-
-            {/* Mis Campañas */}
-            <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                <div className="mb-4 flex items-center justify-between">
-                    <div>
-                        <h2 className="text-xl font-semibold">Mis Campañas de Salud</h2>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
-                            Campañas en las que está registrado actualmente.
-                        </p>
-                    </div>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={cargarCampanas}
-                        disabled={cargandoCampanas}
-                        className="h-8 gap-2"
-                    >
-                        <RefreshCw className={`size-4 ${cargandoCampanas ? 'animate-spin' : ''}`} />
-                        Actualizar
-                    </Button>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+            <div className="max-w-7xl mx-auto space-y-8">
+                
+                {/* Header */}
+                <div className="text-center">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                        ¡Hola, {datos.paciente.usuario?.nombres || 'Paciente'}! 👋
+                    </h1>
+                    <p className="text-lg text-gray-600">
+                        Bienvenido a tu portal de salud cardiovascular
+                    </p>
                 </div>
 
-                {cargandoCampanas ? (
-                    <div className="py-8 text-center">
-                        <RefreshCw className="mx-auto size-8 animate-spin text-slate-400" />
-                        <p className="mt-2 text-slate-500">Cargando campañas...</p>
-                    </div>
-                ) : campanas.length > 0 ? (
-                    <div className="space-y-4">
-                        {campanas.map(campana => (
-                            <div key={campana.id} className="rounded-lg border p-4">
-                                <h3 className="font-semibold">{campana.nombre}</h3>
-                                <p className="text-sm text-slate-500">{campana.descripcion}</p>
-                                <div className="mt-2 text-sm">
-                                    <span className="font-medium">Estado:</span> {campana.estatus}
+                {/* Componente de validación de seguimientos */}
+                <ValidacionSeguimientosAlert validando={validandoSeguimientos} />
+
+                {/* Estadísticas principales */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <span className="text-2xl">🏥</span>
                                 </div>
                             </div>
-                        ))}
+                            <div className="ml-4">
+                                <h3 className="text-lg font-semibold text-gray-900">Campañas Activas</h3>
+                                <p className="text-3xl font-bold text-blue-600">{datos.campanasActivas}</p>
+                            </div>
+                        </div>
                     </div>
-                ) : (
-                    <div className="rounded-lg border border-dashed border-slate-300 p-8 text-center dark:border-slate-700">
-                        <Calendar className="mx-auto size-10 text-slate-400" />
-                        <h3 className="mt-3 text-lg font-medium">No tiene registro en campaña alguna</h3>
-                        <p className="mt-2 text-sm text-slate-500">
-                            Explore las campañas disponibles y regístrese en las que le interesen.
-                        </p>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <span className="text-2xl">📋</span>
+                                </div>
+                            </div>
+                            <div className="ml-4">
+                                <h3 className="text-lg font-semibold text-gray-900">Campañas Disponibles</h3>
+                                <p className="text-3xl font-bold text-green-600">{datos.campanasDisponibles}</p>
+                            </div>
+                        </div>
                     </div>
-                )}
+
+                    <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <span className="text-2xl">📊</span>
+                                </div>
+                            </div>
+                            <div className="ml-4">
+                                <h3 className="text-lg font-semibold text-gray-900">Triajes Realizados</h3>
+                                <p className="text-3xl font-bold text-purple-600">{datos.triagesRealizados}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Seguimientos del Paciente */}
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                            <span className="text-3xl mr-3">💊</span>
+                            Seguimientos del Paciente
+                        </h2>
+                        <button 
+                            onClick={recargarDatos}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            🔄 Actualizar
+                        </button>
+                    </div>
+                    
+                    {validandoSeguimientos && (
+                        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div className="flex items-center">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
+                                <p className="text-blue-700">Validando seguimientos automáticos...</p>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="text-center py-8 text-gray-500">
+                        <p className="text-sm">Todos los seguimientos cardiovasculares (pendientes y completados)</p>
+                    </div>
+
+                    {datos.seguimientos.length === 0 ? (
+                        <div className="text-center py-8">
+                            <div className="mb-4">
+                                <span className="text-6xl">✅</span>
+                            </div>
+                            <p className="text-gray-600 mb-2">No hay seguimientos registrados</p>
+                            <p className="text-sm text-gray-500">Los seguimientos aparecerán aquí cuando se creen</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {datos.seguimientos.map((seguimiento) => (
+                                <div key={seguimiento.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h4 className="font-semibold text-gray-900">{seguimiento.tipo}</h4>
+                                            <p className="text-sm text-gray-600">
+                                                Programado: {new Date(seguimiento.fecha_programada).toLocaleDateString()}
+                                            </p>
+                                            <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                                                seguimiento.estado === 'COMPLETADO' ? 'bg-green-100 text-green-800' :
+                                                seguimiento.estado === 'PENDIENTE' ? 'bg-yellow-100 text-yellow-800' :
+                                                'bg-gray-100 text-gray-800'
+                                            }`}>
+                                                {seguimiento.estado}
+                                            </span>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className={`text-sm font-medium ${
+                                                seguimiento.prioridad === 'ALTA' ? 'text-red-600' :
+                                                seguimiento.prioridad === 'MEDIA' ? 'text-yellow-600' :
+                                                'text-green-600'
+                                            }`}>
+                                                {seguimiento.prioridad}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {seguimiento.notas && (
+                                        <p className="mt-2 text-sm text-gray-700">{seguimiento.notas}</p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Mis Campañas de Salud */}
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <span className="text-3xl mr-3">🏥</span>
+                        Mis Campañas de Salud
+                    </h2>
+                    
+                    <div className="text-center py-4 text-gray-500">
+                        <p className="text-sm">Campañas en las que estás registrado actualmente</p>
+                    </div>
+
+                    {datos.campanas.length === 0 ? (
+                        <div className="text-center py-8">
+                            <span className="text-6xl mb-4 block">📋</span>
+                            <p className="text-gray-600 mb-2">No estás inscrito en ninguna campaña</p>
+                            <p className="text-sm text-gray-500">Las campañas aparecerán aquí cuando te inscribas</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {datos.campanas.map((campana) => (
+                                <div key={campana.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                                    <h3 className="font-semibold text-gray-900 mb-2">{campana.nombre}</h3>
+                                    <p className="text-sm text-gray-600 mb-3">{campana.descripcion}</p>
+                                    <div className="space-y-1 text-xs text-gray-500">
+                                        <p>📅 Inicio: {new Date(campana.fecha_inicio).toLocaleDateString()}</p>
+                                        <p>⏰ Límite: {new Date(campana.fecha_limite).toLocaleDateString()}</p>
+                                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                                            campana.estado === 'ACTIVA' ? 'bg-green-100 text-green-800' :
+                                            campana.estado === 'PENDIENTE' ? 'bg-yellow-100 text-yellow-800' :
+                                            'bg-gray-100 text-gray-800'
+                                        }`}>
+                                            {campana.estado}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Historial de Citaciones */}
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <span className="text-3xl mr-3">📋</span>
+                        Historial de Citaciones
+                    </h2>
+                    
+                    <div className="space-y-4">
+                        <div className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <h3 className="font-semibold text-gray-900">Campaña Menorcitos</h3>
+                                    <p className="text-sm text-gray-600">11/06/2025 a las 17:03</p>
+                                </div>
+                                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                                    Atendida
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
-    );
+    )
 }

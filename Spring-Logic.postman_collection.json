@@ -1,0 +1,1628 @@
+{
+	"info": {
+		"_postman_id": "spring-logic-collection",
+		"name": "Spring Logic API",
+		"description": "Colección de endpoints para la API de Spring Logic",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Autenticación",
+			"item": [
+				{
+					"name": "Registro de Usuario",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"correo\": \"usuario@ejemplo.com\",\n    \"contrasena\": \"contraseña123\",\n    \"tipoIdentificacion\": \"CEDULA\",\n    \"identificacion\": \"1234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/registro",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "registro"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "Listar Todos los Usuarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Usuario por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Usuario por Correo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/correo/:correo",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", "correo", ":correo"],
+							"variable": [
+								{
+									"key": "correo",
+									"value": "usuario@ejemplo.com"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Usuario por Identificación",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/identificacion/:tipo/:numero",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", "identificacion", ":tipo", ":numero"],
+							"variable": [
+								{
+									"key": "tipo",
+									"value": "CEDULA"
+								},
+								{
+									"key": "numero",
+									"value": "1234567890"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Usuario",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"correo\": \"usuario@ejemplo.com\",\n    \"contrasena\": \"contraseña123\",\n    \"tipoIdentificacion\": \"CEDULA\",\n    \"identificacion\": \"1234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/usuarios",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Usuario",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"correo\": \"usuario.actualizado@ejemplo.com\",\n    \"contrasena\": \"nuevaContraseña123\",\n    \"tipoIdentificacion\": \"CEDULA\",\n    \"identificacion\": \"1234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Usuario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Pacientes",
+			"item": [
+				{
+					"name": "Listar Todos los Pacientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/pacientes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pacientes"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Paciente por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/pacientes/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pacientes", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Pacientes por Localización",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/pacientes/localizacion/:localizacionId",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pacientes", "localizacion", ":localizacionId"],
+							"variable": [
+								{
+									"key": "localizacionId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Paciente por Usuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/pacientes/usuario/:usuarioId",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pacientes", "usuario", ":usuarioId"],
+							"variable": [
+								{
+									"key": "usuarioId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Paciente",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usuarioId\": 1,\n    \"localizacionId\": 1,\n    \"fechaNacimiento\": \"1990-01-01\",\n    \"genero\": \"MASCULINO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pacientes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pacientes"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Paciente",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"usuarioId\": 1,\n    \"localizacionId\": 1,\n    \"fechaNacimiento\": \"1990-01-01\",\n    \"genero\": \"FEMENINO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pacientes/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pacientes", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Paciente",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/pacientes/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pacientes", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Personal Médico",
+			"item": [
+				{
+					"name": "Listar Todo el Personal Médico",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/personal-medico",
+							"host": ["{{base_url}}"],
+							"path": ["api", "personal-medico"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Médico por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/personal-medico/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "personal-medico", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Médico por Usuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/personal-medico/usuario/:usuarioId",
+							"host": ["{{base_url}}"],
+							"path": ["api", "personal-medico", "usuario", ":usuarioId"],
+							"variable": [
+								{
+									"key": "usuarioId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Personal Médico",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usuarioId\": 1,\n    \"especialidad\": \"Medicina General\",\n    \"registroMedico\": \"RM12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/personal-medico",
+							"host": ["{{base_url}}"],
+							"path": ["api", "personal-medico"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Personal Médico",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"usuarioId\": 1,\n    \"especialidad\": \"Cardiología\",\n    \"registroMedico\": \"RM12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/personal-medico/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "personal-medico", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Personal Médico",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/personal-medico/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "personal-medico", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Historias Clínicas",
+			"item": [
+				{
+					"name": "Listar Todas las Historias Clínicas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/historias-clinicas",
+							"host": ["{{base_url}}"],
+							"path": ["api", "historias-clinicas"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Historia Clínica por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/historias-clinicas/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "historias-clinicas", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Historias Clínicas por Paciente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/historias-clinicas/paciente/:pacienteId",
+							"host": ["{{base_url}}"],
+							"path": ["api", "historias-clinicas", "paciente", ":pacienteId"],
+							"variable": [
+								{
+									"key": "pacienteId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Historia Clínica",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pacienteId\": 1,\n    \"fechaConsulta\": \"2024-03-20\",\n    \"motivoConsulta\": \"Control rutinario\",\n    \"diagnostico\": \"Paciente sano\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/historias-clinicas",
+							"host": ["{{base_url}}"],
+							"path": ["api", "historias-clinicas"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Historia Clínica",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"pacienteId\": 1,\n    \"fechaConsulta\": \"2024-03-20\",\n    \"motivoConsulta\": \"Control rutinario actualizado\",\n    \"diagnostico\": \"Paciente sano con mejoría\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/historias-clinicas/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "historias-clinicas", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Historia Clínica",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/historias-clinicas/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "historias-clinicas", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Datos Clínicos",
+			"item": [
+				{
+					"name": "Listar Todos los Datos Clínicos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/datos-clinicos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "datos-clinicos"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Datos Clínicos por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/datos-clinicos/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "datos-clinicos", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Datos Clínicos por Paciente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/datos-clinicos/paciente/:pacienteId",
+							"host": ["{{base_url}}"],
+							"path": ["api", "datos-clinicos", "paciente", ":pacienteId"],
+							"variable": [
+								{
+									"key": "pacienteId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Datos Clínicos",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pacienteId\": 1,\n    \"presionArterial\": \"120/80\",\n    \"frecuenciaCardiaca\": 75,\n    \"temperatura\": 36.5,\n    \"peso\": 70.5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/datos-clinicos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "datos-clinicos"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Datos Clínicos",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"pacienteId\": 1,\n    \"presionArterial\": \"118/78\",\n    \"frecuenciaCardiaca\": 72,\n    \"temperatura\": 36.6,\n    \"peso\": 70.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/datos-clinicos/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "datos-clinicos", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Datos Clínicos",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/datos-clinicos/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "datos-clinicos", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Campañas",
+			"item": [
+				{
+					"name": "Listar Todas las Campañas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/campana",
+							"host": ["{{base_url}}"],
+							"path": ["api", "campana"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Campaña por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/campana/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "campana", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Campañas por Fecha Límite",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/campana/fecha-límite",
+							"host": ["{{base_url}}"],
+							"path": ["api", "campana", "fecha-límite"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Campañas por Fecha Inicio",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/campana/fecha-inicio",
+							"host": ["{{base_url}}"],
+							"path": ["api", "campana", "fecha-inicio"]
+						}
+					}
+				},
+				{
+					"name": "Crear Campaña",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Campaña de Vacunación\",\n    \"descripcion\": \"Campaña anual de vacunación\",\n    \"fechaInicio\": \"2024-04-01\",\n    \"fechaLimite\": \"2024-04-30\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/campana",
+							"host": ["{{base_url}}"],
+							"path": ["api", "campana"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Campaña",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"nombre\": \"Campaña de Vacunación Actualizada\",\n    \"descripcion\": \"Campaña anual de vacunación extendida\",\n    \"fechaInicio\": \"2024-04-01\",\n    \"fechaLimite\": \"2024-05-15\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/campana/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "campana", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Campaña",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/campana/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "campana", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Inscripciones a Campañas",
+			"item": [
+				{
+					"name": "Listar Todas las Inscripciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/inscripciones-campana",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inscripciones-campana"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Inscripción por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/inscripciones-campana/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inscripciones-campana", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Inscripciones por Paciente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/inscripciones-campana/paciente/:pacienteId",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inscripciones-campana", "paciente", ":pacienteId"],
+							"variable": [
+								{
+									"key": "pacienteId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Inscripción",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pacienteId\": 1,\n    \"campanaId\": 1,\n    \"fechaInscripcion\": \"2024-03-20\",\n    \"estado\": \"ACTIVO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/inscripciones-campana",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inscripciones-campana"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Inscripción",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"pacienteId\": 1,\n    \"campanaId\": 1,\n    \"fechaInscripcion\": \"2024-03-20\",\n    \"estado\": \"COMPLETADO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/inscripciones-campana/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inscripciones-campana", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Inscripción",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/inscripciones-campana/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inscripciones-campana", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Factores de Riesgo",
+			"item": [
+				{
+					"name": "Listar Todos los Factores de Riesgo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/factor-riesgo",
+							"host": ["{{base_url}}"],
+							"path": ["api", "factor-riesgo"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Factor de Riesgo por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/factor-riesgo/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "factor-riesgo", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Factores por Nombre",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/factor-riesgo/nombre/:nombreFactor",
+							"host": ["{{base_url}}"],
+							"path": ["api", "factor-riesgo", "nombre", ":nombreFactor"],
+							"variable": [
+								{
+									"key": "nombreFactor",
+									"value": "diabetes"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Factores por Tipo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/factor-riesgo/tipo/:tipoFactor",
+							"host": ["{{base_url}}"],
+							"path": ["api", "factor-riesgo", "tipo", ":tipoFactor"],
+							"variable": [
+								{
+									"key": "tipoFactor",
+									"value": "enfermedad"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Factor de Riesgo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Diabetes\",\n    \"descripcion\": \"Factor de riesgo para diabetes tipo 2\",\n    \"tipo\": \"ENFERMEDAD\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/factor-riesgo",
+							"host": ["{{base_url}}"],
+							"path": ["api", "factor-riesgo"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Factor de Riesgo",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"nombre\": \"Diabetes Tipo 2\",\n    \"descripcion\": \"Factor de riesgo actualizado para diabetes tipo 2\",\n    \"tipo\": \"ENFERMEDAD\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/factor-riesgo/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "factor-riesgo", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Factor de Riesgo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/factor-riesgo/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "factor-riesgo", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Entidades de Salud",
+			"item": [
+				{
+					"name": "Listar Todas las Entidades de Salud",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/entidades-salud",
+							"host": ["{{base_url}}"],
+							"path": ["api", "entidades-salud"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Entidad de Salud por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/entidades-salud/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "entidades-salud", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Entidad por Razón Social",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/entidades-salud/entidad/:razon_social",
+							"host": ["{{base_url}}"],
+							"path": ["api", "entidades-salud", "entidad", ":razon_social"],
+							"variable": [
+								{
+									"key": "razon_social",
+									"value": "Clínica Ejemplo"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Buscar Entidad por Usuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/entidades-salud/usuario/:usuarioId",
+							"host": ["{{base_url}}"],
+							"path": ["api", "entidades-salud", "usuario", ":usuarioId"],
+							"variable": [
+								{
+									"key": "usuarioId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Entidad de Salud",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"razonSocial\": \"Clínica Ejemplo\",\n    \"nit\": \"900123456-7\",\n    \"direccion\": \"Calle Principal #123\",\n    \"telefono\": \"6011234567\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/entidades-salud",
+							"host": ["{{base_url}}"],
+							"path": ["api", "entidades-salud"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Entidad de Salud",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"razonSocial\": \"Clínica Ejemplo Actualizada\",\n    \"nit\": \"900123456-7\",\n    \"direccion\": \"Calle Principal #123, Piso 2\",\n    \"telefono\": \"6011234567\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/entidades-salud/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "entidades-salud", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Entidad de Salud",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/entidades-salud/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "entidades-salud", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Servicios Médicos",
+			"item": [
+				{
+					"name": "Listar Todos los Servicios Médicos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/servicios-medicos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "servicios-medicos"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Servicio Médico por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/servicios-medicos/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "servicios-medicos", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Servicio Médico",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Consulta General\",\n    \"descripcion\": \"Consulta médica general\",\n    \"duracion\": 30,\n    \"costo\": 50000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/servicios-medicos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "servicios-medicos"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Servicio Médico",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"nombre\": \"Consulta General Actualizada\",\n    \"descripcion\": \"Consulta médica general extendida\",\n    \"duracion\": 45,\n    \"costo\": 60000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/servicios-medicos/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "servicios-medicos", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Servicio Médico",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/servicios-medicos/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "servicios-medicos", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Localizaciones",
+			"item": [
+				{
+					"name": "Listar Todas las Localizaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/localizaciones",
+							"host": ["{{base_url}}"],
+							"path": ["api", "localizaciones"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Localización por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/localizaciones/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "localizaciones", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Localización",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"departamento\": \"Caldas\",\n    \"ciudad\": \"Manizales\",\n    \"direccion\": \"Calle Principal #123\",\n    \"codigoPostal\": \"170001\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/localizaciones",
+							"host": ["{{base_url}}"],
+							"path": ["api", "localizaciones"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Localización",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"departamento\": \"Caldas\",\n    \"ciudad\": \"Manizales\",\n    \"direccion\": \"Calle Principal #123, Edificio A\",\n    \"codigoPostal\": \"170001\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/localizaciones/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "localizaciones", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Localización",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/localizaciones/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "localizaciones", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Predicciones",
+			"item": [
+				{
+					"name": "Listar Todas las Predicciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/predicciones",
+							"host": ["{{base_url}}"],
+							"path": ["api", "predicciones"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Predicción por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/predicciones/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "predicciones", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Predicción",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pacienteId\": 1,\n    \"factorRiesgoId\": 1,\n    \"probabilidad\": 0.75,\n    \"fechaPrediccion\": \"2024-03-20\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/predicciones",
+							"host": ["{{base_url}}"],
+							"path": ["api", "predicciones"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Predicción",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"pacienteId\": 1,\n    \"factorRiesgoId\": 1,\n    \"probabilidad\": 0.80,\n    \"fechaPrediccion\": \"2024-03-20\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/predicciones/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "predicciones", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Predicción",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/predicciones/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "predicciones", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Interacciones Chatbot",
+			"item": [
+				{
+					"name": "Listar Todas las Interacciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/interacciones_chatbot",
+							"host": ["{{base_url}}"],
+							"path": ["api", "interacciones_chatbot"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Interacción por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/interacciones_chatbot/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "interacciones_chatbot", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Interacción",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pacienteId\": 1,\n    \"mensaje\": \"¿Cuáles son los síntomas de la diabetes?\",\n    \"respuesta\": \"Los síntomas comunes incluyen sed excesiva, micción frecuente y fatiga.\",\n    \"fechaInteraccion\": \"2024-03-20T10:30:00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/interacciones_chatbot",
+							"host": ["{{base_url}}"],
+							"path": ["api", "interacciones_chatbot"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Interacción",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"pacienteId\": 1,\n    \"mensaje\": \"¿Cuáles son los síntomas de la diabetes?\",\n    \"respuesta\": \"Los síntomas comunes incluyen sed excesiva, micción frecuente, fatiga y visión borrosa.\",\n    \"fechaInteraccion\": \"2024-03-20T10:30:00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/interacciones_chatbot/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "interacciones_chatbot", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Interacción",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/interacciones_chatbot/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "interacciones_chatbot", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/healthz",
+							"host": ["{{base_url}}"],
+							"path": ["healthz"]
+						}
+					}
+				},
+				{
+					"name": "Test API",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/test",
+							"host": ["{{base_url}}"],
+							"path": ["api", "test"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		}
+	]
+} 
