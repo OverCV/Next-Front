@@ -81,7 +81,7 @@ export default function RegistroEntidadForm(): JSX.Element {
                 correo: datos.correo,
                 clave: datos.clave,
                 celular: datos.telefono,
-                estaActivo: true,
+                estado: "ACTIVO",
                 rolId: ROLES.ENTIDAD_SALUD
             }
 

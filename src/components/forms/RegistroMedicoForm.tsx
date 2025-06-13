@@ -11,17 +11,20 @@ import { Alert, AlertDescription } from "@/src/components/ui/alert"
 import { Form } from "@/src/components/ui/form"
 import { ROLES, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
-import { MedicoService } from "@/src/services/domain/medico.service"
+import entidadSaludService from "@/src/services/domain/entidad-salud.service"
+import MedicoService from "@/src/services/domain/medico.service"
 import { usuariosService } from "@/src/services/domain/usuarios.service"
 import { notificacionesService } from "@/src/services/notificaciones"
+import { Medico, Usuario } from "@/src/types"
 
-import ContactoFields from "./registro-medico/ContactoFields"
-import DatosPersonalesFields from "./registro-medico/DatosPersonalesFields"
-import EspecialidadFields from "./registro-medico/EspecialidadFields"
-import FormActions from "./registro-medico/FormActions"
-import FormHeader from "./registro-medico/FormHeader"
-import IdentificacionFields from "./registro-medico/IdentificacionFields"
-import SeguridadFields from "./registro-medico/SeguridadFields"
+import { ContactoFields } from "./registro-medico/ContactoFields"
+import { DatosPersonalesFields } from "./registro-medico/DatosPersonalesFields"
+import { EspecialidadFields } from "./registro-medico/EspecialidadFields"
+import { FormActions } from "./registro-medico/FormActions"
+import { FormHeader } from "./registro-medico/FormHeader"
+import { IdentificacionFields } from "./registro-medico/IdentificacionFields"
+import { SeguridadFields } from "./registro-medico/SeguridadFields"
+
 
 // Esquema de validación con Zod
 const registroMedicoSchema = z.object({
@@ -58,7 +61,7 @@ export default function RegistroMedicoForm() {
             nombres: "",
             apellidos: "",
             especialidad: "",
-            celular: "",
+            telefono: "",
             correo: "",
             clave: "",
             confirmarClave: ""
@@ -66,12 +69,12 @@ export default function RegistroMedicoForm() {
     })
 
     // Función para enviar SMS de bienvenida
-    const enviarSMSBienvenida = async (celular: string, nombres: string, identificacion: string): Promise<void> => {
+    const enviarSMSBienvenida = async (telefono: string, nombres: string, identificacion: string): Promise<void> => {
         try {
             setEnviandoSMS(true)
             const mensaje = `¡Hola Dr(a). ${nombres}! 🏥 Su cuenta médica en HealInk ha sido creada exitosamente. Usuario: ${identificacion} | Acceda con su contraseña en healink.com para comenzar a atender pacientes.`
 
-            await notificacionesService.enviarSMS(celular, mensaje)
+            await notificacionesService.enviarSMS(telefono, mensaje)
             console.log("✅ SMS de bienvenida médico enviado exitosamente")
         } catch (err) {
             console.error("⚠️ Error al enviar SMS de bienvenida médico:", err)
@@ -82,12 +85,14 @@ export default function RegistroMedicoForm() {
 
     const onSubmit = async (datos: RegistroMedicoFormValues): Promise<void> => {
         const token = usuario?.token || localStorage.getItem('token')
-        const entidadId = usuario?.entidadId
 
-        if (!token || !entidadId) {
-            setError("No hay sesión activa o entidad válida. Por favor, inicia sesión nuevamente.")
+        if (!usuario?.id) {
+            setError("No hay sesión activa. Por favor, inicia sesión nuevamente.")
             return
         }
+
+        const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(usuario.id)
+        const entidadId = entidad?.id
 
         setCargando(true)
         setError(null)
@@ -97,7 +102,7 @@ export default function RegistroMedicoForm() {
             console.log("📝 Registrando médico:", datos)
 
             // 1. Crear usuario
-            const datosUsuario = {
+            const datosUsuario: Usuario = {
                 tipoIdentificacion: datos.tipoIdentificacion,
                 identificacion: datos.identificacion,
                 nombres: datos.nombres,
@@ -105,7 +110,7 @@ export default function RegistroMedicoForm() {
                 correo: datos.correo,
                 clave: datos.clave,
                 celular: datos.telefono,
-                estaActivo: true,
+                estado: "ACTIVO",
                 rolId: ROLES.MEDICO,
             }
 
@@ -113,10 +118,10 @@ export default function RegistroMedicoForm() {
             console.log("✅ Usuario médico creado:", respuestaUsuario)
 
             // 2. Crear médico vinculado
-            const datosMedico = {
+            const datosMedico: Medico = {
                 usuarioId: respuestaUsuario.id,
                 especialidad: datos.especialidad,
-                entidadId
+                entidadId: entidadId || 0,
             }
 
             await MedicoService.crearMedico(datosMedico)
@@ -125,7 +130,7 @@ export default function RegistroMedicoForm() {
             setExitoso(true)
 
             // Enviar SMS de bienvenida de forma asíncrona
-            enviarSMSBienvenida(datos.celular, datos.nombres, datos.identificacion)
+            enviarSMSBienvenida(datos.telefono, datos.nombres, datos.identificacion)
 
             // Redirigir después de 2 segundos
             setTimeout(() => {
@@ -177,7 +182,7 @@ export default function RegistroMedicoForm() {
                     <EspecialidadFields control={form.control} />
                     <ContactoFields control={form.control} />
                     <SeguridadFields control={form.control} />
-                    <FormActions cargando={cargando} exitoso={exitoso} />
+                    <FormActions cargando={cargando} />
                 </form>
             </Form>
         </div>

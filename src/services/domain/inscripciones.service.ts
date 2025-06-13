@@ -1,4 +1,5 @@
 import { InscripcionCampana, CampanaConLocalizacion } from '@/src/types';
+
 import apiSpringClient from '../api'
 import { ENDPOINTS } from '../auth/endpoints'
 

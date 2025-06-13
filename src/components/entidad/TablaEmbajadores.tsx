@@ -56,16 +56,16 @@ export function TablaEmbajadores({ embajadores, cargando, busqueda, onRefresh }:
     }
 
     const manejarInscripcion = async () => {
-        if (!embajadorSeleccionado?.id || !campanaSeleccionada) return
+        if (!embajadorSeleccionado?.usuarioId || !campanaSeleccionada) return;
 
-        setProcesando(true)
-        const exito = await inscribirAuxiliar(embajadorSeleccionado.id, parseInt(campanaSeleccionada))
+        setProcesando(true);
+        const exito = await inscribirAuxiliar(embajadorSeleccionado.usuarioId, parseInt(campanaSeleccionada));
 
         if (exito) {
-            setCampanaSeleccionada('')
-            if (onRefresh) onRefresh()
+            setCampanaSeleccionada('');
+            if (onRefresh) onRefresh();
         }
-        setProcesando(false)
+        setProcesando(false);
     }
 
     const manejarEliminacion = async (inscripcionId: number) => {
@@ -112,7 +112,6 @@ export function TablaEmbajadores({ embajadores, cargando, busqueda, onRefresh }:
                         <thead>
                             <tr className="border-b border-slate-200 dark:border-slate-700">
                                 <th className="py-3 text-left font-medium">Nombre</th>
-
                                 <th className="py-3 text-left font-medium">Teléfono</th>
                                 <th className="py-3 text-left font-medium">Localidad</th>
                                 <th className="py-3 text-right font-medium">Acciones</th>

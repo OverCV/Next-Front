@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { RegistroMedicoForm } from '@/src/components/forms/RegistroMedicoForm'
+import RegistroMedicoForm  from '@/src/components/forms/RegistroMedicoForm'
 import { Button } from '@/src/components/ui/button'
 
 export default function RegistrarMedicoPage() {

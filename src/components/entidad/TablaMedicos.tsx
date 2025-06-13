@@ -52,15 +52,15 @@ export function TablaMedicos({ medicos, cargando, busqueda, onRefresh }: TablaMe
     }
 
     const manejarInscripcion = async (campanaId: string) => {
-        if (!medicoSeleccionado?.id) return
+        if (!medicoSeleccionado?.usuarioId) return;
 
-        setProcesando(true)
-        const exito = await inscribirAuxiliar(medicoSeleccionado.id, parseInt(campanaId))
+        setProcesando(true);
+        const exito = await inscribirAuxiliar(medicoSeleccionado.usuarioId, parseInt(campanaId));
 
         if (exito && onRefresh) {
-            onRefresh()
+            onRefresh();
         }
-        setProcesando(false)
+        setProcesando(false);
     }
 
     const manejarEliminacion = async (inscripcionId: number) => {
