@@ -1,28 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ChevronDown, ChevronRight, Edit, Eye, MoreVertical, Trash2 } from "lucide-react"
+import { ChevronDown, ChevronRight, Edit, Eye, MoreVertical } from "lucide-react"
 
-import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/src/components/ui/table"
+
 import { Button } from "@/src/components/ui/button"
 import { Badge } from "@/src/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/src/components/ui/collapsible"
-import { 
-    Select, 
-    SelectContent, 
-    SelectItem, 
-    SelectTrigger, 
-    SelectValue 
-} from "@/src/components/ui/select"
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -55,6 +40,7 @@ export function ListaEntidadesRegistradas() {
     const [entidadesExpandidas, setEntidadesExpandidas] = useState<Set<number>>(new Set())
     const [modalEditarAbierto, setModalEditarAbierto] = useState(false)
     const [entidadSeleccionada, setEntidadSeleccionada] = useState<EntidadCompleta | null>(null)
+    const [actualizandoDatos, setActualizandoDatos] = useState(false)
 
     useEffect(() => {
         const cargarEntidades = async () => {
@@ -143,24 +129,6 @@ export function ListaEntidadesRegistradas() {
         setEntidadesExpandidas(nuevasExpandidas)
     }
 
-    const cambiarEstadoEntidad = async (entidadId: number, nuevoEstado: string) => {
-        try {
-            await usuariosService.cambiarEstadoUsuario(entidadId, nuevoEstado)
-            
-            // Actualizar el estado local
-            setEntidades(prevEntidades => 
-                prevEntidades.map(entidad => 
-                    entidad.usuario.id === entidadId 
-                        ? { ...entidad, usuario: { ...entidad.usuario, estado: nuevoEstado } }
-                        : entidad
-                )
-            )
-        } catch (error) {
-            console.error("Error al cambiar estado de entidad:", error)
-            setError("No se pudo cambiar el estado de la entidad")
-        }
-    }
-
     const getBadgeVariant = (estado: string) => {
         switch (estado) {
             case "ACTIVO":
@@ -197,18 +165,95 @@ export function ListaEntidadesRegistradas() {
     }
 
     const cerrarModalEditar = () => {
-        setModalEditarAbierto(false)
-        setEntidadSeleccionada(null)
+        // Usar setTimeout para evitar problemas de renderizado
+        setTimeout(() => {
+            setModalEditarAbierto(false)
+            setEntidadSeleccionada(null)
+        }, 0)
     }
 
-    const actualizarEntidad = (usuarioActualizado: UsuarioAccedido) => {
-        setEntidades(prevEntidades => 
-            prevEntidades.map(entidad => 
-                entidad.usuario.id === usuarioActualizado.id 
-                    ? { ...entidad, usuario: usuarioActualizado }
-                    : entidad
+    const actualizarEntidad = async (usuarioActualizado: UsuarioAccedido) => {
+        console.log("🔄 Iniciando actualización de entidad:", usuarioActualizado)
+        setActualizandoDatos(true)
+        
+        try {
+            // Actualizar el estado local inmediatamente para feedback visual rápido
+            setEntidades(prevEntidades => 
+                prevEntidades.map(entidad => 
+                    entidad.usuario.id === usuarioActualizado.id 
+                        ? { ...entidad, usuario: usuarioActualizado }
+                        : entidad
+                )
             )
-        )
+            
+            // Mostrar mensaje de éxito
+            console.log("✅ Entidad actualizada exitosamente - Estado local actualizado")
+            
+            // Recargar datos completos desde el servidor para asegurar sincronización
+            console.log("🔄 Recargando datos completos desde el servidor...")
+            
+            // Obtener todos los usuarios actualizados
+            const todosLosUsuarios = await usuariosService.obtenerUsuarios()
+            
+            // Filtrar entidades de salud creadas por el admin actual
+            const entidadesFiltradas = todosLosUsuarios.filter(
+                (u) => u.rolId === ROLES.ENTIDAD_SALUD && u.creadoPorId === usuario?.id
+            )
+
+            // Para cada entidad, obtener sus datos completos y campañas
+            const entidadesCompletas = await Promise.all(
+                entidadesFiltradas.map(async (entidadUsuario) => {
+                    try {
+                        // Obtener datos de la entidad de salud
+                        let entidadSalud: EntidadSalud | undefined
+                        try {
+                            entidadSalud = await entidadSaludService.obtenerEntidadPorUsuarioId(entidadUsuario.id)
+                        } catch (err) {
+                            console.warn(`No se pudo obtener entidad de salud para usuario ${entidadUsuario.id}:`, err)
+                        }
+
+                        // Obtener campañas de la entidad
+                        let campanas: Campana[] = []
+                        if (entidadSalud?.id) {
+                            try {
+                                campanas = await CampanaService.obtenerCampanasPorEntidad(entidadSalud.id)
+                            } catch (err) {
+                                console.warn(`No se pudieron obtener campañas para entidad ${entidadSalud.id}:`, err)
+                            }
+                        }
+
+                        // Clasificar campañas por estado
+                        const campanasClasificadas = {
+                            activas: campanas.filter(c => c.estado === EstadoCampana.EJECUCION),
+                            postuladas: campanas.filter(c => c.estado === EstadoCampana.POSTULADA),
+                            finalizadas: campanas.filter(c => c.estado === EstadoCampana.FINALIZADA)
+                        }
+
+                        return {
+                            usuario: entidadUsuario,
+                            entidadSalud,
+                            campanas: campanasClasificadas
+                        }
+                    } catch (err) {
+                        console.error(`Error al procesar entidad ${entidadUsuario.id}:`, err)
+                        return {
+                            usuario: entidadUsuario,
+                            entidadSalud: undefined,
+                            campanas: { activas: [], postuladas: [], finalizadas: [] }
+                        }
+                    }
+                })
+            )
+
+            setEntidades(entidadesCompletas)
+            console.log("✅ Datos completos recargados exitosamente")
+            
+        } catch (error) {
+            console.error("❌ Error al recargar datos completos:", error)
+            // En caso de error, mantener la actualización local que ya hicimos
+        } finally {
+            setActualizandoDatos(false)
+        }
     }
 
     if (cargando) {
@@ -223,7 +268,15 @@ export function ListaEntidadesRegistradas() {
         <div className="mt-8 space-y-4">
             <Card>
                 <CardHeader>
-                    <CardTitle>Entidades de Salud Registradas</CardTitle>
+                    <CardTitle className="flex items-center justify-between">
+                        <span>Entidades de Salud Registradas</span>
+                        {actualizandoDatos && (
+                            <div className="flex items-center text-sm text-blue-600">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                                Actualizando datos...
+                            </div>
+                        )}
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     {entidades.length === 0 ? (
@@ -270,23 +323,10 @@ export function ListaEntidadesRegistradas() {
                                                 </Badge>
                                             </div>
                                             
-                                            <Select
-                                                value={entidad.usuario.estado}
-                                                onValueChange={(valor) => cambiarEstadoEntidad(entidad.usuario.id, valor)}
-                                            >
-                                                <SelectTrigger className="w-32">
-                                                    <Badge variant={getBadgeVariant(entidad.usuario.estado)}>
-                                                        {getEstadoLabel(entidad.usuario.estado)}
-                                                    </Badge>
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="ACTIVO">Activo</SelectItem>
-                                                    <SelectItem value="INACTIVO">Inactivo</SelectItem>
-                                                    <SelectItem value="SUSPENDIDO">Suspendido</SelectItem>
-                                                    <SelectItem value="PENDIENTE">Pendiente</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-
+                                            <Badge variant={getBadgeVariant(entidad.usuario.estado)}>
+                                                {getEstadoLabel(entidad.usuario.estado)}
+                                            </Badge>
+                                            
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
                                                     <Button variant="ghost" size="sm">
@@ -309,27 +349,20 @@ export function ListaEntidadesRegistradas() {
 
                                     {entidadesExpandidas.has(entidad.usuario.id) && (
                                         <div className="mt-4 space-y-4">
-                                            {/* Información de la entidad */}
-                                            <div className="grid grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg">
-                                                <div>
-                                                    <h4 className="font-medium text-sm text-slate-700">Información de Usuario</h4>
-                                                    <div className="mt-2 space-y-1 text-sm">
-                                                        <p><span className="font-medium">Tipo ID:</span> {entidad.usuario.tipoIdentificacion}</p>
+                                            {/* Información de la entidad unificada */}
+                                            <div className="p-4 bg-slate-50 rounded-lg">
+                                                <h4 className="font-medium text-sm text-slate-700 mb-3">Información de la Entidad</h4>
+                                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                                    <div className="space-y-2">
                                                         <p><span className="font-medium">Identificación:</span> {entidad.usuario.identificacion}</p>
                                                         <p><span className="font-medium">Correo:</span> {entidad.usuario.correo}</p>
                                                         <p><span className="font-medium">Celular:</span> {entidad.usuario.celular}</p>
                                                     </div>
-                                                </div>
-                                                {entidad.entidadSalud && (
-                                                    <div>
-                                                        <h4 className="font-medium text-sm text-slate-700">Datos de la Entidad</h4>
-                                                        <div className="mt-2 space-y-1 text-sm">
-                                                            <p><span className="font-medium">Razón Social:</span> {entidad.entidadSalud.razonSocial}</p>
-                                                            <p><span className="font-medium">Dirección:</span> {entidad.entidadSalud.direccion}</p>
-                                                            <p><span className="font-medium">Teléfono:</span> {entidad.entidadSalud.telefono}</p>
-                                                        </div>
+                                                    <div className="space-y-2">
+                                                        <p><span className="font-medium">Nombre:</span> {entidad.entidadSalud?.razonSocial || `${entidad.usuario.nombres} ${entidad.usuario.apellidos}`}</p>
+                                                        <p><span className="font-medium">Dirección:</span> {entidad.entidadSalud?.direccion || 'No especificada'}</p>
                                                     </div>
-                                                )}
+                                                </div>
                                             </div>
 
                                             {/* Campañas */}
