@@ -14,10 +14,9 @@ import { medicosService, DatoClinico } from '@/src/services/domain/medicos.servi
 interface DatosClinicosFormProps {
     pacienteId: number
     onGuardar?: () => void
-    readOnly?: boolean
 }
 
-export default function DatosClinicosForm({ pacienteId, onGuardar, readOnly }: DatosClinicosFormProps) {
+export default function DatosClinicosForm({ pacienteId, onGuardar }: DatosClinicosFormProps) {
     const [datosExistentes, setDatosExistentes] = useState<DatoClinico[]>([])
     const [nuevosDatos, setNuevosDatos] = useState<Omit<DatoClinico, 'id'>>({
         pacienteId,
@@ -156,14 +155,7 @@ export default function DatosClinicosForm({ pacienteId, onGuardar, readOnly }: D
             {datosExistentes.length > 0 && (
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-lg">
-                            {readOnly ? 'Datos Clínicos Registrados' : 'Historial Clínico del Paciente'}
-                        </CardTitle>
-                        {readOnly && (
-                            <p className="text-sm text-slate-500">
-                                Información clínica registrada durante esta atención médica
-                            </p>
-                        )}
+                        <CardTitle className="text-lg">Historial Clínico del Paciente</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="overflow-x-auto">
@@ -176,12 +168,10 @@ export default function DatosClinicosForm({ pacienteId, onGuardar, readOnly }: D
                                         <th className="py-2 text-left">Temp</th>
                                         <th className="py-2 text-left">SpO2</th>
                                         <th className="py-2 text-left">Colesterol</th>
-                                        {!readOnly && <th className="py-2 text-left">HDL</th>}
-                                        <th className="py-2 text-left">Observaciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {datosExistentes.slice(0, readOnly ? 10 : 5).map(dato => (
+                                    {datosExistentes.slice(0, 5).map(dato => (
                                         <tr key={dato.id} className="border-b">
                                             <td className="py-2">{new Date(dato.fechaMedicion).toLocaleDateString('es-ES')}</td>
                                             <td className="py-2">{dato.presionSistolica}/{dato.presionDiastolica}</td>
@@ -189,172 +179,163 @@ export default function DatosClinicosForm({ pacienteId, onGuardar, readOnly }: D
                                             <td className="py-2">{dato.temperatura}°C</td>
                                             <td className="py-2">{dato.saturacionOxigeno}%</td>
                                             <td className="py-2">{dato.colesterolTotal} mg/dL</td>
-                                            {!readOnly && <td className="py-2">{dato.hdl} mg/dL</td>}
-                                            <td className="py-2">{dato.observaciones || 'Sin observaciones'}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
-                        {readOnly && datosExistentes.length === 0 && (
-                            <div className="text-center py-8">
-                                <p className="text-slate-500">No se registraron datos clínicos durante esta atención.</p>
-                            </div>
-                        )}
+                </div>
                     </CardContent>
                 </Card>
             )}
 
-            {/* Formulario para nuevos datos - Solo mostrar si NO está en modo readOnly */}
-            {!readOnly && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg">Nuevos Datos Clínicos</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        {/* Signos vitales */}
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div className="space-y-2">
-                                <Label htmlFor="presionSistolica">Presión Sistólica (mmHg)</Label>
-                                <Input
-                                    id="presionSistolica"
-                                    type="number"
-                                    min="80"
-                                    max="300"
-                                    value={nuevosDatos.presionSistolica}
-                                    onChange={(e) => manejarCambio('presionSistolica', parseInt(e.target.value) || 0)}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="presionDiastolica">Presión Diastólica (mmHg)</Label>
-                                <Input
-                                    id="presionDiastolica"
-                                    type="number"
-                                    min="40"
-                                    max="150"
-                                    value={nuevosDatos.presionDiastolica}
-                                    onChange={(e) => manejarCambio('presionDiastolica', parseInt(e.target.value) || 0)}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div className="space-y-2">
-                                <Label htmlFor="frecuenciaCardiacaMin">Frecuencia Cardíaca Mín (bpm)</Label>
-                                <Input
-                                    id="frecuenciaCardiacaMin"
-                                    type="number"
-                                    min="40"
-                                    max="200"
-                                    value={nuevosDatos.frecuenciaCardiacaMin}
-                                    onChange={(e) => manejarCambio('frecuenciaCardiacaMin', parseInt(e.target.value) || 0)}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="frecuenciaCardiacaMax">Frecuencia Cardíaca Máx (bpm)</Label>
-                                <Input
-                                    id="frecuenciaCardiacaMax"
-                                    type="number"
-                                    min="40"
-                                    max="200"
-                                    value={nuevosDatos.frecuenciaCardiacaMax}
-                                    onChange={(e) => manejarCambio('frecuenciaCardiacaMax', parseInt(e.target.value) || 0)}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div className="space-y-2">
-                                <Label htmlFor="temperatura">Temperatura (°C)</Label>
-                                <Input
-                                    id="temperatura"
-                                    type="number"
-                                    step="0.1"
-                                    min="30"
-                                    max="45"
-                                    value={nuevosDatos.temperatura}
-                                    onChange={(e) => manejarCambio('temperatura', parseFloat(e.target.value) || 0)}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="saturacionOxigeno">Saturación O2 (%)</Label>
-                                <Input
-                                    id="saturacionOxigeno"
-                                    type="number"
-                                    min="70"
-                                    max="100"
-                                    value={nuevosDatos.saturacionOxigeno}
-                                    onChange={(e) => manejarCambio('saturacionOxigeno', parseInt(e.target.value) || 0)}
-                                />
-                            </div>
-                        </div>
-
-                        {/* Laboratorios */}
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div className="space-y-2">
-                                <Label htmlFor="colesterolTotal">Colesterol Total (mg/dL)</Label>
-                                <Input
-                                    id="colesterolTotal"
-                                    type="number"
-                                    min="100"
-                                    max="400"
-                                    value={nuevosDatos.colesterolTotal}
-                                    onChange={(e) => manejarCambio('colesterolTotal', parseInt(e.target.value) || 0)}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="hdl">HDL (mg/dL)</Label>
-                                <Input
-                                    id="hdl"
-                                    type="number"
-                                    min="20"
-                                    max="100"
-                                    value={nuevosDatos.hdl}
-                                    onChange={(e) => manejarCambio('hdl', parseInt(e.target.value) || 0)}
-                                />
-                            </div>
-                        </div>
-
-                        {/* Fecha y observaciones */}
+            {/* Formulario para nuevos datos */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg">Nuevos Datos Clínicos</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    {/* Signos vitales */}
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                            <Label htmlFor="fechaMedicion">Fecha de Medición</Label>
+                            <Label htmlFor="presionSistolica">Presión Sistólica (mmHg)</Label>
                             <Input
-                                id="fechaMedicion"
-                                type="date"
-                                value={nuevosDatos.fechaMedicion}
-                                onChange={(e) => manejarCambio('fechaMedicion', e.target.value)}
+                                id="presionSistolica"
+                            type="number"
+                                min="80"
+                                max="300"
+                                value={nuevosDatos.presionSistolica}
+                                onChange={(e) => manejarCambio('presionSistolica', parseInt(e.target.value) || 0)}
                             />
                         </div>
-
                         <div className="space-y-2">
-                            <Label htmlFor="observaciones">Observaciones Clínicas</Label>
-                            <Textarea
-                                id="observaciones"
-                                placeholder="Escriba las observaciones clínicas del paciente..."
-                                className="min-h-[100px] resize-none"
-                                value={nuevosDatos.observaciones}
-                                onChange={(e) => manejarCambio('observaciones', e.target.value)}
+                            <Label htmlFor="presionDiastolica">Presión Diastólica (mmHg)</Label>
+                            <Input
+                                id="presionDiastolica"
+                            type="number"
+                                min="40"
+                                max="150"
+                                value={nuevosDatos.presionDiastolica}
+                                onChange={(e) => manejarCambio('presionDiastolica', parseInt(e.target.value) || 0)}
+                        />
+                    </div>
+                </div>
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="frecuenciaCardiacaMin">Frecuencia Cardíaca Mín (bpm)</Label>
+                            <Input
+                                id="frecuenciaCardiacaMin"
+                            type="number"
+                                min="40"
+                                max="200"
+                                value={nuevosDatos.frecuenciaCardiacaMin}
+                                onChange={(e) => manejarCambio('frecuenciaCardiacaMin', parseInt(e.target.value) || 0)}
                             />
                         </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="frecuenciaCardiacaMax">Frecuencia Cardíaca Máx (bpm)</Label>
+                            <Input
+                                id="frecuenciaCardiacaMax"
+                            type="number"
+                                min="40"
+                                max="200"
+                                value={nuevosDatos.frecuenciaCardiacaMax}
+                                onChange={(e) => manejarCambio('frecuenciaCardiacaMax', parseInt(e.target.value) || 0)}
+                        />
+                    </div>
+                </div>
 
-                        {/* Botón de guardar */}
-                        <div className="flex justify-end pt-4">
-                            <Button
-                                onClick={guardarDatos}
-                                disabled={guardando}
-                                className="gap-2"
-                            >
-                                {guardando ? (
-                                    <RefreshCw className="size-4 animate-spin" />
-                                ) : (
-                                    <Save className="size-4" />
-                                )}
-                                {guardando ? 'Guardando...' : 'Guardar Datos Clínicos'}
-                            </Button>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="temperatura">Temperatura (°C)</Label>
+                            <Input
+                                id="temperatura"
+                            type="number"
+                                step="0.1"
+                                min="30"
+                                max="45"
+                                value={nuevosDatos.temperatura}
+                                onChange={(e) => manejarCambio('temperatura', parseFloat(e.target.value) || 0)}
+                            />
                         </div>
-                    </CardContent>
-                </Card>
-            )}
+                        <div className="space-y-2">
+                            <Label htmlFor="saturacionOxigeno">Saturación O2 (%)</Label>
+                            <Input
+                                id="saturacionOxigeno"
+                            type="number"
+                                min="70"
+                                max="100"
+                                value={nuevosDatos.saturacionOxigeno}
+                                onChange={(e) => manejarCambio('saturacionOxigeno', parseInt(e.target.value) || 0)}
+                        />
+                    </div>
+                </div>
+
+                    {/* Laboratorios */}
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="colesterolTotal">Colesterol Total (mg/dL)</Label>
+                            <Input
+                                id="colesterolTotal"
+                            type="number"
+                                min="100"
+                                max="400"
+                                value={nuevosDatos.colesterolTotal}
+                                onChange={(e) => manejarCambio('colesterolTotal', parseInt(e.target.value) || 0)}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="hdl">HDL (mg/dL)</Label>
+                            <Input
+                                id="hdl"
+                            type="number"
+                                min="20"
+                                max="100"
+                                value={nuevosDatos.hdl}
+                                onChange={(e) => manejarCambio('hdl', parseInt(e.target.value) || 0)}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Fecha y observaciones */}
+                    <div className="space-y-2">
+                        <Label htmlFor="fechaMedicion">Fecha de Medición</Label>
+                        <Input
+                            id="fechaMedicion"
+                            type="date"
+                            value={nuevosDatos.fechaMedicion}
+                            onChange={(e) => manejarCambio('fechaMedicion', e.target.value)}
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="observaciones">Observaciones Clínicas</Label>
+                        <Textarea
+                            id="observaciones"
+                            placeholder="Escriba las observaciones clínicas del paciente..."
+                            className="min-h-[100px] resize-none"
+                            value={nuevosDatos.observaciones}
+                            onChange={(e) => manejarCambio('observaciones', e.target.value)}
+                        />
+                </div>
+
+                    {/* Botón de guardar */}
+                    <div className="flex justify-end pt-4">
+                    <Button
+                            onClick={guardarDatos}
+                            disabled={guardando}
+                        className="gap-2"
+                    >
+                            {guardando ? (
+                                <RefreshCw className="size-4 animate-spin" />
+                            ) : (
+                                <Save className="size-4" />
+                            )}
+                            {guardando ? 'Guardando...' : 'Guardar Datos Clínicos'}
+                    </Button>
+                </div>
+                </CardContent>
+            </Card>
         </div>
     )
 }

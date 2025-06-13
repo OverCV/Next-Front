@@ -196,470 +196,391 @@ export default function DiagnosticoForm({
 
     return (
         <div className="space-y-6">
-            {readOnly && diagnosticoExistente ? (
-                // Vista de solo lectura
-                <div className="space-y-4">
-                    <div className="bg-gray-50 p-6 rounded-lg border">
-                        <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center gap-2">
-                            <Pill className="size-5 text-blue-500" />
-                            Diagnóstico Registrado
-                        </h3>
-                        
-                        <div className="grid gap-4 sm:grid-cols-2 mb-4">
-                            <div>
-                                <label className="text-sm font-medium text-gray-700">Código CIE-10</label>
-                                <p className="text-gray-900 bg-white p-2 rounded border">
-                                    {diagnosticoExistente.codigoCie10 || 'No especificado'}
-                                </p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-gray-700">Severidad</label>
-                                <p className="text-gray-900 bg-white p-2 rounded border">
-                                    {diagnosticoExistente.severidad || 'No especificado'}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="text-sm font-medium text-gray-700">Descripción del Diagnóstico</label>
-                            <p className="text-gray-900 bg-white p-3 rounded border min-h-[80px]">
-                                {diagnosticoExistente.descripcion || 'Sin descripción'}
-                            </p>
-                        </div>
-
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className={`w-3 h-3 rounded-full ${diagnosticoExistente.esPrincipal ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                            <span className="text-sm text-gray-700">
-                                {diagnosticoExistente.esPrincipal ? 'Diagnóstico principal' : 'Diagnóstico secundario'}
-                            </span>
-                        </div>
-
-                        {diagnosticoExistente.notasMedicas && (
-                            <div className="mb-4">
-                                <label className="text-sm font-medium text-gray-700">Notas Médicas</label>
-                                <p className="text-gray-900 bg-white p-3 rounded border min-h-[80px]">
-                                    {diagnosticoExistente.notasMedicas}
-                                </p>
-                            </div>
-                        )}
-
-                        {diagnosticoExistente.requiereSeguimiento && (
-                            <div className="bg-blue-50 p-4 rounded border border-blue-200">
-                                <h4 className="text-sm font-medium text-blue-800 mb-2 flex items-center gap-2">
-                                    <Clock className="size-4" />
-                                    Seguimiento Programado
-                                </h4>
-                                <div className="grid gap-2 sm:grid-cols-2">
-                                    {diagnosticoExistente.fechaSeguimiento && (
-                                        <p className="text-sm text-blue-700">
-                                            <strong>Fecha:</strong> {new Date(diagnosticoExistente.fechaSeguimiento).toLocaleDateString('es-ES')}
-                                        </p>
-                                    )}
-                                    {diagnosticoExistente.prioridadSeguimiento && (
-                                        <p className="text-sm text-blue-700">
-                                            <strong>Prioridad:</strong> {diagnosticoExistente.prioridadSeguimiento}
-                                        </p>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                    <Accordion type="multiple" defaultValue={["sugerencias", "diagnostico"]} className="w-full">
+                        {/* Sección de sugerencias de IA */}
+                        {/* <AccordionItem value="sugerencias" className="rounded-md border">
+                            <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
+                                <div className="flex items-center gap-2">
+                                    <Brain className="size-5 text-blue-500" />
+                                    <span>Sugerencias de Diagnóstico (IA)</span>
+                                    {sugerencias.length > 0 && (
+                                        <Badge variant="outline" className="ml-2">
+                                            {sugerencias.length}
+                                        </Badge>
                                     )}
                                 </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Mostrar prescripciones/tratamientos si existen */}
-                    {diagnosticoExistente.prescripciones && diagnosticoExistente.prescripciones.length > 0 && (
-                        <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-                            <h3 className="text-lg font-medium text-green-800 mb-4 flex items-center gap-2">
-                                <Pill className="size-5 text-green-600" />
-                                Tratamiento Prescrito
-                            </h3>
-                            <div className="space-y-3">
-                                {diagnosticoExistente.prescripciones.map((prescripcion: any, index: number) => (
-                                    <div key={index} className="bg-white p-4 rounded border">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            {prescripcion.tipo === 'MEDICAMENTO' && <Pill className="size-4 text-blue-500" />}
-                                            {prescripcion.tipo === 'ESTILO_VIDA' && <Repeat className="size-4 text-green-500" />}
-                                            {prescripcion.tipo === 'ACTIVIDAD_FISICA' && <Dumbbell className="size-4 text-orange-500" />}
-                                            {prescripcion.tipo === 'DIETA' && <Utensils className="size-4 text-amber-500" />}
-                                            <span className="font-medium">{prescripcion.descripcion}</span>
-                                            <Badge variant="outline" className="ml-auto">
-                                                {obtenerTextoTipoPrescripcion(prescripcion.tipo)}
-                                            </Badge>
+                            </AccordionTrigger>
+                            <AccordionContent className="px-4 pb-4">
+                                {cargandoSugerencias ? (
+                                    <div className="flex items-center justify-center py-8">
+                                        <div className="flex items-center gap-2">
+                                            <RefreshCw className="size-4 animate-spin" />
+                                            <span className="text-sm text-slate-500">Analizando datos del paciente...</span>
                                         </div>
-                                        
-                                        {prescripcion.tipo === 'MEDICAMENTO' && (
-                                            <div className="grid grid-cols-3 gap-2 text-sm mt-2">
-                                                {prescripcion.dosis && (
-                                                    <div><span className="text-gray-500">Dosis:</span> {prescripcion.dosis}</div>
-                                                )}
-                                                {prescripcion.frecuencia && (
-                                                    <div><span className="text-gray-500">Frecuencia:</span> {prescripcion.frecuencia}</div>
-                                                )}
-                                                {prescripcion.duracion && (
-                                                    <div><span className="text-gray-500">Duración:</span> {prescripcion.duracion}</div>
-                                                )}
-                                            </div>
-                                        )}
-                                        
-                                        {prescripcion.indicacionesEspeciales && (
-                                            <p className="text-sm text-gray-600 mt-2">{prescripcion.indicacionesEspeciales}</p>
-                                        )}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Mensaje si no hay diagnóstico */}
-                    {!diagnosticoExistente && (
-                        <div className="text-center py-8">
-                            <p className="text-gray-500">No se registró diagnóstico durante esta atención médica.</p>
-                        </div>
-                    )}
-                </div>
-            ) : (
-                // Vista de formulario editable (código existente)
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-                        <Accordion type="multiple" defaultValue={["sugerencias", "diagnostico"]} className="w-full">
-                            {/* Sección de sugerencias de IA */}
-                            {/* <AccordionItem value="sugerencias" className="rounded-md border">
-                                <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
-                                    <div className="flex items-center gap-2">
-                                        <Brain className="size-5 text-blue-500" />
-                                        <span>Sugerencias de Diagnóstico (IA)</span>
-                                        {sugerencias.length > 0 && (
-                                            <Badge variant="outline" className="ml-2">
-                                                {sugerencias.length}
-                                            </Badge>
-                                        )}
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="px-4 pb-4">
-                                    {cargandoSugerencias ? (
-                                        <div className="flex items-center justify-center py-8">
-                                            <div className="flex items-center gap-2">
-                                                <RefreshCw className="size-4 animate-spin" />
-                                                <span className="text-sm text-slate-500">Analizando datos del paciente...</span>
-                                            </div>
-                                        </div>
-                                    ) : sugerencias.length > 0 ? (
-                                        <div className="space-y-3">
-                                            {sugerencias.map((sugerencia, index) => (
-                                                <Card key={index} className="overflow-hidden">
-                                                    <CardContent className="p-0">
-                                                        <div className="flex flex-col sm:flex-row sm:items-start">
-                                                            <div className="flex-1 p-4">
-                                                                <div className="mb-2 flex items-center gap-2">
-                                                                    <Badge className={obtenerClasesConfianza(sugerencia.confianza)}>
-                                                                        {Math.round(sugerencia.confianza * 100)}% coincidencia
+                                ) : sugerencias.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {sugerencias.map((sugerencia, index) => (
+                                            <Card key={index} className="overflow-hidden">
+                                                <CardContent className="p-0">
+                                                    <div className="flex flex-col sm:flex-row sm:items-start">
+                                                        <div className="flex-1 p-4">
+                                                            <div className="mb-2 flex items-center gap-2">
+                                                                <Badge className={obtenerClasesConfianza(sugerencia.confianza)}>
+                                                                    {Math.round(sugerencia.confianza * 100)}% coincidencia
+                                                                </Badge>
+                                                                {sugerencia.codigoCie10 && (
+                                                                    <Badge variant="outline">
+                                                                        {sugerencia.codigoCie10}
                                                                     </Badge>
-                                                                    {sugerencia.codigoCie10 && (
-                                                                        <Badge variant="outline">
-                                                                            {sugerencia.codigoCie10}
-                                                                        </Badge>
-                                                                    )}
-                                                                </div>
-                                                                <h4 className="font-medium">{sugerencia.descripcion}</h4>
-                                                                <p className="mt-1 text-sm text-slate-500">{sugerencia.detalles}</p>
+                                                                )}
                                                             </div>
-                                                            <div className="flex justify-center border-t bg-slate-50 p-3 dark:bg-slate-800 sm:justify-end sm:border-l sm:border-t-0">
-                                                                <Button
-                                                                    variant="default"
-                                                                    size="sm"
-                                                                    onClick={() => aplicarSugerencia(sugerencia)}
-                                                                >
-                                                                    Aplicar
-                                                                </Button>
-                                                            </div>
+                                                            <h4 className="font-medium">{sugerencia.descripcion}</h4>
+                                                            <p className="mt-1 text-sm text-slate-500">{sugerencia.detalles}</p>
                                                         </div>
-                                                    </CardContent>
-                                                </Card>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p className="py-2 text-center text-sm text-slate-500">
-                                            No hay sugerencias disponibles para este paciente.
-                                        </p>
-                                    )}
-                                </AccordionContent>
-                            </AccordionItem> */}
-
-                            {/* Sección de prescripciones/tratamiento */}
-                            <AccordionItem value="prescripciones" className="mt-3 rounded-md border">
-                                <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
-                                    <div className="flex items-center gap-2">
-                                        <Pill className="size-5 text-green-500" />
-                                        <span>Tratamiento y Recomendaciones</span>
-                                        {prescripciones.length > 0 && (
-                                            <Badge variant="outline" className="ml-2">
-                                                {prescripciones.length}
-                                            </Badge>
-                                        )}
+                                                        <div className="flex justify-center border-t bg-slate-50 p-3 dark:bg-slate-800 sm:justify-end sm:border-l sm:border-t-0">
+                                                            <Button
+                                                                variant="default"
+                                                                size="sm"
+                                                                onClick={() => aplicarSugerencia(sugerencia)}
+                                                            >
+                                                                Aplicar
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
                                     </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="px-4 pb-4">
-                                    {/* Lista de prescripciones agregadas */}
+                                ) : (
+                                    <p className="py-2 text-center text-sm text-slate-500">
+                                        No hay sugerencias disponibles para este paciente.
+                                    </p>
+                                )}
+                            </AccordionContent>
+                        </AccordionItem> */}
+
+                        {/* Sección de prescripciones/tratamiento */}
+                        <AccordionItem value="prescripciones" className="mt-3 rounded-md border">
+                            <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
+                                <div className="flex items-center gap-2">
+                                    <Pill className="size-5 text-green-500" />
+                                    <span>Tratamiento y Recomendaciones</span>
                                     {prescripciones.length > 0 && (
-                                        <div className="mb-4 space-y-3">
-                                            {prescripciones.map((prescripcion, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="flex items-start justify-between rounded-md border p-3"
-                                                >
-                                                    <div className="flex-1">
-                                                        <div className="mb-2 flex items-center gap-2">
-                                                            {prescripcion.tipo === 'MEDICAMENTO' && (
-                                                                <Pill className="size-4 text-blue-500" />
-                                                            )}
-                                                            {prescripcion.tipo === 'ESTILO_VIDA' && (
-                                                                <Repeat className="size-4 text-green-500" />
-                                                            )}
-                                                            {prescripcion.tipo === 'ACTIVIDAD_FISICA' && (
-                                                                <Dumbbell className="size-4 text-orange-500" />
-                                                            )}
-                                                            {prescripcion.tipo === 'DIETA' && (
-                                                                <Utensils className="size-4 text-amber-500" />
-                                                            )}
-
-                                                            <span className="font-medium">
-                                                                {prescripcion.descripcion}
-                                                            </span>
-
-                                                            <Badge variant="outline" className="ml-auto">
-                                                                {obtenerTextoTipoPrescripcion(prescripcion.tipo)}
-                                                            </Badge>
-                                                        </div>
+                                        <Badge variant="outline" className="ml-2">
+                                            {prescripciones.length}
+                                        </Badge>
+                                    )}
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="px-4 pb-4">
+                                {/* Lista de prescripciones agregadas */}
+                                {prescripciones.length > 0 && (
+                                    <div className="mb-4 space-y-3">
+                                        {prescripciones.map((prescripcion, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex items-start justify-between rounded-md border p-3"
+                                            >
+                                                <div className="flex-1">
+                                                    <div className="mb-2 flex items-center gap-2">
                                                         {prescripcion.tipo === 'MEDICAMENTO' && (
-                                                            <div className="grid grid-cols-3 gap-2 text-sm">
-                                                                {prescripcion.dosis && (
-                                                                    <div>
-                                                                        <span className="text-slate-500">Dosis:</span> {prescripcion.dosis}
-                                                                    </div>
-                                                                )}
-                                                                {prescripcion.frecuencia && (
-                                                                    <div>
-                                                                        <span className="text-slate-500">Frecuencia:</span> {prescripcion.frecuencia}
-                                                                    </div>
-                                                                )}
-                                                                {prescripcion.duracion && (
-                                                                    <div>
-                                                                        <span className="text-slate-500">Duración:</span> {prescripcion.duracion}
-                                                                    </div>
-                                                                )}
-                                                            </div>
+                                                            <Pill className="size-4 text-blue-500" />
+                                                        )}
+                                                        {prescripcion.tipo === 'ESTILO_VIDA' && (
+                                                            <Repeat className="size-4 text-green-500" />
+                                                        )}
+                                                        {prescripcion.tipo === 'ACTIVIDAD_FISICA' && (
+                                                            <Dumbbell className="size-4 text-orange-500" />
+                                                        )}
+                                                        {prescripcion.tipo === 'DIETA' && (
+                                                            <Utensils className="size-4 text-amber-500" />
                                                         )}
 
-                                                        {prescripcion.indicacionesEspeciales && (
-                                                            <p className="mt-1 text-sm text-slate-500">
-                                                                {prescripcion.indicacionesEspeciales}
-                                                            </p>
-                                                        )}
+                                                        <span className="font-medium">
+                                                            {prescripcion.descripcion}
+                                                        </span>
+
+                                                        <Badge variant="outline" className="ml-auto">
+                                                            {obtenerTextoTipoPrescripcion(prescripcion.tipo)}
+                                                        </Badge>
                                                     </div>
 
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => eliminarPrescripcion(index)}
-                                                        className="text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-300"
-                                                    >
-                                                        <Trash2 className="size-4" />
-                                                    </Button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                                    {prescripcion.tipo === 'MEDICAMENTO' && (
+                                                        <div className="grid grid-cols-3 gap-2 text-sm">
+                                                            {prescripcion.dosis && (
+                                                                <div>
+                                                                    <span className="text-slate-500">Dosis:</span> {prescripcion.dosis}
+                                                                </div>
+                                                            )}
+                                                            {prescripcion.frecuencia && (
+                                                                <div>
+                                                                    <span className="text-slate-500">Frecuencia:</span> {prescripcion.frecuencia}
+                                                                </div>
+                                                            )}
+                                                            {prescripcion.duracion && (
+                                                                <div>
+                                                                    <span className="text-slate-500">Duración:</span> {prescripcion.duracion}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
 
-                                    <div className="rounded-md border p-4">
-                                        <h4 className="mb-3 text-sm font-medium">Agregar Recomendación o Medicamento</h4>
-
-                                        <div className="space-y-4">
-                                            <div className="flex gap-3">
-                                                <div className="flex-1">
-                                                    <label className="mb-1 block text-sm font-medium">Tipo</label>
-                                                    <select
-                                                        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800"
-                                                        value={nuevaPrescripcion.tipo}
-                                                        onChange={(e) => setNuevaPrescripcion({
-                                                            ...nuevaPrescripcion,
-                                                            tipo: e.target.value
-                                                        })}
-                                                    >
-                                                        <option value="MEDICAMENTO">Medicamento</option>
-                                                        <option value="ESTILO_VIDA">Estilo de Vida</option>
-                                                        <option value="ACTIVIDAD_FISICA">Actividad Física</option>
-                                                        <option value="DIETA">Dieta</option>
-                                                    </select>
+                                                    {prescripcion.indicacionesEspeciales && (
+                                                        <p className="mt-1 text-sm text-slate-500">
+                                                            {prescripcion.indicacionesEspeciales}
+                                                        </p>
+                                                    )}
                                                 </div>
 
                                                 <Button
-                                                    type="button"
-                                                    variant="secondary"
+                                                    variant="ghost"
                                                     size="icon"
-                                                    onClick={agregarPrescripcion}
-                                                    disabled={!nuevaPrescripcion.descripcion}
-                                                    className="mt-7"
+                                                    onClick={() => eliminarPrescripcion(index)}
+                                                    className="text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-300"
                                                 >
-                                                    <Plus className="size-4" />
+                                                    <Trash2 className="size-4" />
                                                 </Button>
                                             </div>
+                                        ))}
+                                    </div>
+                                )}
 
-                                            <div>
-                                                <label className="mb-1 block text-sm font-medium">Descripción</label>
-                                                <Input
-                                                    value={nuevaPrescripcion.descripcion}
+                                <div className="rounded-md border p-4">
+                                    <h4 className="mb-3 text-sm font-medium">Agregar Recomendación o Medicamento</h4>
+
+                                    <div className="space-y-4">
+                                        <div className="flex gap-3">
+                                            <div className="flex-1">
+                                                <label className="mb-1 block text-sm font-medium">Tipo</label>
+                                                <select
+                                                    className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800"
+                                                    value={nuevaPrescripcion.tipo}
                                                     onChange={(e) => setNuevaPrescripcion({
                                                         ...nuevaPrescripcion,
-                                                        descripcion: e.target.value
+                                                        tipo: e.target.value
                                                     })}
-                                                    placeholder={
-                                                        nuevaPrescripcion.tipo === 'MEDICAMENTO' ? "Nombre del medicamento" :
-                                                            nuevaPrescripcion.tipo === 'ESTILO_VIDA' ? "Recomendación de estilo de vida" :
-                                                                nuevaPrescripcion.tipo === 'ACTIVIDAD_FISICA' ? "Actividad física recomendada" :
-                                                                    "Recomendación dietética"
-                                                    }
-                                                />
+                                                >
+                                                    <option value="MEDICAMENTO">Medicamento</option>
+                                                    <option value="ESTILO_VIDA">Estilo de Vida</option>
+                                                    <option value="ACTIVIDAD_FISICA">Actividad Física</option>
+                                                    <option value="DIETA">Dieta</option>
+                                                </select>
                                             </div>
 
-                                            {nuevaPrescripcion.tipo === 'MEDICAMENTO' && (
-                                                <div className="grid gap-4 sm:grid-cols-3">
-                                                    <div>
-                                                        <label className="mb-1 block text-sm font-medium">Dosis</label>
-                                                        <Input
-                                                            value={nuevaPrescripcion.dosis || ''}
-                                                            onChange={(e) => setNuevaPrescripcion({
-                                                                ...nuevaPrescripcion,
-                                                                dosis: e.target.value
-                                                            })}
-                                                            placeholder="Ej. 500mg"
-                                                        />
-                                                    </div>
+                                            <Button
+                                                type="button"
+                                                variant="secondary"
+                                                size="icon"
+                                                onClick={agregarPrescripcion}
+                                                disabled={!nuevaPrescripcion.descripcion}
+                                                className="mt-7"
+                                            >
+                                                <Plus className="size-4" />
+                                            </Button>
+                                        </div>
 
-                                                    <div>
-                                                        <label className="mb-1 block text-sm font-medium">Frecuencia</label>
-                                                        <Input
-                                                            value={nuevaPrescripcion.frecuencia || ''}
-                                                            onChange={(e) => setNuevaPrescripcion({
-                                                                ...nuevaPrescripcion,
-                                                                frecuencia: e.target.value
-                                                            })}
-                                                            placeholder="Ej. Cada 8 horas"
-                                                        />
-                                                    </div>
+                                        <div>
+                                            <label className="mb-1 block text-sm font-medium">Descripción</label>
+                                            <Input
+                                                value={nuevaPrescripcion.descripcion}
+                                                onChange={(e) => setNuevaPrescripcion({
+                                                    ...nuevaPrescripcion,
+                                                    descripcion: e.target.value
+                                                })}
+                                                placeholder={
+                                                    nuevaPrescripcion.tipo === 'MEDICAMENTO' ? "Nombre del medicamento" :
+                                                        nuevaPrescripcion.tipo === 'ESTILO_VIDA' ? "Recomendación de estilo de vida" :
+                                                            nuevaPrescripcion.tipo === 'ACTIVIDAD_FISICA' ? "Actividad física recomendada" :
+                                                                "Recomendación dietética"
+                                                }
+                                            />
+                                        </div>
 
-                                                    <div>
-                                                        <label className="mb-1 block text-sm font-medium">Duración</label>
-                                                        <Input
-                                                            value={nuevaPrescripcion.duracion || ''}
-                                                            onChange={(e) => setNuevaPrescripcion({
-                                                                ...nuevaPrescripcion,
-                                                                duracion: e.target.value
-                                                            })}
-                                                            placeholder="Ej. 7 días"
-                                                        />
-                                                    </div>
+                                        {nuevaPrescripcion.tipo === 'MEDICAMENTO' && (
+                                            <div className="grid gap-4 sm:grid-cols-3">
+                                                <div>
+                                                    <label className="mb-1 block text-sm font-medium">Dosis</label>
+                                                    <Input
+                                                        value={nuevaPrescripcion.dosis || ''}
+                                                        onChange={(e) => setNuevaPrescripcion({
+                                                            ...nuevaPrescripcion,
+                                                            dosis: e.target.value
+                                                        })}
+                                                        placeholder="Ej. 500mg"
+                                                    />
                                                 </div>
-                                            )}
 
-                                            <div>
-                                                <label className="mb-1 block text-sm font-medium">
-                                                    {nuevaPrescripcion.tipo === 'MEDICAMENTO' ? 'Indicaciones Especiales' : 'Detalles Adicionales'}
-                                                </label>
-                                                <Input
-                                                    value={nuevaPrescripcion.indicacionesEspeciales || ''}
-                                                    onChange={(e) => setNuevaPrescripcion({
-                                                        ...nuevaPrescripcion,
-                                                        indicacionesEspeciales: e.target.value
-                                                    })}
-                                                    placeholder="Instrucciones adicionales..."
-                                                />
+                                                <div>
+                                                    <label className="mb-1 block text-sm font-medium">Frecuencia</label>
+                                                    <Input
+                                                        value={nuevaPrescripcion.frecuencia || ''}
+                                                        onChange={(e) => setNuevaPrescripcion({
+                                                            ...nuevaPrescripcion,
+                                                            frecuencia: e.target.value
+                                                        })}
+                                                        placeholder="Ej. Cada 8 horas"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="mb-1 block text-sm font-medium">Duración</label>
+                                                    <Input
+                                                        value={nuevaPrescripcion.duracion || ''}
+                                                        onChange={(e) => setNuevaPrescripcion({
+                                                            ...nuevaPrescripcion,
+                                                            duracion: e.target.value
+                                                        })}
+                                                        placeholder="Ej. 7 días"
+                                                    />
+                                                </div>
                                             </div>
+                                        )}
+
+                                        <div>
+                                            <label className="mb-1 block text-sm font-medium">
+                                                {nuevaPrescripcion.tipo === 'MEDICAMENTO' ? 'Indicaciones Especiales' : 'Detalles Adicionales'}
+                                            </label>
+                                            <Input
+                                                value={nuevaPrescripcion.indicacionesEspeciales || ''}
+                                                onChange={(e) => setNuevaPrescripcion({
+                                                    ...nuevaPrescripcion,
+                                                    indicacionesEspeciales: e.target.value
+                                                })}
+                                                placeholder="Instrucciones adicionales..."
+                                            />
                                         </div>
                                     </div>
-                                </AccordionContent>
-                            </AccordionItem>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
 
-                            {/* Formulario de diagnóstico */}
-                            <AccordionItem value="diagnostico" className="mt-3 rounded-md border">
-                                <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
-                                    <div className="flex items-center gap-2">
-                                        <Pill className="size-5 text-red-500" />
-                                        <span>Diagnóstico Principal</span>
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="space-y-4 px-4 pb-4">
-                                    <div className="grid gap-4 sm:grid-cols-2">
+                        {/* Formulario de diagnóstico */}
+                        <AccordionItem value="diagnostico" className="mt-3 rounded-md border">
+                            <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
+                                <div className="flex items-center gap-2">
+                                    <Pill className="size-5 text-red-500" />
+                                    <span>Diagnóstico Principal</span>
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="space-y-4 px-4 pb-4">
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <CustomFormField
+                                        fieldType={FormFieldType.INPUT}
+                                        control={form.control}
+                                        name="codigoCie10"
+                                        label="Código CIE-10"
+                                        placeholder="Ej. I10"
+                                    />
 
+                                    <CustomFormField
+                                        fieldType={FormFieldType.SELECT}
+                                        control={form.control}
+                                        name="severidad"
+                                        label="Severidad"
+                                    >
+                                        <SelectItem value="LEVE">Leve</SelectItem>
+                                        <SelectItem value="MODERADA">Moderada</SelectItem>
+                                        <SelectItem value="GRAVE">Grave</SelectItem>
+                                    </CustomFormField>
+                                </div>
+
+                                <CustomFormField
+                                    fieldType={FormFieldType.TEXTAREA}
+                                    control={form.control}
+                                    name="descripcion"
+                                    label="Descripción del Diagnóstico"
+                                    placeholder="Detalle el diagnóstico del paciente..."
+                                />
+
+                                <CustomFormField
+                                    fieldType={FormFieldType.CHECKBOX}
+                                    control={form.control}
+                                    name="esPrincipal"
+                                    label="Es diagnóstico principal"
+                                />
+                            </AccordionContent>
+                        </AccordionItem>
+
+                        {/* Sección de notas médicas */}
+                        <AccordionItem value="notas" className="mt-3 rounded-md border">
+                            <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
+                                <div className="flex items-center gap-2">
+                                    <Clock className="size-5 text-slate-500" />
+                                    <span>Notas Médicas</span>
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="px-4 pb-4">
+                                <CustomFormField
+                                    fieldType={FormFieldType.TEXTAREA}
+                                    control={form.control}
+                                    name="notasMedicas"
+                                    label="Notas y Observaciones"
+                                    placeholder="Registre observaciones adicionales, síntomas, signos, evolución, etc."
+                                />
+                            </AccordionContent>
+                        </AccordionItem>
+
+
+                        {/* Sección de seguimiento
+                        <AccordionItem value="seguimiento" className="mt-3 rounded-md border">
+                            <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
+                                <div className="flex items-center gap-2">
+                                    <Repeat className="size-5 text-purple-500" />
+                                    <span>Seguimiento</span>
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="px-4 pb-4">
+                                <CustomFormField
+                                    fieldType={FormFieldType.CHECKBOX}
+                                    control={form.control}
+                                    name="requiereSeguimiento"
+                                    label="Requiere seguimiento posterior"
+                                />
+
+                                {requiereSeguimiento && (
+                                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
                                         <CustomFormField
-                                            fieldType={FormFieldType.INPUT}
+                                            fieldType={FormFieldType.DATE_PICKER}
                                             control={form.control}
-                                            name="codigoCie10"
-                                            label="Código CIE-10"
-                                            placeholder="Ej. I10"
+                                            name="fechaSeguimiento"
+                                            label="Fecha de Seguimiento"
+                                            placeholder="Seleccione fecha"
                                         />
 
                                         <CustomFormField
                                             fieldType={FormFieldType.SELECT}
                                             control={form.control}
-                                            name="severidad"
-                                            label="Severidad"
+                                            name="prioridadSeguimiento"
+                                            label="Prioridad"
                                         >
-                                            <SelectItem value="LEVE">Leve</SelectItem>
-                                            <SelectItem value="MODERADA">Moderada</SelectItem>
-                                            <SelectItem value="GRAVE">Grave</SelectItem>
+                                            {NIVELES_PRIORIDAD.map((nivel) => (
+                                                <SelectItem key={nivel.valor} value={nivel.valor}>
+                                                    {nivel.etiqueta}
+                                                </SelectItem>
+                                            ))}
                                         </CustomFormField>
                                     </div>
+                                )}
+                            </AccordionContent>
+                        </AccordionItem> */}
+                    </Accordion>
 
-                                    <CustomFormField
-                                        fieldType={FormFieldType.TEXTAREA}
-                                        control={form.control}
-                                        name="descripcion"
-                                        label="Descripción del Diagnóstico"
-                                        placeholder="Detalle el diagnóstico del paciente..."
-                                    />
-
-                                    <CustomFormField
-                                        fieldType={FormFieldType.CHECKBOX}
-                                        control={form.control}
-                                        name="esPrincipal"
-                                        label="Es diagnóstico principal"
-                                    />
-                                </AccordionContent>
-                            </AccordionItem>
-
-                            {/* Sección de notas médicas */}
-                            <AccordionItem value="notas" className="mt-3 rounded-md border">
-                                <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
-                                    <div className="flex items-center gap-2">
-                                        <Clock className="size-5 text-slate-500" />
-                                        <span>Notas Médicas</span>
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="px-4 pb-4">
-                                    <CustomFormField
-                                        fieldType={FormFieldType.TEXTAREA}
-                                        control={form.control}
-                                        name="notasMedicas"
-                                        label="Notas y Observaciones"
-                                        placeholder="Registre observaciones adicionales, síntomas, signos, evolución, etc."
-                                    />
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-
-                        {/* Botón de finalizar */}
-                        <div className="mt-6 flex justify-end">
-                            <Button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="gap-2"
-                            >
-                                <Save className="size-4" />
-                                Finalizar Atención
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
-            )}
+                    {/* Botón de finalizar */}
+                    <div className="mt-6 flex justify-end">
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="gap-2"
+                        >
+                            <Save className="size-4" />
+                            Finalizar Atención
+                        </Button>
+                    </div>
+                </form>
+            </Form>
         </div>
     );
 }

@@ -60,7 +60,11 @@ export function AtenderCitacionButton({
 
         setProcesando(true)
         try {
-            const citacionActualizada = await citacionesService.finalizarAtencion(citacion.id)
+            // Finalizar la atención
+            await atencionesService.finalizarAtencion(atencionActual.id)
+
+            // Marcar la citación como atendida
+            const citacionActualizada = await citacionesService.atenderCitacion(citacion.id)
 
             // Notificar al componente padre
             onCitacionAtendida(citacionActualizada)
@@ -141,8 +145,8 @@ export function AtenderCitacionButton({
             ) : (
                 // Atención completada
                 <div className="flex items-center gap-2 text-green-600">
-                    <span className="font-medium">Atención Completada</span>
                     <CheckCircle className="size-4" />
+                    <span className="font-medium">Atención Completada</span>
                 </div>
             )}
         </div>

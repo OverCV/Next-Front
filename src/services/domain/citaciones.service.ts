@@ -253,51 +253,5 @@ export const citacionesService = {
 			console.error('❌ Error al completar atención médica:', error)
 			throw error
 		}
-	},
-
-	// NUEVO: Iniciar atención médica (establece hora_atencion PERO NO cambia estado)
-	iniciarAtencion: async (citacionId: number): Promise<Citacion> => {
-		console.log('🚀 Iniciando atención médica:', citacionId)
-		try {
-			// Obtener la citación actual
-			const citacionActual = await citacionesService.obtenerCitacionPorId(citacionId)
-			
-			// Actualizar SOLO con la hora actual como hora_atencion
-			// NO cambiar el estado todavía
-			const citacionActualizada = {
-				...citacionActual,
-				horaAtencion: new Date().toISOString()
-				// estado sigue siendo el mismo (probablemente AGENDADA)
-			}
-
-			const response = await apiSpringClient.put(ENDPOINTS.CITACIONES.ACTUALIZAR(citacionId), citacionActualizada)
-			console.log('✅ Atención médica iniciada (hora registrada)')
-			return response.data
-		} catch (error) {
-			console.error('❌ Error al iniciar atención médica:', error)
-			throw error
-		}
-	},
-
-	// NUEVO: Finalizar atención médica (establece hora_fin_atencion Y cambia estado a ATENDIDA)
-	finalizarAtencion: async (citacionId: number): Promise<Citacion> => {
-		console.log('🏁 Finalizando atención médica:', citacionId)
-		try {
-			// Usar el endpoint específico que ejecuta el flujo completo automáticamente
-			const payload = {
-				hora_fin_atencion: new Date().toISOString()
-			}
-
-			const respuestaHoraFinAtencion = await apiSpringClient.put(ENDPOINTS.CITACIONES.ACTUALIZAR_FECHA_FIN_ATENCION(citacionId), payload);
-			
-			const response = await apiSpringClient.put(ENDPOINTS.CITACIONES.FINALIZAR_ATENCION(citacionId))
-			console.log('✅ Atención médica finalizada - Spring Boot manejará seguimientos automáticamente')
-			
-			// El endpoint específico retorna un objeto con la citación actualizada
-			return response.data.citacion || response.data
-		} catch (error) {
-			console.error('❌ Error al finalizar atención médica:', error)
-			throw error
-		}
 	}
 } 
