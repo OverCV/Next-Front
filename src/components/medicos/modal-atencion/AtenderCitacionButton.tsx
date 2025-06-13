@@ -145,8 +145,8 @@ export function AtenderCitacionButton({
             ) : (
                 // Atención completada
                 <div className="flex items-center gap-2 text-green-600">
-                    <CheckCircle className="size-4" />
                     <span className="font-medium">Atención Completada</span>
+                    <CheckCircle className="size-4" />
                 </div>
             )}
         </div>

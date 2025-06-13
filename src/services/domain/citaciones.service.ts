@@ -253,5 +253,50 @@ export const citacionesService = {
 			console.error('❌ Error al completar atención médica:', error)
 			throw error
 		}
+	},
+
+	// NUEVO: Iniciar atención médica (establece hora_atencion)
+	iniciarAtencion: async (citacionId: number): Promise<Citacion> => {
+		console.log('🚀 Iniciando atención médica:', citacionId)
+		try {
+			// Obtener la citación actual
+			const citacionActual = await citacionesService.obtenerCitacionPorId(citacionId)
+			
+			// Actualizar con la hora actual como hora_atencion
+			const citacionActualizada = {
+				...citacionActual,
+				horaAtencion: new Date().toISOString(),
+				estado: 'ATENDIDA' as const
+			}
+
+			const response = await apiSpringClient.put(ENDPOINTS.CITACIONES.ACTUALIZAR(citacionId), citacionActualizada)
+			console.log('✅ Atención médica iniciada')
+			return response.data
+		} catch (error) {
+			console.error('❌ Error al iniciar atención médica:', error)
+			throw error
+		}
+	},
+
+	// NUEVO: Finalizar atención médica (establece hora_fin_atencion)
+	finalizarAtencion: async (citacionId: number): Promise<Citacion> => {
+		console.log('🏁 Finalizando atención médica:', citacionId)
+		try {
+			// Obtener la citación actual
+			const citacionActual = await citacionesService.obtenerCitacionPorId(citacionId)
+			
+			// Actualizar con la hora actual como hora_fin_atencion
+			const citacionActualizada = {
+				...citacionActual,
+				horaFinAtencion: new Date().toISOString()
+			}
+
+			const response = await apiSpringClient.put(ENDPOINTS.CITACIONES.ACTUALIZAR(citacionId), citacionActualizada)
+			console.log('✅ Atención médica finalizada')
+			return response.data
+		} catch (error) {
+			console.error('❌ Error al finalizar atención médica:', error)
+			throw error
+		}
 	}
 } 
