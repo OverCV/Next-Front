@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { citacionesService } from '@/src/services/domain/citaciones.service'
 import { medicosService } from '@/src/services/domain/medicos.service'
+import { seguimientosService } from '@/src/services/seguimientos'
 import { Citacion, PacienteCompleto } from '@/src/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 
@@ -55,14 +56,26 @@ export default function ModalAtencionMedica({
     }, [citacion.pacienteId])
 
     // Manejar citación atendida (callback del botón)
-    const manejarCitacionAtendida = (citacionActualizada: Citacion) => {
-        setExito(true)
-        onCitacionAtendida(citacionActualizada)
+    const manejarCitacionAtendida = async (citacionActualizada: Citacion) => {
+        try {
+            // Generar seguimientos usando el workflow de n8n
+            await seguimientosService.generarSeguimientos(
+                citacion.pacienteId,
+                citacion.id,
+                citacion.campanaId
+            );
+            
+            setExito(true)
+            onCitacionAtendida(citacionActualizada)
 
-        // Cerrar modal después de un momento
-        setTimeout(() => {
-            onCerrar()
-        }, 1500)
+            // Cerrar modal después de un momento
+            setTimeout(() => {
+                onCerrar()
+            }, 1500)
+        } catch (error) {
+            console.error('Error generando seguimientos:', error);
+            setError('Error al generar seguimientos automáticos');
+        }
     }
 
     // Callback para el formulario (sin parámetros)

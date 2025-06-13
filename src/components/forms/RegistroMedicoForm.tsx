@@ -11,17 +11,19 @@ import { Alert, AlertDescription } from "@/src/components/ui/alert"
 import { Form } from "@/src/components/ui/form"
 import { ROLES, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
-import { MedicoService } from "@/src/services/domain/medico.service"
+import MedicoService from "@/src/services/domain/medico.service"
 import { usuariosService } from "@/src/services/domain/usuarios.service"
 import { notificacionesService } from "@/src/services/notificaciones"
 
-import ContactoFields from "./registro-medico/ContactoFields"
-import DatosPersonalesFields from "./registro-medico/DatosPersonalesFields"
-import EspecialidadFields from "./registro-medico/EspecialidadFields"
-import FormActions from "./registro-medico/FormActions"
-import FormHeader from "./registro-medico/FormHeader"
-import IdentificacionFields from "./registro-medico/IdentificacionFields"
-import SeguridadFields from "./registro-medico/SeguridadFields"
+import { ContactoFields } from "./registro-medico/ContactoFields"
+import { DatosPersonalesFields } from "./registro-medico/DatosPersonalesFields"
+import { EspecialidadFields } from "./registro-medico/EspecialidadFields"
+import { FormActions } from "./registro-medico/FormActions"
+import { FormHeader } from "./registro-medico/FormHeader"
+import { IdentificacionFields } from "./registro-medico/IdentificacionFields"
+import { SeguridadFields } from "./registro-medico/SeguridadFields"
+import entidadSaludService from "@/src/services/domain/entidad-salud.service"
+import { UsuarioAccedido } from "@/src/types"
 
 // Esquema de validación con Zod
 const registroMedicoSchema = z.object({
@@ -44,7 +46,7 @@ type RegistroMedicoFormValues = z.infer<typeof registroMedicoSchema>
 
 export default function RegistroMedicoForm() {
     const router = useRouter()
-    const { usuario } = useAuth()
+    const { usuario } = useAuth() as { usuario: UsuarioAccedido | null }
     const [error, setError] = useState<string | null>(null)
     const [cargando, setCargando] = useState<boolean>(false)
     const [exitoso, setExitoso] = useState<boolean>(false)
@@ -81,10 +83,18 @@ export default function RegistroMedicoForm() {
     }
 
     const onSubmit = async (datos: RegistroMedicoFormValues): Promise<void> => {
-        const token = usuario?.token || localStorage.getItem('token')
-        const entidadId = usuario?.entidadId
 
-        if (!token || !entidadId) {
+        const token = usuario?.token || localStorage.getItem('token')
+
+        if (!usuario?.id) {
+            setError("No hay sesión activa. Por favor, inicia sesión nuevamente.")
+            return
+        }
+
+        const respuestaEntidad = await entidadSaludService.obtenerEntidadPorUsuarioId(usuario.id)
+        const entidadId = respuestaEntidad.id
+
+        if (!entidadId) {
             setError("No hay sesión activa o entidad válida. Por favor, inicia sesión nuevamente.")
             return
         }

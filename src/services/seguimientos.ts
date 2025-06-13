@@ -1,4 +1,5 @@
 import apiClient from './api'
+import { API_N8N_URL } from '@/src/config/env'
 
 export interface Seguimiento {
   id: number
@@ -96,6 +97,34 @@ export const seguimientosService = {
   async obtenerPorId(seguimientoId: number): Promise<Seguimiento> {
     const response = await apiClient.get(`/seguimientos/${seguimientoId}`)
     return response.data
+  },
+
+  /**
+   * Generar seguimientos usando el workflow de n8n
+   */
+  async generarSeguimientos(pacienteId: number, atencionId: number, campanaId: number): Promise<any> {
+    try {
+      const response = await fetch(`${API_N8N_URL}/webhook/orquestador-seguimientos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          paciente_id: pacienteId,
+          atencion_id: atencionId,
+          campana_id: campanaId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error del workflow: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error generando seguimientos:', error);
+      throw error;
+    }
   }
 }
 

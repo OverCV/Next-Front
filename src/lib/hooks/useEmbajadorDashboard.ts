@@ -41,9 +41,10 @@ export const useEmbajadorDashboard = () => {
 		try {
 			// Obtener usuarios con rol de paciente
 			const pacientesData = await usuariosService.obtenerUsuariosPorRol(ROLES.PACIENTE)
-			setPacientes(pacientesData)
+			const dataFilter = pacientesData.filter(p => p.creadoPorId === usuario?.id)
+			setPacientes(dataFilter)
 
-			console.log('✅ Pacientes cargados:', pacientesData.length)
+			console.log('✅ Pacientes cargados:', dataFilter.length)
 		} catch (err: any) {
 			console.error('❌ Error al cargar pacientes:', err)
 			setError('No se pudieron cargar los pacientes')
@@ -116,11 +117,11 @@ export const useEmbajadorDashboard = () => {
 		if (!busqueda.trim()) return pacientes
 
 		return pacientes.filter(p =>
-			p.nombres.toLowerCase().includes(busqueda.toLowerCase()) ||
+			(p.nombres.toLowerCase().includes(busqueda.toLowerCase()) ||
 			p.apellidos.toLowerCase().includes(busqueda.toLowerCase()) ||
-			p.identificacion.includes(busqueda)
+			p.identificacion.includes(busqueda))
 		)
-	}, [pacientes])
+	}, [pacientes, usuario?.id])
 
 	// Obtener color del estado de campaña
 	const obtenerColorEstadoCampana = useCallback((estado: string) => {

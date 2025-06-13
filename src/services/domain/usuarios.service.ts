@@ -98,14 +98,29 @@ export const usuariosService = {
     },
 
     /**
-     * Cambia estado de un usuario (activar/desactivar)
+     * Cambia estado de un usuario (ACTIVO, INACTIVO, SUSPENDIDO, PENDIENTE)
      */
-    cambiarEstadoUsuario: async (id: number, estaActivo: boolean): Promise<UsuarioAccedido> => {
+    cambiarEstadoUsuario: async (id: number, nuevoEstado: string): Promise<UsuarioAccedido> => {
+        try {
+            const response = await apiSpringClient.patch(`${ENDPOINTS.USUARIOS.BASE}/${id}/estado`, { 
+                estado: nuevoEstado 
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error al cambiar estado de usuario con ID ${id}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Desactiva/activa un usuario (método legacy mantenido por compatibilidad)
+     */
+    toggleUsuarioActivo: async (id: number, estaActivo: boolean): Promise<UsuarioAccedido> => {
         try {
             const response = await apiSpringClient.patch(`${ENDPOINTS.USUARIOS.BASE}/${id}/estado`, { estaActivo });
             return response.data;
         } catch (error) {
-            console.error(`Error al cambiar estado de usuario con ID ${id}:`, error);
+            console.error(`Error al cambiar estado activo de usuario con ID ${id}:`, error);
             throw error;
         }
     }

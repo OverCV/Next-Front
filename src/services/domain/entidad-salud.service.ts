@@ -59,6 +59,19 @@ export const entidadSaludService = {
     }
   },
 
+  /**
+   * Actualiza los datos de una entidad de salud
+   */
+  actualizarEntidadSalud: async (id: number, datos: Partial<EntidadSalud>): Promise<EntidadSalud> => {
+    try {
+      const response = await apiSpringClient.put(`${ENDPOINTS.ENTIDADES_SALUD.BASE}/${id}`, datos)
+      return response.data
+    } catch (error) {
+      console.error("Error al actualizar entidad de salud:", error)
+      throw error
+    }
+  },
+
 }
 
 export default entidadSaludService

@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react'
 
 import { CampanaService } from '@/src/services/domain/campana.service'
-import { inscripcionesService, InscripcionCampana } from '@/src/services/domain/inscripciones.service'
+import { inscripcionesService } from '@/src/services/domain/inscripciones.service'
 import { usuariosService } from '@/src/services/domain/usuarios.service'
-import { Campana, UsuarioAccedido, EstadoCampana } from '@/src/types'
+import { Campana, UsuarioAccedido, EstadoCampana, InscripcionCampana } from '@/src/types'
 import apiSpringClient from '@/src/services/api'
 import { ENDPOINTS } from '@/src/services/auth/endpoints'
 
@@ -87,6 +87,8 @@ export const useAuxiliares = () => {
 			return false
 		}
 	}, [cargarInscripcionesAuxiliar])
+
+	
 
 	// Eliminar inscripción de auxiliar - ya usando inscripciones.service.ts correctamente
 	const eliminarInscripcion = useCallback(async (inscripcionId: number, usuarioId: number) => {
