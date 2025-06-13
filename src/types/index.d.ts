@@ -112,6 +112,7 @@ export interface Citacion {
   medicoId: number
   horaProgramada: string
   horaAtencion?: string
+  horaFinAtencion?: string
   duracionEstimada: number // en minutos
   estado: EstadoCitacion
   prediccionAsistencia: number // 0-100%

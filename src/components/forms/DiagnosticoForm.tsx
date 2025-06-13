@@ -215,7 +215,7 @@ export default function DiagnosticoForm({
                 <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                     <Accordion type="multiple" defaultValue={["sugerencias", "diagnostico"]} className="w-full">
                         {/* Sección de sugerencias de IA */}
-                        <AccordionItem value="sugerencias" className="rounded-md border">
+                        {/* <AccordionItem value="sugerencias" className="rounded-md border">
                             <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
                                 <div className="flex items-center gap-2">
                                     <Brain className="size-5 text-blue-500" />
@@ -275,73 +275,7 @@ export default function DiagnosticoForm({
                                     </p>
                                 )}
                             </AccordionContent>
-                        </AccordionItem>
-
-                        {/* Formulario de diagnóstico */}
-                        <AccordionItem value="diagnostico" className="mt-3 rounded-md border">
-                            <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
-                                <div className="flex items-center gap-2">
-                                    <Pill className="size-5 text-red-500" />
-                                    <span>Diagnóstico Principal</span>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="space-y-4 px-4 pb-4">
-                                <div className="grid gap-4 sm:grid-cols-2">
-                                    <CustomFormField
-                                        fieldType={FormFieldType.INPUT}
-                                        control={form.control}
-                                        name="codigoCie10"
-                                        label="Código CIE-10"
-                                        placeholder="Ej. I10"
-                                    />
-
-                                    <CustomFormField
-                                        fieldType={FormFieldType.SELECT}
-                                        control={form.control}
-                                        name="severidad"
-                                        label="Severidad"
-                                    >
-                                        <SelectItem value="LEVE">Leve</SelectItem>
-                                        <SelectItem value="MODERADA">Moderada</SelectItem>
-                                        <SelectItem value="GRAVE">Grave</SelectItem>
-                                    </CustomFormField>
-                                </div>
-
-                                <CustomFormField
-                                    fieldType={FormFieldType.TEXTAREA}
-                                    control={form.control}
-                                    name="descripcion"
-                                    label="Descripción del Diagnóstico"
-                                    placeholder="Detalle el diagnóstico del paciente..."
-                                />
-
-                                <CustomFormField
-                                    fieldType={FormFieldType.CHECKBOX}
-                                    control={form.control}
-                                    name="esPrincipal"
-                                    label="Es diagnóstico principal"
-                                />
-                            </AccordionContent>
-                        </AccordionItem>
-
-                        {/* Sección de notas médicas */}
-                        <AccordionItem value="notas" className="mt-3 rounded-md border">
-                            <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
-                                <div className="flex items-center gap-2">
-                                    <Clock className="size-5 text-slate-500" />
-                                    <span>Notas Médicas</span>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-4 pb-4">
-                                <CustomFormField
-                                    fieldType={FormFieldType.TEXTAREA}
-                                    control={form.control}
-                                    name="notasMedicas"
-                                    label="Notas y Observaciones"
-                                    placeholder="Registre observaciones adicionales, síntomas, signos, evolución, etc."
-                                />
-                            </AccordionContent>
-                        </AccordionItem>
+                        </AccordionItem> */}
 
                         {/* Sección de prescripciones/tratamiento */}
                         <AccordionItem value="prescripciones" className="mt-3 rounded-md border">
@@ -538,7 +472,74 @@ export default function DiagnosticoForm({
                             </AccordionContent>
                         </AccordionItem>
 
-                        {/* Sección de seguimiento */}
+                        {/* Formulario de diagnóstico */}
+                        <AccordionItem value="diagnostico" className="mt-3 rounded-md border">
+                            <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
+                                <div className="flex items-center gap-2">
+                                    <Pill className="size-5 text-red-500" />
+                                    <span>Diagnóstico Principal</span>
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="space-y-4 px-4 pb-4">
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <CustomFormField
+                                        fieldType={FormFieldType.INPUT}
+                                        control={form.control}
+                                        name="codigoCie10"
+                                        label="Código CIE-10"
+                                        placeholder="Ej. I10"
+                                    />
+
+                                    <CustomFormField
+                                        fieldType={FormFieldType.SELECT}
+                                        control={form.control}
+                                        name="severidad"
+                                        label="Severidad"
+                                    >
+                                        <SelectItem value="LEVE">Leve</SelectItem>
+                                        <SelectItem value="MODERADA">Moderada</SelectItem>
+                                        <SelectItem value="GRAVE">Grave</SelectItem>
+                                    </CustomFormField>
+                                </div>
+
+                                <CustomFormField
+                                    fieldType={FormFieldType.TEXTAREA}
+                                    control={form.control}
+                                    name="descripcion"
+                                    label="Descripción del Diagnóstico"
+                                    placeholder="Detalle el diagnóstico del paciente..."
+                                />
+
+                                <CustomFormField
+                                    fieldType={FormFieldType.CHECKBOX}
+                                    control={form.control}
+                                    name="esPrincipal"
+                                    label="Es diagnóstico principal"
+                                />
+                            </AccordionContent>
+                        </AccordionItem>
+
+                        {/* Sección de notas médicas */}
+                        <AccordionItem value="notas" className="mt-3 rounded-md border">
+                            <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
+                                <div className="flex items-center gap-2">
+                                    <Clock className="size-5 text-slate-500" />
+                                    <span>Notas Médicas</span>
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="px-4 pb-4">
+                                <CustomFormField
+                                    fieldType={FormFieldType.TEXTAREA}
+                                    control={form.control}
+                                    name="notasMedicas"
+                                    label="Notas y Observaciones"
+                                    placeholder="Registre observaciones adicionales, síntomas, signos, evolución, etc."
+                                />
+                            </AccordionContent>
+                        </AccordionItem>
+
+
+                        {/* Sección de seguimiento
                         <AccordionItem value="seguimiento" className="mt-3 rounded-md border">
                             <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
                                 <div className="flex items-center gap-2">
@@ -579,7 +580,7 @@ export default function DiagnosticoForm({
                                     </div>
                                 )}
                             </AccordionContent>
-                        </AccordionItem>
+                        </AccordionItem> */}
                     </Accordion>
 
                     {/* Botón de finalizar */}

@@ -1,8 +1,9 @@
 "use client"
 
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, Clock, Play, Square } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 
+import { Button } from '@/src/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { citacionesService } from '@/src/services/domain/citaciones.service'
 import { medicosService } from '@/src/services/domain/medicos.service'
@@ -33,6 +34,20 @@ export default function ModalAtencionMedica({
     const [cargandoPaciente, setCargandoPaciente] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [exito, setExito] = useState(false)
+    
+    // NUEVOS ESTADOS PARA EL FLUJO DE ATENCIÓN
+    const [atencionIniciada, setAtencionIniciada] = useState(false)
+    const [iniciandoAtencion, setIniciandoAtencion] = useState(false)
+    const [finalizandoAtencion, setFinalizandoAtencion] = useState(false)
+    const [citacionActual, setCitacionActual] = useState<Citacion>(citacion)
+
+    // Verificar si la atención ya fue iniciada al cargar el componente
+    useEffect(() => {
+        // Si la citación ya tiene hora_atencion, significa que ya se inició la atención
+        if (citacion.horaAtencion) {
+            setAtencionIniciada(true)
+        }
+    }, [citacion])
 
     // Cargar información completa del paciente
     useEffect(() => {
@@ -55,26 +70,56 @@ export default function ModalAtencionMedica({
         cargarPacienteCompleto()
     }, [citacion.pacienteId])
 
-    // Manejar citación atendida (callback del botón)
-    const manejarCitacionAtendida = async (citacionActualizada: Citacion) => {
+    // NUEVA FUNCIÓN: Iniciar atención médica
+    const iniciarAtencionMedica = async () => {
+        setIniciandoAtencion(true)
+        setError(null)
+        
         try {
-            // Generar seguimientos usando el workflow de n8n
-            await seguimientosService.generarSeguimientos(
-                citacion.pacienteId,
-                citacion.id,
-                citacion.campanaId
-            );
+            console.log('🚀 Iniciando atención médica...')
+            const citacionActualizada = await citacionesService.iniciarAtencion(citacion.id)
+            setCitacionActual(citacionActualizada)
+            setAtencionIniciada(true)
+            console.log('✅ Atención médica iniciada exitosamente')
+        } catch (error: any) {
+            console.error('❌ Error al iniciar atención:', error)
+            setError('Error al iniciar la atención médica')
+        } finally {
+            setIniciandoAtencion(false)
+        }
+    }
+
+    // NUEVA FUNCIÓN: Finalizar atención médica
+    const finalizarAtencionMedica = async () => {
+        setFinalizandoAtencion(true)
+        setError(null)
+        
+        try {
+            console.log('🏁 Finalizando atención médica...')
+            
+            // 1. Finalizar la atención (establecer hora_fin_atencion Y cambiar estado a ATENDIDA)
+            // Spring Boot detectará automáticamente el cambio de estado y disparará el webhook n8n
+            const citacionFinalizada = await citacionesService.finalizarAtencion(citacion.id)
+            setCitacionActual(citacionFinalizada)
+            
+            // 2. NO necesitamos llamar manualmente a seguimientosService.generarSeguimientos
+            // porque Spring Boot lo hace automáticamente via EventListener cuando estado = ATENDIDA
+            console.log('✅ Spring Boot manejará los seguimientos automáticamente')
             
             setExito(true)
-            onCitacionAtendida(citacionActualizada)
-
+            onCitacionAtendida(citacionFinalizada)
+            
             // Cerrar modal después de un momento
             setTimeout(() => {
                 onCerrar()
             }, 1500)
-        } catch (error) {
-            console.error('Error generando seguimientos:', error);
-            setError('Error al generar seguimientos automáticos');
+            
+            console.log('✅ Atención médica finalizada exitosamente')
+        } catch (error: any) {
+            console.error('❌ Error al finalizar atención:', error)
+            setError('Error al finalizar la atención médica')
+        } finally {
+            setFinalizandoAtencion(false)
         }
     }
 
@@ -111,58 +156,104 @@ export default function ModalAtencionMedica({
             <StatusMessages error={error} exito={exito} />
 
             {/* Header con información del paciente */}
-            <PacienteHeader usuario={usuario} citacion={citacion} />
+            <PacienteHeader usuario={usuario} citacion={citacionActual} />
 
-            {/* Contenido principal con tabs */}
-            <Tabs defaultValue="datos-clinicos" className="w-full">
-                <TabsList className="grid w-full grid-cols-5">
-                    <TabsTrigger value="datos-clinicos">Datos Clínicos</TabsTrigger>
-                    <TabsTrigger value="triaje">Triaje Inicial</TabsTrigger>
-                    <TabsTrigger value="historial">Historial</TabsTrigger>
-                    <TabsTrigger value="diagnostico">Diagnóstico</TabsTrigger>
-                    <TabsTrigger value="prediccion">Predecir Riesgo CV</TabsTrigger>
-                </TabsList>
+            {/* BOTÓN INICIAR ATENCIÓN */}
+            {!atencionIniciada && (
+                <div className="flex flex-col items-center justify-center p-8 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+                    <Clock className="size-16 text-slate-400 mb-4" />
+                    <h3 className="text-lg font-medium text-slate-600 mb-2">
+                        Atención No Iniciada
+                    </h3>
+                    <p className="text-sm text-slate-500 mb-6 text-center max-w-md">
+                        Para acceder a las herramientas de atención médica, primero debe iniciar la atención del paciente.
+                    </p>
+                    <Button 
+                        onClick={iniciarAtencionMedica}
+                        disabled={iniciandoAtencion}
+                        size="lg"
+                        className="bg-green-600 hover:bg-green-700"
+                    >
+                        {iniciandoAtencion ? (
+                            <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                                Iniciando...
+                            </>
+                        ) : (
+                            <>
+                                <Play className="size-4 mr-2" />
+                                Iniciar Atención
+                            </>
+                        )}
+                    </Button>
+                </div>
+            )}
 
-                {/* Tab de datos clínicos */}
-                <TabsContent value="datos-clinicos" className="mt-6">
-                    <DatosClinicosForm
-                        pacienteId={citacion.pacienteId}
-                        onGuardar={manejarGuardadoDatos}
-                    />
-                </TabsContent>
+            {/* CONTENIDO DEL MODAL - SOLO DISPONIBLE DESPUÉS DE INICIAR ATENCIÓN */}
+            {atencionIniciada && (
+                <>
+                    {/* Contenido principal con tabs */}
+                    <Tabs defaultValue="datos-clinicos" className="w-full">
+                        <TabsList className="grid w-full grid-cols-4">
+                            <TabsTrigger value="datos-clinicos">Datos Clínicos</TabsTrigger>
+                            <TabsTrigger value="triaje">Triaje Inicial</TabsTrigger>
+                            <TabsTrigger value="prediccion">Predecir Riesgo CV</TabsTrigger>
+                            <TabsTrigger value="diagnostico">Diagnóstico</TabsTrigger>
+                        </TabsList>
 
-                {/* Tab de triaje */}
-                <TabsContent value="triaje" className="mt-6">
-                    <TriajeSection triaje={ultimoTriaje} />
-                </TabsContent>
+                        {/* Tab de datos clínicos */}
+                        <TabsContent value="datos-clinicos" className="mt-6">
+                            <DatosClinicosForm
+                                pacienteId={citacion.pacienteId}
+                                onGuardar={manejarGuardadoDatos}
+                            />
+                        </TabsContent>
 
-                {/* Tab de historial de atenciones médicas */}
-                <TabsContent value="historial" className="mt-6">
-                    <HistorialAtencionesSection citacionId={citacion.id} />
-                </TabsContent>
+                        {/* Tab de triaje */}
+                        <TabsContent value="triaje" className="mt-6">
+                            <TriajeSection triaje={ultimoTriaje} />
+                        </TabsContent>
 
-                {/* Tab de diagnóstico médico */}
-                <TabsContent value="diagnostico" className="mt-6">
-                    <DiagnosticoMedicoSection
-                        citacionId={citacion.id}
-                        pacienteId={citacion.pacienteId}
-                    />
-                </TabsContent>
+                        {/* Tab de predicción de riesgo CV */}
+                        <TabsContent value="prediccion" className="mt-6">
+                            <PredecirRiesgoCV
+                                pacienteId={citacion.pacienteId}
+                                campanaId={citacion.campanaId}
+                            />
+                        </TabsContent>
 
-                {/* Tab de predicción de riesgo CV */}
-                <TabsContent value="prediccion" className="mt-6">
-                    <PredecirRiesgoCV
-                        pacienteId={citacion.pacienteId}
-                        campanaId={citacion.campanaId}
-                    />
-                </TabsContent>
-            </Tabs>
+                        {/* Tab de diagnóstico médico */}
+                        <TabsContent value="diagnostico" className="mt-6">
+                            <DiagnosticoMedicoSection
+                                citacionId={citacion.id}
+                                pacienteId={citacion.pacienteId}
+                            />
+                        </TabsContent>
+                    </Tabs>
 
-            {/* Botón para marcar como atendida */}
-            <AtenderCitacionButton
-                citacion={citacion}
-                onCitacionAtendida={manejarCitacionAtendida}
-            />
+                    {/* BOTÓN FINALIZAR ATENCIÓN */}
+                    <div className="flex justify-center pt-4 border-t">
+                        <Button 
+                            onClick={finalizarAtencionMedica}
+                            disabled={finalizandoAtencion}
+                            size="lg"
+                            className="bg-red-600 hover:bg-red-700"
+                        >
+                            {finalizandoAtencion ? (
+                                <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                                    Finalizando...
+                                </>
+                            ) : (
+                                <>
+                                    <Square className="size-4 mr-2" />
+                                    Finalizar Atención
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </>
+            )}
         </div>
     )
 } 
