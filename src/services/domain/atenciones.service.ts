@@ -128,16 +128,6 @@ export const atencionesService = {
 		}
 	},
 
-	obtenerSugerenciasDiagnostico: async (pacienteId: number) => {
-		try {
-			const response = await apiSpringClient.get(`${ENDPOINTS.ATENCIONES_MEDICAS.BASE}/sugerencias/${pacienteId}`)
-			return response.data
-		} catch (error) {
-			console.error("📅 Error al obtener sugerencias de diagnóstico:", error)
-			return []
-		}
-	},
-
 	registrarDiagnostico: async (pacienteId: number, diagnostico: any) => {
 		try {
 			const response = await apiSpringClient.post(`${ENDPOINTS.ATENCIONES_MEDICAS.BASE}/diagnostico/${pacienteId}`, diagnostico)

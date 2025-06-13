@@ -84,8 +84,6 @@ export default function DiagnosticoForm({
     readOnly,
     diagnosticoExistente
 }: DiagnosticoFormProps) {
-    const [sugerencias, setSugerencias] = useState<any[]>([]);
-    const [cargandoSugerencias, setCargandoSugerencias] = useState(false);
     const [prescripciones, setPrescripciones] = useState<PrescripcionFormValues[]>([]);
     const [nuevaPrescripcion, setNuevaPrescripcion] = useState<Partial<PrescripcionFormValues>>({
         tipo: 'MEDICAMENTO',
@@ -111,24 +109,7 @@ export default function DiagnosticoForm({
     // Vigilar cambios en requiereSeguimiento para validación condicional
     const requiereSeguimiento = form.watch("requiereSeguimiento");
 
-    // Cargar sugerencias basadas en signos vitales y triaje
-    useEffect(() => {
-        const cargarSugerencias = async () => {
-            if (!pacienteId) return;
-
-            setCargandoSugerencias(true);
-            try {
-                const sugerenciasData = await atencionesService.obtenerSugerenciasDiagnostico(pacienteId);
-                setSugerencias(sugerenciasData);
-            } catch (err) {
-                console.error('Error al cargar sugerencias:', err);
-            } finally {
-                setCargandoSugerencias(false);
-            }
-        };
-
-        cargarSugerencias();
-    }, [pacienteId]);
+ 
 
     // Manejar la adición de una nueva prescripción
     const agregarPrescripcion = () => {
@@ -661,49 +642,6 @@ export default function DiagnosticoForm({
                                         label="Notas y Observaciones"
                                         placeholder="Registre observaciones adicionales, síntomas, signos, evolución, etc."
                                     />
-                                </AccordionContent>
-                            </AccordionItem>
-
-                            {/* Sección de seguimiento */}
-                            <AccordionItem value="seguimiento" className="mt-3 rounded-md border">
-                                <AccordionTrigger className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
-                                    <div className="flex items-center gap-2">
-                                        <Repeat className="size-5 text-purple-500" />
-                                        <span>Seguimiento</span>
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="px-4 pb-4">
-                                    <CustomFormField
-                                        fieldType={FormFieldType.CHECKBOX}
-                                        control={form.control}
-                                        name="requiereSeguimiento"
-                                        label="Requiere seguimiento posterior"
-                                    />
-
-                                    {requiereSeguimiento && (
-                                        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                                            <CustomFormField
-                                                fieldType={FormFieldType.DATE_PICKER}
-                                                control={form.control}
-                                                name="fechaSeguimiento"
-                                                label="Fecha de Seguimiento"
-                                                placeholder="Seleccione fecha"
-                                            />
-
-                                            <CustomFormField
-                                                fieldType={FormFieldType.SELECT}
-                                                control={form.control}
-                                                name="prioridadSeguimiento"
-                                                label="Prioridad"
-                                            >
-                                                {NIVELES_PRIORIDAD.map((nivel) => (
-                                                    <SelectItem key={nivel.valor} value={nivel.valor}>
-                                                        {nivel.etiqueta}
-                                                    </SelectItem>
-                                                ))}
-                                            </CustomFormField>
-                                        </div>
-                                    )}
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>

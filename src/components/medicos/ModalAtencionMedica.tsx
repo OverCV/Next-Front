@@ -237,12 +237,12 @@ export default function ModalAtencionMedica({
                     {/* Contenido principal con tabs */}
                     <Tabs defaultValue="datos-clinicos" className="w-full">
                         <TabsList className="grid w-full grid-cols-4">
-                            <TabsTrigger value="datos-clinicos" disabled={soloLectura}>
+                            <TabsTrigger value="datos-clinicos">
                                 Datos Clínicos
                             </TabsTrigger>
                             <TabsTrigger value="triaje">Triaje Inicial</TabsTrigger>
                             <TabsTrigger value="prediccion">Predecir Riesgo CV</TabsTrigger>
-                            <TabsTrigger value="diagnostico" disabled={soloLectura}>
+                            <TabsTrigger value="diagnostico">
                                 Diagnóstico
                             </TabsTrigger>
                         </TabsList>
