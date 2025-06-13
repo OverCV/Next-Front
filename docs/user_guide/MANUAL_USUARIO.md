@@ -175,8 +175,6 @@ Una vez el embajador es creado desde el Dashboard de la Entidad de Salud, se asi
 
 
 
-
-
 ## 6. Funcionalidades Comunes
 
 ### 6.1 Perfil de Usuario
