@@ -85,7 +85,6 @@ export default function ModalAtencionMedica({
     const iniciarAtencionMedica = async () => {
         setIniciandoAtencion(true)
         setError(null)
-        
         try {
             console.log('🚀 Iniciando atención médica...')
             const citacionActualizada = await citacionesService.iniciarAtencion(citacion.id)
@@ -168,7 +167,6 @@ export default function ModalAtencionMedica({
 
             {/* Header con información del paciente */}
             <PacienteHeader usuario={usuario} citacion={citacionActual} />
-
             {/* MENSAJE INFORMATIVO PARA CITACIONES YA ATENDIDAS */}
             {citacionYaAtendida && (
                 <div className="flex items-center justify-center p-6 bg-green-50 rounded-lg border border-green-200">
@@ -231,7 +229,9 @@ export default function ModalAtencionMedica({
                 </div>
             )}
 
+
             {/* CONTENIDO DEL MODAL - DISPONIBLE DESPUÉS DE INICIAR ATENCIÓN */}
+
             {atencionIniciada && (
                 <>
                     {/* Contenido principal con tabs */}
@@ -245,6 +245,7 @@ export default function ModalAtencionMedica({
                             <TabsTrigger value="diagnostico">
                                 Diagnóstico
                             </TabsTrigger>
+
                         </TabsList>
 
                         {/* Tab de datos clínicos */}
@@ -253,6 +254,7 @@ export default function ModalAtencionMedica({
                                 pacienteId={citacion.pacienteId}
                                 onGuardar={manejarGuardadoDatos}
                                 readOnly={soloLectura}
+
                             />
                         </TabsContent>
 
@@ -275,10 +277,10 @@ export default function ModalAtencionMedica({
                                 citacionId={citacion.id}
                                 pacienteId={citacion.pacienteId}
                                 readOnly={soloLectura}
+
                             />
                         </TabsContent>
                     </Tabs>
-
                     {/* BOTÓN FINALIZAR ATENCIÓN - Solo mostrar si NO está ya atendida */}
                     {!citacionYaAtendida && (
                         <div className="flex justify-center pt-4 border-t">
@@ -316,6 +318,7 @@ export default function ModalAtencionMedica({
                             </div>
                         </div>
                     )}
+
                 </>
             )}
         </div>

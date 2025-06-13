@@ -429,7 +429,6 @@ export default function DiagnosticoForm({
                                                                 {obtenerTextoTipoPrescripcion(prescripcion.tipo)}
                                                             </Badge>
                                                         </div>
-
                                                         {prescripcion.tipo === 'MEDICAMENTO' && (
                                                             <div className="grid grid-cols-3 gap-2 text-sm">
                                                                 {prescripcion.dosis && (
@@ -589,6 +588,7 @@ export default function DiagnosticoForm({
                                 </AccordionTrigger>
                                 <AccordionContent className="space-y-4 px-4 pb-4">
                                     <div className="grid gap-4 sm:grid-cols-2">
+
                                         <CustomFormField
                                             fieldType={FormFieldType.INPUT}
                                             control={form.control}
