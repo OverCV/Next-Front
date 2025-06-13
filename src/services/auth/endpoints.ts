@@ -113,7 +113,9 @@ export const ENDPOINTS = {
 		POR_CAMPANA: (campanaId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/campana/${campanaId}`,
 		ACTUALIZAR_ESTADO: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}/estado`,
 		ACTUALIZAR: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}`,
-		ELIMINAR: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}`
+		ELIMINAR: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}`,
+		ACTUALIZAR_FECHA_FIN_ATENCION: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}`,
+		FINALIZAR_ATENCION: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}/marcar-atendida`,
 	},
 
 	// Diagnósticos

@@ -97,16 +97,14 @@ export default function ModalAtencionMedica({
         try {
             console.log('🏁 Finalizando atención médica...')
             
-            // 1. Finalizar la atención (establecer hora_fin_atencion)
+            // 1. Finalizar la atención (establecer hora_fin_atencion Y cambiar estado a ATENDIDA)
+            // Spring Boot detectará automáticamente el cambio de estado y disparará el webhook n8n
             const citacionFinalizada = await citacionesService.finalizarAtencion(citacion.id)
             setCitacionActual(citacionFinalizada)
             
-            // 2. Generar seguimientos automáticos
-            await seguimientosService.generarSeguimientos(
-                citacion.pacienteId,
-                citacion.id,
-                citacion.campanaId
-            )
+            // 2. NO necesitamos llamar manualmente a seguimientosService.generarSeguimientos
+            // porque Spring Boot lo hace automáticamente via EventListener cuando estado = ATENDIDA
+            console.log('✅ Spring Boot manejará los seguimientos automáticamente')
             
             setExito(true)
             onCitacionAtendida(citacionFinalizada)

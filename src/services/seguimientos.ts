@@ -1,5 +1,4 @@
 import apiClient from './api'
-import { API_N8N_URL } from '@/src/config/env'
 
 export interface Seguimiento {
   id: number
@@ -100,31 +99,34 @@ export const seguimientosService = {
   },
 
   /**
-   * Generar seguimientos usando el workflow de n8n
+   * DEPRECADO: Generar seguimientos usando el workflow de n8n
+   * AHORA: Spring Boot maneja esto automáticamente cuando una citación cambia a ATENDIDA
    */
-  async generarSeguimientos(pacienteId: number, atencionId: number, campanaId: number): Promise<any> {
-    try {
-      const response = await fetch(`${API_N8N_URL}/webhook/orquestador-seguimientos`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          paciente_id: pacienteId,
-          atencion_id: atencionId,
-          campana_id: campanaId
-        })
-      });
+  // async generarSeguimientos(pacienteId: number, atencionId: number, campanaId: number): Promise<any> {
+  //   console.log('⚠️ MÉTODO DEPRECADO: generarSeguimientos')
+  //   console.log('Spring Boot maneja seguimientos automáticamente cuando citación estado = ATENDIDA')
+  //   return Promise.resolve({ 
+  //     status: 'handled_by_springboot',
+  //     mensaje: 'Los seguimientos se generan automáticamente en el backend'
+  //   })
+  // }
 
-      if (!response.ok) {
-        throw new Error(`Error del workflow: ${response.status} ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error generando seguimientos:', error);
-      throw error;
-    }
+  /**
+   * NUEVO: Método placeholder para mantener compatibilidad
+   * Los seguimientos se generan automáticamente en Spring Boot
+   */
+  async generarSeguimientos(pacienteId: number, citacionId: number, campanaId: number): Promise<any> {
+    console.log('ℹ️ Seguimientos manejados automáticamente por Spring Boot')
+    console.log('📋 Citación ID:', citacionId, 'Paciente ID:', pacienteId, 'Campaña ID:', campanaId)
+    
+    return Promise.resolve({
+      status: 'automatic_backend_handling',
+      mensaje: 'Los seguimientos se generan automáticamente cuando la citación cambia a ATENDIDA',
+      citacionId,
+      pacienteId,
+      campanaId,
+      timestamp: new Date().toISOString()
+    })
   }
 }
 
