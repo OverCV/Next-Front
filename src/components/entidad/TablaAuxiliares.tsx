@@ -7,10 +7,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/componen
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { useAuxiliares } from '@/src/lib/hooks/useAuxiliares'
-import { Medico } from '@/src/types'
+import { UsuarioAccedido } from '@/src/types'
 
 interface TablaAuxiliaresProps {
-    auxiliares: Medico[]
+    auxiliares: UsuarioAccedido[]
     onRefresh?: () => void
 }
 
@@ -26,7 +26,7 @@ export default function TablaAuxiliares({ auxiliares, onRefresh }: TablaAuxiliar
         limpiarEstado
     } = useAuxiliares()
 
-    const [auxiliarSeleccionado, setAuxiliarSeleccionado] = useState<Medico | null>(null)
+    const [auxiliarSeleccionado, setAuxiliarSeleccionado] = useState<UsuarioAccedido | null>(null)
     const [campanaSeleccionada, setCampanaSeleccionada] = useState<string>('')
     const [modalAbierto, setModalAbierto] = useState(false)
     const [procesando, setProcesando] = useState(false)
@@ -36,13 +36,13 @@ export default function TablaAuxiliares({ auxiliares, onRefresh }: TablaAuxiliar
         cargarCampanas()
     }, [cargarCampanas])
 
-    const abrirModalInscripcion = async (auxiliar: Medico) => {
+    const abrirModalInscripcion = async (auxiliar: UsuarioAccedido) => {
         setAuxiliarSeleccionado(auxiliar)
         setModalAbierto(true)
         limpiarEstado()
 
-        if (auxiliar.usuarioId) {
-            await cargarInscripcionesAuxiliar(auxiliar.usuarioId)
+        if (auxiliar.id) {
+            await cargarInscripcionesAuxiliar(auxiliar.id)
         }
     }
 
@@ -108,12 +108,12 @@ export default function TablaAuxiliares({ auxiliares, onRefresh }: TablaAuxiliar
                         {auxiliares.map((auxiliar) => (
                             <TableRow key={auxiliar.id}>
                                 <TableCell className="font-medium">
-                                    {auxiliar.nombreCompleto}
+                                    {auxiliar.nombres} {auxiliar.apellidos}
                                 </TableCell>
                                 <TableCell>
                                     {auxiliar.identificacion}
                                 </TableCell>
-                                <TableCell>{auxiliar.telefono}</TableCell>
+                                <TableCell>{auxiliar.celular}</TableCell>
                                 <TableCell>{auxiliar.correo}</TableCell>
                                 <TableCell className="text-center">
                                     <Button
@@ -135,7 +135,7 @@ export default function TablaAuxiliares({ auxiliares, onRefresh }: TablaAuxiliar
                 <DialogContent className="max-w-2xl">
                     <DialogHeader>
                         <DialogTitle>
-                            Inscripciones de {auxiliarSeleccionado?.nombreCompleto}
+                            Inscripciones de {auxiliarSeleccionado?.nombres} {auxiliarSeleccionado?.apellidos}
                         </DialogTitle>
                     </DialogHeader>
 

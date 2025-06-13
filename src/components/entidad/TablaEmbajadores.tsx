@@ -112,7 +112,7 @@ export function TablaEmbajadores({ embajadores, cargando, busqueda, onRefresh }:
                         <thead>
                             <tr className="border-b border-slate-200 dark:border-slate-700">
                                 <th className="py-3 text-left font-medium">Nombre</th>
-
+                                <th className="py-3 text-left font-medium">identificacion</th>
                                 <th className="py-3 text-left font-medium">Teléfono</th>
                                 <th className="py-3 text-left font-medium">Localidad</th>
                                 <th className="py-3 text-right font-medium">Acciones</th>
@@ -136,6 +136,10 @@ export function TablaEmbajadores({ embajadores, cargando, busqueda, onRefresh }:
                                     >
                                         <td className="py-3 font-medium">
                                             {embajador.nombreCompleto}
+                                        </td>
+
+                                        <td className="py-3">
+                                            {embajador.usuario?.identificacion}
                                         </td>
 
                                         <td className="py-3">

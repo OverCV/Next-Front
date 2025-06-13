@@ -77,7 +77,7 @@ export const ENDPOINTS = {
 	ENTIDADES_SALUD: {
 		BASE: `${API_SPRINGBOOT_URL}/entidades-salud`,
 		POR_ID: (entidadId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/${entidadId}`,
-		POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/entidad/${usuarioId}`,
+		POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/usuario/${usuarioId}`,
 	},
 
 	// Personal Médico
@@ -165,7 +165,7 @@ export const ENDPOINTS = {
 			ACTUALIZAR_POR_TRIAJE: `${API_FASTAPI_URL}/api/priorizacion/actualizar-por-triaje`,
 			CAMPANA_PACIENTES: (campanaId: number) => `${API_FASTAPI_URL}/api/priorizacion/campana/${campanaId}/pacientes`,
 			CITACIONES_PACIENTE: (pacienteId: number) => `${API_FASTAPI_URL}/api/priorizacion/paciente/${pacienteId}/citaciones`,
-			GENERAR_MANUAL: (campanaId: number) => `${API_FASTAPI_URL}/api/priorizacion/priorizacion/campana/${campanaId}/generar`
+			GENERAR_MANUAL: (campanaId: number) => `${API_FASTAPI_URL}/api/priorizacion/campana/${campanaId}/generar`
 		}
 	},
 

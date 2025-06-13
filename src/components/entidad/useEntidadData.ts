@@ -5,7 +5,7 @@ import { CampanaService } from '@/src/services/domain/campana.service'
 import { entidadSaludService } from '@/src/services/domain/entidad-salud.service'
 import MedicoService from '@/src/services/domain/medico.service'
 import { usuariosService } from '@/src/services/domain/usuarios.service'
-import { Campana, Embajador, Medico, UsuarioAccedido } from '@/src/types'
+import { Campana, Embajador, Medico, UsuarioAccedido} from '@/src/types'
 
 export function useEntidadData() {
 	const { usuario } = useAuth()
