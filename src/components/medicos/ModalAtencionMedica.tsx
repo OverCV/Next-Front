@@ -40,12 +40,23 @@ export default function ModalAtencionMedica({
     const [iniciandoAtencion, setIniciandoAtencion] = useState(false)
     const [finalizandoAtencion, setFinalizandoAtencion] = useState(false)
     const [citacionActual, setCitacionActual] = useState<Citacion>(citacion)
+    
+    // NUEVO: Estado para verificar si la citación ya fue completamente atendida
+    const [citacionYaAtendida, setCitacionYaAtendida] = useState(false)
+    const [soloLectura, setSoloLectura] = useState(false)
 
-    // Verificar si la atención ya fue iniciada al cargar el componente
+    // Verificar el estado de la citación al cargar el componente
     useEffect(() => {
-        // Si la citación ya tiene hora_atencion, significa que ya se inició la atención
-        if (citacion.horaAtencion) {
+        // Si la citación ya tiene estado ATENDIDA, está completamente finalizada
+        if (citacion.estado === 'ATENDIDA') {
+            setCitacionYaAtendida(true)
+            setSoloLectura(true)
+            setAtencionIniciada(true) // Para mostrar el contenido
+            console.log('📋 Citación ya está ATENDIDA - Modo solo lectura activado')
+        } else if (citacion.horaAtencion) {
+            // Si tiene hora_atencion pero no está ATENDIDA, solo se inició la atención
             setAtencionIniciada(true)
+            console.log('⏰ Atención ya iniciada - Permitir finalizar')
         }
     }, [citacion])
 
@@ -158,8 +169,39 @@ export default function ModalAtencionMedica({
             {/* Header con información del paciente */}
             <PacienteHeader usuario={usuario} citacion={citacionActual} />
 
-            {/* BOTÓN INICIAR ATENCIÓN */}
-            {!atencionIniciada && (
+            {/* MENSAJE INFORMATIVO PARA CITACIONES YA ATENDIDAS */}
+            {citacionYaAtendida && (
+                <div className="flex items-center justify-center p-6 bg-green-50 rounded-lg border border-green-200">
+                    <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0">
+                            <div className="size-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <svg className="size-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-medium text-green-800">
+                                Atención Médica Completada
+                            </h3>
+                            <div className="mt-1 text-sm text-green-600">
+                                <p>Esta citación ya fue atendida completamente.</p>
+                                <div className="mt-2 space-y-1">
+                                    {citacionActual.horaAtencion && (
+                                        <p><strong>Hora de inicio:</strong> {new Date(citacionActual.horaAtencion).toLocaleString()}</p>
+                                    )}
+                                    {citacionActual.horaFinAtencion && (
+                                        <p><strong>Hora de finalización:</strong> {new Date(citacionActual.horaFinAtencion).toLocaleString()}</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* BOTÓN INICIAR ATENCIÓN - Solo mostrar si NO está atendida y NO está iniciada */}
+            {!citacionYaAtendida && !atencionIniciada && (
                 <div className="flex flex-col items-center justify-center p-8 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
                     <Clock className="size-16 text-slate-400 mb-4" />
                     <h3 className="text-lg font-medium text-slate-600 mb-2">
@@ -189,16 +231,20 @@ export default function ModalAtencionMedica({
                 </div>
             )}
 
-            {/* CONTENIDO DEL MODAL - SOLO DISPONIBLE DESPUÉS DE INICIAR ATENCIÓN */}
+            {/* CONTENIDO DEL MODAL - DISPONIBLE DESPUÉS DE INICIAR ATENCIÓN */}
             {atencionIniciada && (
                 <>
                     {/* Contenido principal con tabs */}
                     <Tabs defaultValue="datos-clinicos" className="w-full">
                         <TabsList className="grid w-full grid-cols-4">
-                            <TabsTrigger value="datos-clinicos">Datos Clínicos</TabsTrigger>
+                            <TabsTrigger value="datos-clinicos" disabled={soloLectura}>
+                                Datos Clínicos
+                            </TabsTrigger>
                             <TabsTrigger value="triaje">Triaje Inicial</TabsTrigger>
                             <TabsTrigger value="prediccion">Predecir Riesgo CV</TabsTrigger>
-                            <TabsTrigger value="diagnostico">Diagnóstico</TabsTrigger>
+                            <TabsTrigger value="diagnostico" disabled={soloLectura}>
+                                Diagnóstico
+                            </TabsTrigger>
                         </TabsList>
 
                         {/* Tab de datos clínicos */}
@@ -206,6 +252,7 @@ export default function ModalAtencionMedica({
                             <DatosClinicosForm
                                 pacienteId={citacion.pacienteId}
                                 onGuardar={manejarGuardadoDatos}
+                                readOnly={soloLectura}
                             />
                         </TabsContent>
 
@@ -227,31 +274,48 @@ export default function ModalAtencionMedica({
                             <DiagnosticoMedicoSection
                                 citacionId={citacion.id}
                                 pacienteId={citacion.pacienteId}
+                                readOnly={soloLectura}
                             />
                         </TabsContent>
                     </Tabs>
 
-                    {/* BOTÓN FINALIZAR ATENCIÓN */}
-                    <div className="flex justify-center pt-4 border-t">
-                        <Button 
-                            onClick={finalizarAtencionMedica}
-                            disabled={finalizandoAtencion}
-                            size="lg"
-                            className="bg-red-600 hover:bg-red-700"
-                        >
-                            {finalizandoAtencion ? (
-                                <>
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                                    Finalizando...
-                                </>
-                            ) : (
-                                <>
-                                    <Square className="size-4 mr-2" />
-                                    Finalizar Atención
-                                </>
-                            )}
-                        </Button>
-                    </div>
+                    {/* BOTÓN FINALIZAR ATENCIÓN - Solo mostrar si NO está ya atendida */}
+                    {!citacionYaAtendida && (
+                        <div className="flex justify-center pt-4 border-t">
+                            <Button 
+                                onClick={finalizarAtencionMedica}
+                                disabled={finalizandoAtencion}
+                                size="lg"
+                                className="bg-red-600 hover:bg-red-700"
+                            >
+                                {finalizandoAtencion ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                                        Finalizando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Square className="size-4 mr-2" />
+                                        Finalizar Atención
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    )}
+
+                    {/* MENSAJE PARA CITACIONES YA FINALIZADAS */}
+                    {citacionYaAtendida && (
+                        <div className="flex justify-center pt-4 border-t">
+                            <div className="text-center p-4">
+                                <p className="text-green-600 font-medium">
+                                    ✅ Esta atención médica ya fue completada exitosamente
+                                </p>
+                                <p className="text-gray-500 text-sm mt-1">
+                                    Los seguimientos automáticos han sido generados para este paciente
+                                </p>
+                            </div>
+                        </div>
+                    )}
                 </>
             )}
         </div>
