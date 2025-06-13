@@ -173,7 +173,6 @@ El dashboard de la entidad muestra:
 #### Asignar Embajadores a Campañas
 Una vez el embajador es creado desde el Dashboard de la Entidad de Salud, se asigna la Campaña a la cual quedará inscrito.
 
-
 ## 6. Funcionalidades Comunes
 
 ### 6.1 Perfil de Usuario
