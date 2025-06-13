@@ -190,8 +190,7 @@ export interface Embajador {
   telefono: string
   usuarioId: number
   localidad: string
-  identificacion: string
-  correo: string
+  usuario: Usuario
 }
 
 export interface Medico {
