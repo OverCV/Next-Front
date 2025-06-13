@@ -60,7 +60,7 @@ export function ModalDetallesCampana({ campana, isOpen, onClose }: ModalDetalles
             // Si no hay datos de priorización, mostrar mensaje apropiado
             if (!data || data.length === 0) {
                 setPriorizacionData({
-                    mensaje: 'No hay priorización generada para esta campaña',
+                    mensaje: 'Aún no se han inscrito pacientes en esta campaña',
                     campana_id: campana.id,
                     total_pacientes: 0,
                     distribución_por_nivel: {},
@@ -83,10 +83,30 @@ export function ModalDetallesCampana({ campana, isOpen, onClose }: ModalDetalles
                     pacientes_priorizados: data
                 })
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Error al cargar priorización:', error)
-            setError('Error al cargar la priorización de pacientes')
-            setPriorizacionData(null)
+            
+            // Verificar si es un error 500 o de servidor que podría indicar que no hay pacientes
+            const errorMessage = error?.message || error?.toString() || ''
+            
+            // Si el error sugiere que no hay pacientes o es un error de "no encontrado"
+            if (errorMessage.includes('404') || 
+                errorMessage.includes('No se encontraron pacientes') ||
+                errorMessage.includes('No patients found')) {
+                setPriorizacionData({
+                    mensaje: 'Aún no se han inscrito pacientes en esta campaña',
+                    campana_id: campana.id,
+                    total_pacientes: 0,
+                    distribución_por_nivel: {},
+                    citaciones_automaticas: false,
+                    pacientes_priorizados: []
+                })
+                setError(null) // No mostrar como error
+            } else {
+                // Es un error real de conexión o servidor
+                setError('Error al conectar con el servidor. Por favor, intente nuevamente.')
+                setPriorizacionData(null)
+            }
         } finally {
             setCargandoPriorizacion(false)
         }

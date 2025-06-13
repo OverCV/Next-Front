@@ -89,14 +89,29 @@ export const prediccionesService = {
 			})
 
 			if (!response.ok) {
+				// Si es un error 404 o similar, podría ser que no hay pacientes inscritos
+				if (response.status === 404) {
+					console.log('ℹ️ No se encontraron pacientes priorizados para la campaña:', campanaId)
+					return [] // Retornar array vacío en lugar de lanzar error
+				}
 				throw new Error(`HTTP error! status: ${response.status}`)
 			}
 
 			const data = await response.json()
 			console.log('✅ Pacientes priorizados obtenidos:', data)
-			return data
-		} catch (error) {
+			return data || [] // Asegurar que siempre se retorne un array
+		} catch (error: any) {
 			console.error('❌ Error al obtener pacientes priorizados:', error)
+			
+			// Si el error contiene mensajes que sugieren que no hay pacientes, retornar array vacío
+			const errorMessage = error?.message || error?.toString() || ''
+			if (errorMessage.includes('No se encontraron pacientes') || 
+				errorMessage.includes('No patients found') ||
+				errorMessage.includes('404')) {
+				console.log('ℹ️ Interpretando como campaña sin pacientes inscritos')
+				return []
+			}
+			
 			throw error
 		}
 	},
