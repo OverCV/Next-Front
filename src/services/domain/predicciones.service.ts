@@ -29,13 +29,14 @@ export const prediccionesService = {
 	},
 
 	// Predecir riesgo cardiovascular (FastAPI)
-	predecirRiesgoCardiovascular: async (pacienteId: number, campanaId: number): Promise<any> => {
+	predecirRiesgoCardiovascular: async (pacienteId: number, campanaId: number, token: string): Promise<any> => {
 		console.log('🔮 Prediciendo riesgo cardiovascular...')
 		try {
 			const response = await fetch(ENDPOINTS.FASTAPI.PREDECIR_RIESGO(pacienteId, campanaId), {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
 				},
 			})
 
