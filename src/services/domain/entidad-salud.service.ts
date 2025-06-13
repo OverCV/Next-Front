@@ -38,7 +38,7 @@ export const entidadSaludService = {
 
   obtenerEntidadPorUsuarioId: async (usuarioId: number): Promise<EntidadSalud> => {
     try {
-      const response = await apiSpringClient.get(`${ENDPOINTS.ENTIDADES_SALUD.BASE}/usuario/${usuarioId}`)
+      const response = await apiSpringClient.get(`${ENDPOINTS.ENTIDADES_SALUD.POR_USUARIO(usuarioId)}`)
       return response.data
     } catch (error) {
       console.error("Error al obtener entidad por usuario ID:", error)

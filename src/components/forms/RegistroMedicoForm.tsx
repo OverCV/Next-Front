@@ -9,7 +9,7 @@ import { z } from "zod"
 
 import { Alert, AlertDescription } from "@/src/components/ui/alert"
 import { Form } from "@/src/components/ui/form"
-import { ROLES, TiposIdentificacionEnum } from "@/src/constants"
+import { EstadoUsuarioEnum, ROLES, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
 import MedicoService from "@/src/services/domain/medico.service"
 import { usuariosService } from "@/src/services/domain/usuarios.service"
@@ -22,8 +22,8 @@ import { FormActions } from "./registro-medico/FormActions"
 import { FormHeader } from "./registro-medico/FormHeader"
 import { IdentificacionFields } from "./registro-medico/IdentificacionFields"
 import { SeguridadFields } from "./registro-medico/SeguridadFields"
-import entidadSaludService from "@/src/services/domain/entidad-salud.service"
 import { UsuarioAccedido } from "@/src/types"
+import entidadSaludService from "@/src/services/domain/entidad-salud.service"
 
 // Esquema de validación con Zod
 const registroMedicoSchema = z.object({
@@ -60,7 +60,7 @@ export default function RegistroMedicoForm() {
             nombres: "",
             apellidos: "",
             especialidad: "",
-            celular: "",
+            telefono: "",
             correo: "",
             clave: "",
             confirmarClave: ""
@@ -86,16 +86,15 @@ export default function RegistroMedicoForm() {
 
         const token = usuario?.token || localStorage.getItem('token')
 
-        if (!usuario?.id) {
+        if (!usuario?.id || !token) {
             setError("No hay sesión activa. Por favor, inicia sesión nuevamente.")
             return
         }
 
-        const respuestaEntidad = await entidadSaludService.obtenerEntidadPorUsuarioId(usuario.id)
-        const entidadId = respuestaEntidad.id
+        const {id} = await entidadSaludService.obtenerEntidadPorUsuarioId(usuario.id)
 
-        if (!entidadId) {
-            setError("No hay sesión activa o entidad válida. Por favor, inicia sesión nuevamente.")
+        if (!id) {
+            setError("No hay entidad válida. Por favor, inicia sesión nuevamente.")
             return
         }
 
@@ -115,7 +114,7 @@ export default function RegistroMedicoForm() {
                 correo: datos.correo,
                 clave: datos.clave,
                 celular: datos.telefono,
-                estaActivo: true,
+                estado: EstadoUsuarioEnum.ACTIVO,
                 rolId: ROLES.MEDICO,
             }
 
@@ -126,7 +125,7 @@ export default function RegistroMedicoForm() {
             const datosMedico = {
                 usuarioId: respuestaUsuario.id,
                 especialidad: datos.especialidad,
-                entidadId
+                entidadId: id
             }
 
             await MedicoService.crearMedico(datosMedico)
@@ -135,7 +134,7 @@ export default function RegistroMedicoForm() {
             setExitoso(true)
 
             // Enviar SMS de bienvenida de forma asíncrona
-            enviarSMSBienvenida(datos.celular, datos.nombres, datos.identificacion)
+            enviarSMSBienvenida(datos.telefono, datos.nombres, datos.identificacion)
 
             // Redirigir después de 2 segundos
             setTimeout(() => {
@@ -187,7 +186,7 @@ export default function RegistroMedicoForm() {
                     <EspecialidadFields control={form.control} />
                     <ContactoFields control={form.control} />
                     <SeguridadFields control={form.control} />
-                    <FormActions cargando={cargando} exitoso={exitoso} />
+                    <FormActions cargando={cargando}/>
                 </form>
             </Form>
         </div>

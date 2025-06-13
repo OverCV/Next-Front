@@ -39,9 +39,9 @@ export default function RegistrarMedicoPage() {
                 <div className="order-1 flex items-center justify-center lg:order-2">
                     <div className="relative">
                         <Image
-                            src="/assets/images/dr-sharma.png"
+                            src="/assets/images/medico_cv.jpg"
                             alt="Médico profesional"
-                            width={300}
+                            width={500}
                             height={300}
                             className="rounded-lg"
                             priority

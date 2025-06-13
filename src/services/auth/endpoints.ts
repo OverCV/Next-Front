@@ -77,7 +77,7 @@ export const ENDPOINTS = {
 	ENTIDADES_SALUD: {
 		BASE: `${API_SPRINGBOOT_URL}/entidades-salud`,
 		POR_ID: (entidadId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/${entidadId}`,
-		POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/entidad/${usuarioId}`,
+		POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/entidades-salud/usuario/${usuarioId}`,
 	},
 
 	// Personal Médico
