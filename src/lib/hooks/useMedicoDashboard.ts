@@ -1,16 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
 
 import { useAuth } from '@/src/providers/auth-provider'
-import apiSpringClient from '@/src/services/api'
-import { ENDPOINTS } from '@/src/services/auth/endpoints'
-import { Campana } from '@/src/types'
+import { inscripcionesService } from '@/src/services/domain/inscripciones.service'
+import { InscripcionCompleta, EstadoCampana } from '@/src/types'
 
 export const useMedicoDashboard = () => {
 	const { usuario } = useAuth()
 
 	// Estados principales
-	const [campanas, setCampanas] = useState<Campana[]>([])
-	const [campanasActivas, setCampanasActivas] = useState<Campana[]>([])
+	const [campanasInscritas, setCampanasInscritas] = useState<InscripcionCompleta[]>([])
 	const [busqueda, setBusqueda] = useState('')
 	const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>(new Date())
 
@@ -18,7 +16,7 @@ export const useMedicoDashboard = () => {
 	const [cargandoCampanas, setCargandoCampanas] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 
-	// Cargar campañas del médico
+	// Cargar campañas donde está inscrito el médico
 	const cargarMisCampanas = useCallback(async () => {
 		if (!usuario?.id) {
 			console.log("⏳ Esperando datos del médico para cargar campañas...")
@@ -30,20 +28,17 @@ export const useMedicoDashboard = () => {
 		console.log("🔍 Cargando campañas para médico:", usuario.id)
 
 		try {
-			// Obtener todas las campañas (necesitamos endpoint específico para médicos)
-			const responseCampanas = await apiSpringClient.get(ENDPOINTS.CAMPANAS.TODAS)
-			const todasCampanas = responseCampanas.data
+			// Obtener inscripciones completas del médico usando el servicio existente
+			const inscripcionesData = await inscripcionesService.obtenerInscripcionesCompletas(usuario.id)
 
-			// Filtrar campañas donde el médico está asignado
-			// Por ahora mostramos todas, luego se puede filtrar por medicoId
-			const campanasDelMedico = todasCampanas.filter((campana: Campana) =>
-				campana.estado === 'EJECUCION' || campana.estado === 'POSTULADA'
+			// Filtrar solo campañas activas donde el médico está inscrito
+			const campanasActivas = inscripcionesData.filter(item =>
+				item.campana.estado === EstadoCampana.POSTULADA ||
+				item.campana.estado === EstadoCampana.EJECUCION
 			)
 
-			setCampanas(campanasDelMedico)
-			setCampanasActivas(campanasDelMedico.filter((c: Campana) => c.estado === 'EJECUCION'))
-
-			console.log("✅ Campañas del médico cargadas:", campanasDelMedico.length)
+			setCampanasInscritas(campanasActivas)
+			console.log("✅ Campañas del médico cargadas:", campanasActivas.length)
 		} catch (err: any) {
 			console.error('❌ Error al cargar campañas del médico:', err)
 			setError('Error al cargar las campañas. Intente nuevamente.')
@@ -65,18 +60,26 @@ export const useMedicoDashboard = () => {
 		setFechaSeleccionada(new Date())
 	}, [])
 
+	// Campañas filtradas por búsqueda
+	const campanasFiltradas = campanasInscritas.filter(item =>
+		item.campana.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+		item.campana.descripcion.toLowerCase().includes(busqueda.toLowerCase())
+	)
+
 	// Estadísticas calculadas
 	const estadisticas = {
-		campanasActivas: campanasActivas.length,
-		totalCampanas: campanas.length,
+		campanasActivas: campanasInscritas.filter(item =>
+			item.campana.estado === EstadoCampana.EJECUCION
+		).length,
+		totalCampanas: campanasInscritas.length,
 		pacientesAtendidosHoy: 0, // TODO: implementar cuando tengamos endpoint
 		citasPendientes: 0 // TODO: implementar cuando tengamos endpoint
 	}
 
 	return {
-		// Estados principales
-		campanas,
-		campanasActivas,
+		// Estados principales - mantenemos compatibilidad con la interfaz existente
+		campanas: campanasFiltradas.map(item => item.campana), // Extraer solo las campañas para compatibilidad
+		campanasInscritas: campanasFiltradas,
 		busqueda,
 		setBusqueda,
 		fechaSeleccionada,

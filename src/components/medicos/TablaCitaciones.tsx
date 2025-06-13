@@ -7,15 +7,9 @@ import { useRouter } from "next/navigation"
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { Citacion, EstadoCitacion } from '@/src/types'
-import {
-    getBackgroundColor,
-    getHoverBackgroundColor,
-    getTextColor
-} from "@/src/lib/utils"
+
 
 interface TablaCitacionesProps {
-    citaciones: Citacion[]
-    onAbrirCitacion: (citacion: Citacion) => void
     citaciones: Citacion[]
     onAbrirCitacion: (citacion: Citacion) => void
 }
@@ -25,14 +19,11 @@ export default function TablaCitaciones({ citaciones, onAbrirCitacion }: TablaCi
     const obtenerColorEstado = (estado: string) => {
         switch (estado) {
             case 'AGENDADA':
-            case 'AGENDADA':
                 return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
             case 'ATENDIDA':
                 return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
             case 'CANCELADA':
                 return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-            case 'NO_ASISTIO':
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
             default:
                 return 'bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-200'
         }

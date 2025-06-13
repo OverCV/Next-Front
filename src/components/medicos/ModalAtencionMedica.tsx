@@ -115,12 +115,12 @@ export default function ModalAtencionMedica({
 
             {/* Contenido principal con tabs */}
             <Tabs defaultValue="datos-clinicos" className="w-full">
-                <TabsList className="grid w-full grid-cols-5">
+                <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="datos-clinicos">Datos Clínicos</TabsTrigger>
                     <TabsTrigger value="triaje">Triaje Inicial</TabsTrigger>
-                    <TabsTrigger value="historial">Historial</TabsTrigger>
-                    <TabsTrigger value="diagnostico">Diagnóstico</TabsTrigger>
+                    {/* <TabsTrigger value="historial">Historial</TabsTrigger> */}
                     <TabsTrigger value="prediccion">Predecir Riesgo CV</TabsTrigger>
+                    <TabsTrigger value="diagnostico">Diagnóstico</TabsTrigger>
                 </TabsList>
 
                 {/* Tab de datos clínicos */}
@@ -136,18 +136,10 @@ export default function ModalAtencionMedica({
                     <TriajeSection triaje={ultimoTriaje} />
                 </TabsContent>
 
-                {/* Tab de historial de atenciones médicas */}
+                {/* Tab de historial de atenciones médicas
                 <TabsContent value="historial" className="mt-6">
                     <HistorialAtencionesSection citacionId={citacion.id} />
-                </TabsContent>
-
-                {/* Tab de diagnóstico médico */}
-                <TabsContent value="diagnostico" className="mt-6">
-                    <DiagnosticoMedicoSection
-                        citacionId={citacion.id}
-                        pacienteId={citacion.pacienteId}
-                    />
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* Tab de predicción de riesgo CV */}
                 <TabsContent value="prediccion" className="mt-6">
@@ -156,6 +148,15 @@ export default function ModalAtencionMedica({
                         campanaId={citacion.campanaId}
                     />
                 </TabsContent>
+                {/* Tab de diagnóstico médico */}
+
+                <TabsContent value="diagnostico" className="mt-6">
+                    <DiagnosticoMedicoSection
+                        citacionId={citacion.id}
+                        pacienteId={citacion.pacienteId}
+                    />
+                </TabsContent>
+
             </Tabs>
 
             {/* Botón para marcar como atendida */}
