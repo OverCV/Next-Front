@@ -4,7 +4,7 @@ import { AlertCircle, ArrowLeft } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useState, useEffect } from 'react'
 
-import TablaCitacionesPriorizadas from '@/src/components/auxiliar/TablaCitacionesPriorizadas'
+import { TablaCitacionesPriorizadas } from '@/src/components/auxiliar/TablaCitacionesPriorizadas'
 import { Alert, AlertDescription } from '@/src/components/ui/alert'
 import { Button } from '@/src/components/ui/button'
 import apiSpringClient from '@/src/services/api'

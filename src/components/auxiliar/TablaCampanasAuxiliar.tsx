@@ -53,9 +53,30 @@ export default function TablaCampanasAuxiliar({
     if (campanasInscritas.length === 0) {
         return (
             <div className="rounded-lg border border-slate-200 bg-white p-8 text-center shadow-sm">
-                <p className="text-slate-500">No tienes campañas asignadas actualmente</p>
-                <p className="text-slate-400 text-sm mt-2">
-                    Las campañas aparecerán aquí cuando seas inscrito por una entidad de salud
+                <div className="mb-4">
+                    <div className="mx-auto mb-4 w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center">
+                        <span className="text-2xl">📋</span>
+                    </div>
+                    <h3 className="text-lg font-medium text-slate-900 mb-2">
+                        No tienes campañas asignadas
+                    </h3>
+                    <p className="text-slate-600 mb-4">
+                        Para aparecer en este listado, una entidad de salud debe inscribirte a una campaña.
+                    </p>
+                </div>
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
+                    <h4 className="font-medium text-blue-900 mb-2">¿Cómo funciona el proceso?</h4>
+                    <ol className="text-blue-800 space-y-1 text-left">
+                        <li>1. Las entidades de salud crean campañas</li>
+                        <li>2. La entidad te inscribe a las campañas relevantes</li>
+                        <li>3. Las campañas aparecen automáticamente aquí</li>
+                        <li>4. Puedes gestionar las citaciones de esas campañas</li>
+                    </ol>
+                </div>
+                
+                <p className="text-slate-500 text-sm mt-4">
+                    Contacta a tu entidad de salud para ser inscrito a campañas activas.
                 </p>
             </div>
         )
@@ -100,11 +121,9 @@ export default function TablaCampanasAuxiliar({
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="transition-colors hover:bg-slate-100"
                                         onClick={() => router.push(`/dashboard/auxiliar/campana/${item.campana.id}`)}
-                                        disabled={item.campana.estado !== 'EJECUCION'}
                                     >
-                                        {item.campana.estado === 'EJECUCION' ? 'Ver Pacientes' : 'No Disponible'}
+                                        Ver Detalles
                                     </Button>
                                 </td>
                             </tr>

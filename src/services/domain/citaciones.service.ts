@@ -1,4 +1,4 @@
-import { Citacion } from '@/src/types'
+import { Citacion, EstadoCitacion } from '@/src/types'
 
 import apiSpringClient from '../api'
 import { ENDPOINTS } from '../auth/endpoints'
@@ -73,7 +73,7 @@ export const citacionesService = {
 	actualizarEstadoCitacion: async (citacionId: number, nuevoEstado: EstadoCitacion): Promise<any> => {
 		console.log('🔄 Actualizando estado de citación:', citacionId, nuevoEstado)
 		try {
-			const response = await apiSpringClient.put(`/api/citaciones-medicas/${citacionId}/estado`, {
+			const response = await apiSpringClient.put(ENDPOINTS.CITACIONES.ACTUALIZAR_ESTADO(citacionId), {
 				estado: nuevoEstado
 			})
 			console.log('✅ Estado de citación actualizado')
@@ -106,6 +106,106 @@ export const citacionesService = {
 		}
 	},
 
+	// NUEVA FUNCIONALIDAD: Cancelación avanzada para auxiliares
+	// Cancela, elimina, desvincula paciente y reorganiza horarios
+	cancelarYEliminarCitacion: async (citacionId: number): Promise<{
+		citacionEliminada: boolean
+		pacienteDesvinculado: boolean
+		horariosReorganizados: number
+		mensaje: string
+	}> => {
+		console.log('🗑️ Iniciando cancelación avanzada de citación:', citacionId)
+		
+		try {
+			// 1. Obtener datos de la citación antes de eliminarla
+			const citacion = await citacionesService.obtenerCitacionPorId(citacionId)
+			const { pacienteId, campanaId } = citacion
+			
+			console.log('📋 Datos de la citación:', { pacienteId, campanaId })
+
+			// 2. Obtener todas las citaciones de la campaña para reorganizar
+			const citacionesCampana = await citacionesService.obtenerCitacionesPorCampana(campanaId)
+			
+			// Filtrar citaciones posteriores a la que se va a cancelar
+			const citacionesPosteriores = citacionesCampana
+				.filter(c => c.id !== citacionId && c.estado === EstadoCitacion.AGENDADA)
+				.filter(c => new Date(c.horaProgramada) > new Date(citacion.horaProgramada))
+				.sort((a, b) => new Date(a.horaProgramada).getTime() - new Date(b.horaProgramada).getTime())
+
+			console.log(`📅 Citaciones posteriores a reorganizar: ${citacionesPosteriores.length}`)
+
+			// 3. Eliminar la citación de la base de datos
+			await apiSpringClient.delete(ENDPOINTS.CITACIONES.ELIMINAR(citacionId))
+			console.log('✅ Citación eliminada de la base de datos')
+
+			// 4. Desvincular paciente de la campaña
+			let pacienteDesvinculado = false
+			try {
+				// Importar dinámicamente para evitar dependencias circulares
+				const { inscripcionesService } = await import('./inscripciones.service')
+				
+				// Obtener información del paciente para conseguir el usuarioId
+				const pacienteResponse = await apiSpringClient.get(`${ENDPOINTS.PACIENTES.BASE}/${pacienteId}`)
+				const paciente = pacienteResponse.data
+				
+				if (paciente?.usuarioId) {
+					// Buscar la inscripción del usuario en la campaña
+					const inscripciones = await inscripcionesService.obtenerInscripcionesPorUsuario(paciente.usuarioId)
+					const inscripcionCampana = inscripciones.find(inscripcion => 
+						inscripcion.campanaId === campanaId
+					)
+
+					if (inscripcionCampana) {
+						await inscripcionesService.eliminarInscripcion(inscripcionCampana.id)
+						pacienteDesvinculado = true
+						console.log('🔓 Paciente desvinculado de la campaña')
+					}
+				}
+			} catch (error) {
+				console.error('❌ Error al desvincular paciente:', error)
+			}
+
+			// 5. Reorganizar horarios de citaciones posteriores
+			let horariosReorganizados = 0
+			if (citacionesPosteriores.length > 0) {
+				const duracionCita = citacion.duracionEstimada || 30 // minutos por defecto
+				
+				for (const citacionPosterior of citacionesPosteriores) {
+					try {
+						// Adelantar la hora de la citación por la duración de la citación cancelada
+						const horaActual = new Date(citacionPosterior.horaProgramada)
+						const nuevaHora = new Date(horaActual.getTime() - (duracionCita * 60 * 1000))
+						
+						// Actualizar la citación con la nueva hora
+						await citacionesService.actualizarCitacion(citacionPosterior.id, {
+							...citacionPosterior,
+							horaProgramada: nuevaHora.toISOString()
+						})
+						
+						horariosReorganizados++
+						console.log(`⏰ Citación ${citacionPosterior.id} reorganizada: ${horaActual.toLocaleTimeString()} → ${nuevaHora.toLocaleTimeString()}`)
+					} catch (error) {
+						console.error(`❌ Error reorganizando citación ${citacionPosterior.id}:`, error)
+					}
+				}
+			}
+
+			const resultado = {
+				citacionEliminada: true,
+				pacienteDesvinculado,
+				horariosReorganizados,
+				mensaje: `Citación eliminada exitosamente. ${pacienteDesvinculado ? 'Paciente desvinculado. ' : ''}${horariosReorganizados} horarios reorganizados.`
+			}
+
+			console.log('✅ Cancelación avanzada completada:', resultado)
+			return resultado
+
+		} catch (error) {
+			console.error('❌ Error en cancelación avanzada:', error)
+			throw new Error(`Error al cancelar citación: ${error instanceof Error ? error.message : 'Error desconocido'}`)
+		}
+	},
+
 	// Reprogramar citación (auxiliares) - obtiene primero y luego actualiza
 	reprogramarCitacion: async (citacionId: number): Promise<Citacion> => {
 		console.log('📅 Reprogramando citación:', citacionId)
@@ -132,7 +232,7 @@ export const citacionesService = {
 	marcarComoAtendida: async (citacionId: number): Promise<any> => {
 		console.log('🩺 Marcando citación como atendida:', citacionId)
 		try {
-			const response = await apiSpringClient.put(`/api/citaciones-medicas/${citacionId}/marcar-atendida`)
+			const response = await apiSpringClient.put(`${ENDPOINTS.CITACIONES.BASE}/${citacionId}/marcar-atendida`)
 			console.log('✅ Citación marcada como atendida - Seguimientos iniciados')
 			return response.data
 		} catch (error) {
@@ -146,7 +246,7 @@ export const citacionesService = {
 		console.log('📋 Completando atención médica:', citacionId)
 		try {
 			const payload = horaAtencion ? { hora_atencion: horaAtencion } : {}
-			const response = await apiSpringClient.put(`/api/citaciones-medicas/${citacionId}/completar-atencion`, payload)
+			const response = await apiSpringClient.put(`${ENDPOINTS.CITACIONES.BASE}/${citacionId}/completar-atencion`, payload)
 			console.log('✅ Atención médica completada')
 			return response.data
 		} catch (error) {

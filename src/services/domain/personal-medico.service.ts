@@ -35,7 +35,7 @@ export const personalMedicoService = {
 	obtenerPersonalMedicoPorId: async (medicoId: number): Promise<PersonalMedico> => {
 		try {
 			console.log('🔍 MEDICOS-SERVICE: Obteniendo personal médico por ID:', medicoId)
-			const response = await apiSpringClient.get(ENDPOINTS.PERSONAL_MEDICO.POR_ID(medicoId))
+			const response = await apiSpringClient.get(ENDPOINTS.PERSONAL_MEDICO.POR_ID_CON_DETALLES(medicoId))
 			return response.data
 		} catch (error) {
 			console.error('❌ MEDICOS-SERVICE: Error al obtener personal médico:', error)
