@@ -40,8 +40,8 @@ export function TablaMedicos({ medicos, cargando, busqueda, onRefresh }: TablaMe
         setModalAbierto(true)
         limpiarEstado()
 
-        if (medico.id) {
-            await cargarInscripcionesAuxiliar(medico.id)
+        if (medico.usuarioId) {
+            await cargarInscripcionesAuxiliar(medico.usuarioId)
         }
     }
 

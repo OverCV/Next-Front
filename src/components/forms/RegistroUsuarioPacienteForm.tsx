@@ -13,6 +13,7 @@ import { Form } from "@/src/components/ui/form"
 import { SelectItem } from "@/src/components/ui/select"
 import { ROLES, TIPOS_IDENTIFICACION_USUARIO, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
+import { notificacionesService } from "@/src/services/notificaciones"
 import { usuariosService } from "@/src/services/domain/usuarios.service"
 import { Usuario, UsuarioAccedido } from "@/src/types"
 
@@ -52,6 +53,7 @@ export default function RegistroUsuarioPacienteForm({ onUsuarioCreado }: Registr
     const [cargando, setCargando] = useState<boolean>(false)
     const [exitoso, setExitoso] = useState<boolean>(false)
     const [usuarioCreado, setUsuarioCreado] = useState<UsuarioAccedido | null>(null)
+    const [enviandoSMS, setEnviandoSMS] = useState<boolean>(false)
 
     const form = useForm<RegistroUsuarioFormValues>({
         resolver: zodResolver(registroUsuarioSchema),
@@ -64,6 +66,22 @@ export default function RegistroUsuarioPacienteForm({ onUsuarioCreado }: Registr
             correo: "",
         },
     })
+
+    // Función para enviar SMS de bienvenida
+    const enviarSMSBienvenida = async (celular: string, nombres: string, identificacion: string): Promise<void> => {
+        try {
+            setEnviandoSMS(true)
+            const mensaje = `¡Hola ${nombres}! 🏥 Tu cuenta en HealInk ha sido creada exitosamente. Usuario: ${identificacion} | Contraseña: ${identificacion} | Ingresa en healink.com para acceder al sistema.`
+
+            await notificacionesService.enviarSMS(celular, mensaje)
+            console.log("✅ SMS de bienvenida enviado exitosamente")
+        } catch (err) {
+            console.error("⚠️ Error al enviar SMS de bienvenida:", err)
+            // No mostramos error al usuario por SMS, pero registramos en consola
+        } finally {
+            setEnviandoSMS(false)
+        }
+    }
 
     const onSubmit = async (datos: RegistroUsuarioFormValues): Promise<void> => {
         // Obtener token del usuario actual (embajador)
@@ -101,6 +119,9 @@ export default function RegistroUsuarioPacienteForm({ onUsuarioCreado }: Registr
 
             setUsuarioCreado(respuesta)
             setExitoso(true)
+
+            // Enviar SMS de bienvenida de forma asíncrona
+            enviarSMSBienvenida(datos.celular, datos.nombres, datos.identificacion)
 
             // Notificar al componente padre que el usuario fue creado
             if (onUsuarioCreado && respuesta.id) {
@@ -149,6 +170,7 @@ export default function RegistroUsuarioPacienteForm({ onUsuarioCreado }: Registr
                 <Alert className="mb-6">
                     <AlertDescription>
                         Usuario registrado exitosamente. ID: {usuarioCreado?.id}
+                        {enviandoSMS && " | Enviando SMS de bienvenida..."}
                     </AlertDescription>
                 </Alert>
             )}

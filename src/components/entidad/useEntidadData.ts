@@ -76,9 +76,23 @@ export function useEntidadData() {
 			}
 
 			// 2. Obtener los médicos de esa entidad
-			const medicosData = await MedicoService.obtenerMedicosPorEntidad(entidad.id)
+			const medicosData: Medico[] = await MedicoService.obtenerMedicosPorEntidad(entidad.id)
+			
+			// Obtener información detallada de cada médico
+			const medicosConInfo = await Promise.all(
+				medicosData.map(async (medico) => {
+					const usuarioInfo = await usuariosService.obtenerUsuarioPorId(medico.usuarioId)
+					return {
+						...medico,
+						nombreCompleto: `${usuarioInfo.nombres} ${usuarioInfo.apellidos}`,
+						identificacion: usuarioInfo.identificacion,
+						correo: usuarioInfo.correo,
+						telefono: usuarioInfo.celular
+					}
+				})
+			)
 
-			setMedicos(medicosData)
+			setMedicos(medicosConInfo)
 			console.log('✅ Médicos cargados:', medicosData.length)
 		} catch (err: any) {
 			console.error('Error al cargar médicos:', err)

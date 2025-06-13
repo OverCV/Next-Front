@@ -7,8 +7,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
+import { ListaEntidadesRegistradas } from "@/src/components/admin/ListaEntidadesRegistradas"
 import { RegistroEntidadSaludButton } from "@/src/components/auth/RegistroEntidadSaludButton"
-import NotificacionPrueba from "@/src/components/notificacionPrueba"
 import PasskeyModal from "@/src/components/PasskeyModal"
 import { StatCard } from "@/src/components/StatCard"
 import { Button } from "@/src/components/ui/button"
@@ -40,6 +40,7 @@ const AdminPage = () => {
             className="h-8 w-fit"
           />
         </Link>
+
 
         <p className="text-16-semibold mr-8 ">Admin Dashboard</p>
 
@@ -97,15 +98,14 @@ const AdminPage = () => {
           />
         </section>
 
-        Componente de notificaciones deshabilitado temporalmente
-        <NotificacionPrueba />
+        {/* Acá el listado */}
+        <ListaEntidadesRegistradas />
 
+        {/* Componente de notificaciones deshabilitado temporalmente
+        <NotificacionPrueba /> */}
 
-        {/* <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-          <h3 className="mb-2 text-lg font-semibold">🚧 Notificaciones</h3>
-          <p className="text-slate-500">
-            Panel de notificaciones SMS/Email en desarrollo
-          </p>
+        {/* <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900 ">
+          <h3 className="mb-2 text-lg font-semibold">Registrar Entidad de Salud</h3>
         </div> */}
       </main>
 

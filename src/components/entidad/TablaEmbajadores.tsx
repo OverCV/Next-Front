@@ -43,8 +43,8 @@ export function TablaEmbajadores({ embajadores, cargando, busqueda, onRefresh }:
         setModalAbierto(true)
         limpiarEstado()
 
-        if (embajador.id) {
-            await cargarInscripcionesAuxiliar(embajador.id)
+        if (embajador.usuarioId) {
+            await cargarInscripcionesAuxiliar(embajador.usuarioId)
         }
     }
 
@@ -56,10 +56,10 @@ export function TablaEmbajadores({ embajadores, cargando, busqueda, onRefresh }:
     }
 
     const manejarInscripcion = async () => {
-        if (!embajadorSeleccionado?.id || !campanaSeleccionada) return
+        if (!embajadorSeleccionado?.usuarioId || !campanaSeleccionada) return
 
         setProcesando(true)
-        const exito = await inscribirAuxiliar(embajadorSeleccionado.id, parseInt(campanaSeleccionada))
+        const exito = await inscribirAuxiliar(embajadorSeleccionado.usuarioId, parseInt(campanaSeleccionada))
 
         if (exito) {
             setCampanaSeleccionada('')

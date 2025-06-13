@@ -72,22 +72,6 @@ export default function RegistroEntidadForm(): JSX.Element {
         setExitoso(false)
 
         try {
-            // Llamar a la API para registrar
-            const datosEntidad: EntidadSalud = {
-                razonSocial: datos.razonSocial,
-                direccion: datos.direccion,
-                telefono: datos.telefono,
-                correo: datos.correo,
-            }
-
-            const respuestaEntidad: EntidadSalud = await entidadSaludService.crearEntidadSalud(datosEntidad)
-            console.log("Registro entidad exitoso:", respuestaEntidad)
-
-            if (respuestaEntidad.id === undefined) {
-                setError("Error al registrar la entidad. Por favor, verifica los datos e intenta nuevamente.")
-                setCargando(false)
-                return
-            }
 
             const datosRegistro: Usuario = {
                 tipoIdentificacion: TiposIdentificacionEnum.NIT,  // Fijo para entidades de salud
@@ -103,6 +87,23 @@ export default function RegistroEntidadForm(): JSX.Element {
 
             const respuesta = await registroUsuario(datosRegistro)
             console.log("Registro exitoso:", respuesta)
+
+            if (respuesta.id === undefined) {
+                setError("Error al registrar el usuario. Por favor, verifica los datos e intenta nuevamente.")
+                setCargando(false)
+                return
+            }
+
+            const datosEntidad: EntidadSalud = {
+                razonSocial: datos.razonSocial,
+                direccion: datos.direccion,
+                telefono: datos.telefono,
+                correo: datos.correo,
+                usuarioId: respuesta.id
+            }
+
+            const respuestaEntidad: EntidadSalud = await entidadSaludService.crearEntidadSalud(datosEntidad)
+            console.log("Registro entidad exitoso:", respuestaEntidad)
 
             // Marcar como exitoso
             setExitoso(true)
@@ -232,7 +233,7 @@ export default function RegistroEntidadForm(): JSX.Element {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => router.push("/acceso")}
+                                onClick={() => router.push("/admin")}
                                 className="w-full sm:w-auto"
                             >
                                 Cancelar

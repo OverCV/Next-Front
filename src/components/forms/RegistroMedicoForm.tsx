@@ -11,9 +11,9 @@ import { Alert, AlertDescription } from "@/src/components/ui/alert"
 import { Form } from "@/src/components/ui/form"
 import { ROLES, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
-import { entidadSaludService } from "@/src/services/domain/entidad-salud.service"
-import MedicoService, { CrearMedicoPayload } from "@/src/services/domain/medico.service"
-import { Usuario, UsuarioAccedido } from "@/src/types"
+import MedicoService from "@/src/services/domain/medico.service"
+import { usuariosService } from "@/src/services/domain/usuarios.service"
+import { notificacionesService } from "@/src/services/notificaciones"
 
 import { ContactoFields } from "./registro-medico/ContactoFields"
 import { DatosPersonalesFields } from "./registro-medico/DatosPersonalesFields"
@@ -22,6 +22,8 @@ import { FormActions } from "./registro-medico/FormActions"
 import { FormHeader } from "./registro-medico/FormHeader"
 import { IdentificacionFields } from "./registro-medico/IdentificacionFields"
 import { SeguridadFields } from "./registro-medico/SeguridadFields"
+import entidadSaludService from "@/src/services/domain/entidad-salud.service"
+import { UsuarioAccedido } from "@/src/types"
 
 // Esquema de validación con Zod
 const registroMedicoSchema = z.object({
@@ -42,37 +44,70 @@ const registroMedicoSchema = z.object({
 
 type RegistroMedicoFormValues = z.infer<typeof registroMedicoSchema>
 
-export function RegistroMedicoForm() {
+export default function RegistroMedicoForm() {
     const router = useRouter()
-    const { usuario: usuarioAutenticado } = useAuth() as { usuario: UsuarioAccedido | null }
-    const { registroUsuario } = useAuth()
+    const { usuario } = useAuth() as { usuario: UsuarioAccedido | null }
     const [error, setError] = useState<string | null>(null)
     const [cargando, setCargando] = useState<boolean>(false)
     const [exitoso, setExitoso] = useState<boolean>(false)
+    const [enviandoSMS, setEnviandoSMS] = useState<boolean>(false)
 
     const form = useForm<RegistroMedicoFormValues>({
         resolver: zodResolver(registroMedicoSchema),
         defaultValues: {
             tipoIdentificacion: TiposIdentificacionEnum.CC,
+            identificacion: "",
+            nombres: "",
+            apellidos: "",
             especialidad: "",
-        },
+            celular: "",
+            correo: "",
+            clave: "",
+            confirmarClave: ""
+        }
     })
 
+    // Función para enviar SMS de bienvenida
+    const enviarSMSBienvenida = async (celular: string, nombres: string, identificacion: string): Promise<void> => {
+        try {
+            setEnviandoSMS(true)
+            const mensaje = `¡Hola Dr(a). ${nombres}! 🏥 Su cuenta médica en HealInk ha sido creada exitosamente. Usuario: ${identificacion} | Acceda con su contraseña en healink.com para comenzar a atender pacientes.`
+
+            await notificacionesService.enviarSMS(celular, mensaje)
+            console.log("✅ SMS de bienvenida médico enviado exitosamente")
+        } catch (err) {
+            console.error("⚠️ Error al enviar SMS de bienvenida médico:", err)
+        } finally {
+            setEnviandoSMS(false)
+        }
+    }
+
     const onSubmit = async (datos: RegistroMedicoFormValues): Promise<void> => {
+
+        const token = usuario?.token || localStorage.getItem('token')
+
+        if (!usuario?.id) {
+            setError("No hay sesión activa. Por favor, inicia sesión nuevamente.")
+            return
+        }
+
+        const respuestaEntidad = await entidadSaludService.obtenerEntidadPorUsuarioId(usuario.id)
+        const entidadId = respuestaEntidad.id
+
+        if (!entidadId) {
+            setError("No hay sesión activa o entidad válida. Por favor, inicia sesión nuevamente.")
+            return
+        }
+
         setCargando(true)
         setError(null)
+        setExitoso(false)
 
         try {
-            if (!usuarioAutenticado?.id) {
-                throw new Error('No hay una sesión de entidad activa.')
-            }
+            console.log("📝 Registrando médico:", datos)
 
-            const entidad = await entidadSaludService.obtenerEntidadPorUsuarioId(usuarioAutenticado.id);
-            if (!entidad.id) {
-                throw new Error('No se pudo encontrar la entidad de salud para el usuario actual.');
-            }
-
-            const datosUsuario: Usuario = {
+            // 1. Crear usuario
+            const datosUsuario = {
                 tipoIdentificacion: datos.tipoIdentificacion,
                 identificacion: datos.identificacion,
                 nombres: datos.nombres,
@@ -83,27 +118,50 @@ export function RegistroMedicoForm() {
                 estaActivo: true,
                 rolId: ROLES.MEDICO,
             }
-            const nuevoUsuario = await registroUsuario(datosUsuario)
 
-            const datosMedico: CrearMedicoPayload = {
-                usuarioId: nuevoUsuario.id,
-                entidadId: entidad.id,
+            const respuestaUsuario = await usuariosService.crearUsuario(token, datosUsuario)
+            console.log("✅ Usuario médico creado:", respuestaUsuario)
+
+            // 2. Crear médico vinculado
+            const datosMedico = {
+                usuarioId: respuestaUsuario.id,
                 especialidad: datos.especialidad,
+                entidadId
             }
+
             await MedicoService.crearMedico(datosMedico)
+            console.log("✅ Médico registrado exitosamente")
 
             setExitoso(true)
-            setTimeout(() => router.push('/dashboard/entidad'), 2000)
+
+            // Enviar SMS de bienvenida de forma asíncrona
+            enviarSMSBienvenida(datos.celular, datos.nombres, datos.identificacion)
+
+            // Redirigir después de 2 segundos
+            setTimeout(() => {
+                router.push('/dashboard/entidad')
+            }, 2000)
 
         } catch (err: any) {
-            setError(err.response?.data?.mensaje ?? err.message ?? "Error desconocido al registrar el médico.")
+            console.error("❌ Error al registrar médico:", err)
+            let mensajeError = "Error al registrar el médico. Por favor, verifica los datos e intenta nuevamente."
+
+            if (err.response?.status === 403) {
+                mensajeError = "No tienes permisos para registrar médicos. Verifica tu sesión."
+            } else if (err.response?.status === 400) {
+                mensajeError = err.response?.data?.mensaje || "Datos inválidos. Verifica la información ingresada."
+            } else if (err.response?.status === 409) {
+                mensajeError = "Ya existe un médico con esa identificación."
+            }
+
+            setError(mensajeError)
         } finally {
             setCargando(false)
         }
     }
 
     return (
-        <div className="rounded-lg border bg-white p-6 shadow-md">
+        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-md dark:border-slate-700 dark:bg-slate-900">
             <FormHeader />
 
             {error && (
@@ -112,10 +170,12 @@ export function RegistroMedicoForm() {
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
+
             {exitoso && (
-                <Alert className="mb-6 bg-green-50 text-green-800">
+                <Alert className="mb-6">
                     <AlertDescription>
-                        ✅ Médico registrado exitosamente. Serás redirigido...
+                        Médico registrado exitosamente. Serás redirigido al dashboard...
+                        {enviandoSMS && " | Enviando SMS de bienvenida..."}
                     </AlertDescription>
                 </Alert>
             )}
@@ -127,7 +187,7 @@ export function RegistroMedicoForm() {
                     <EspecialidadFields control={form.control} />
                     <ContactoFields control={form.control} />
                     <SeguridadFields control={form.control} />
-                    <FormActions cargando={cargando} />
+                    <FormActions cargando={cargando} exitoso={exitoso} />
                 </form>
             </Form>
         </div>

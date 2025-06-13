@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AlertCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -14,9 +14,10 @@ import { Form } from "@/src/components/ui/form"
 import { SelectItem } from "@/src/components/ui/select"
 import { ROLES, TIPOS_IDENTIFICACION, TiposIdentificacionEnum } from "@/src/constants"
 import { useAuth } from "@/src/providers/auth-provider"
-// import EmbajadorEntidadService from "@/src/services/domain/embajador-entidad.service"
 import EmbajadorService from "@/src/services/domain/embajador.service"
-import { Embajador, Usuario, UsuarioAccedido } from "@/src/types"
+import { localizacionesService } from "@/src/services/domain/localizaciones.service"
+import { notificacionesService } from "@/src/services/notificaciones"
+import { Embajador, Localizacion, Usuario, UsuarioAccedido } from "@/src/types"
 
 // Esquema de validación
 const registroEmbajadorSchema = z.object({
@@ -59,6 +60,8 @@ export default function RegistroEmbajadorForm() {
     const [error, setError] = useState<string | null>(null)
     const [cargando, setCargando] = useState<boolean>(false)
     const [exitoso, setExitoso] = useState<boolean>(false)
+    const [enviandoSMS, setEnviandoSMS] = useState<boolean>(false)
+    const [localidades, setLocalidades] = useState<Localizacion[]>([])
 
     const form = useForm<RegistroEmbajadorFormValues>({
         resolver: zodResolver(registroEmbajadorSchema),
@@ -74,6 +77,34 @@ export default function RegistroEmbajadorForm() {
             localidad: "",
         },
     })
+
+    useEffect(() => {
+        const cargarLocalidades = async () => {
+            try {
+                const data = await localizacionesService.obtenerLocalizaciones()
+                setLocalidades(data)
+            } catch (err) {
+                console.error("Error al cargar localidades:", err)
+            }
+        }
+
+        cargarLocalidades()
+    }, [])
+
+    // Función para enviar SMS de bienvenida
+    const enviarSMSBienvenida = async (telefono: string, nombres: string, identificacion: string): Promise<void> => {
+        try {
+            setEnviandoSMS(true)
+            const mensaje = `¡Hola ${nombres}! 🏥 Bienvenido como embajador de HealInk. Tu cuenta ha sido creada. Usuario: ${identificacion} | Accede con tu contraseña en healink.com para empezar a ayudar a tu comunidad.`
+
+            await notificacionesService.enviarSMS(telefono, mensaje)
+            console.log("✅ SMS de bienvenida embajador enviado exitosamente")
+        } catch (err) {
+            console.error("⚠️ Error al enviar SMS de bienvenida embajador:", err)
+        } finally {
+            setEnviandoSMS(false)
+        }
+    }
 
     const onSubmit = async (datos: RegistroEmbajadorFormValues): Promise<void> => {
         setCargando(true)
@@ -96,7 +127,7 @@ export default function RegistroEmbajadorForm() {
                 correo: datos.correo,
                 clave: datos.clave,
                 celular: datos.telefono,
-                estaActivo: true,
+                estado: "ACTIVO",
                 rolId: ROLES.EMBAJADOR,
             }
 
@@ -121,6 +152,9 @@ export default function RegistroEmbajadorForm() {
             }
 
             setExitoso(true)
+
+            // Enviar SMS de bienvenida de forma asíncrona
+            enviarSMSBienvenida(datos.telefono, datos.nombres, datos.identificacion)
 
             // Redirigir después de 2 segundos
             setTimeout(() => {
@@ -158,6 +192,7 @@ export default function RegistroEmbajadorForm() {
                 <Alert className="mb-6 bg-green-50 text-green-800 dark:bg-green-900 dark:text-green-50">
                     <AlertDescription>
                         Embajador registrado exitosamente. Serás redirigido al listado...
+                        {enviandoSMS && " | Enviando SMS de bienvenida..."}
                     </AlertDescription>
                 </Alert>
             )}
@@ -198,9 +233,8 @@ export default function RegistroEmbajadorForm() {
                             control={form.control}
                             name="nombres"
                             label="Nombres"
-                            placeholder="Nombres del embajador"
+                            placeholder="Ej. Juan Carlos"
                             iconSrc="/assets/icons/user.svg"
-                            iconAlt="Nombres"
                         />
 
                         <CustomFormField
@@ -208,36 +242,48 @@ export default function RegistroEmbajadorForm() {
                             control={form.control}
                             name="apellidos"
                             label="Apellidos"
-                            placeholder="Apellidos del embajador"
+                            placeholder="Ej. Pérez González"
                             iconSrc="/assets/icons/user.svg"
-                            iconAlt="Apellidos"
                         />
                     </div>
 
-                    {/* Contacto */}
+                    {/* Información de contacto */}
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <CustomFormField
                             fieldType={FormFieldType.INPUT}
                             control={form.control}
                             name="telefono"
                             label="Teléfono"
-                            placeholder="Ej. 3101234567"
+                            placeholder="Ej. 3001234567"
                             iconSrc="/assets/icons/celu.svg"
-                            iconAlt="Teléfono"
                         />
 
                         <CustomFormField
                             fieldType={FormFieldType.INPUT}
                             control={form.control}
                             name="correo"
-                            label="Correo Electrónico"
-                            placeholder="correo@ejemplo.com"
+                            label="Correo Electrónico (Opcional)"
+                            placeholder="auxiliar@ejemplo.com"
                             iconSrc="/assets/icons/email.svg"
-                            iconAlt="Correo"
                         />
                     </div>
 
-                    {/* Contraseñas */}
+                    {/* Localidad */}
+                    <CustomFormField
+                        fieldType={FormFieldType.SELECT}
+                        control={form.control}
+                        name="localidad"
+                        label="Localidad Asignada"
+                        placeholder="Selecciona una localidad"
+                    >
+                        {localidades.map((localidad) => (
+                            <SelectItem key={localidad.id} value={localidad.departamento + ", " + localidad.municipio + ", " + localidad.localidad}>
+                                {localidad.departamento + ", " + localidad.municipio + ", " + localidad.localidad}
+                            </SelectItem>
+                        ))}
+                    </CustomFormField>
+
+                    {/* Seguridad */}
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <CustomFormField
                             fieldType={FormFieldType.INPUT}
@@ -247,7 +293,6 @@ export default function RegistroEmbajadorForm() {
                             placeholder="••••••••"
                             type="password"
                             iconSrc="/assets/icons/lock.svg"
-                            iconAlt="Contraseña"
                         />
 
                         <CustomFormField
@@ -258,35 +303,15 @@ export default function RegistroEmbajadorForm() {
                             placeholder="••••••••"
                             type="password"
                             iconSrc="/assets/icons/lock.svg"
-                            iconAlt="Confirmar Contraseña"
                         />
                     </div>
 
-                    {/* Localidad */}
-                    <CustomFormField
-                        fieldType={FormFieldType.INPUT}
-                        control={form.control}
-                        name="localidad"
-                        label="Localidad Asignada"
-                        placeholder="Ej. Vereda San Antonio, Municipio La Unión"
-                        iconSrc="/assets/icons/map-pin.svg"
-                        iconAlt="Localidad"
-                    />
-
                     <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:justify-end">
                         <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => router.push('/dashboard/entidad')}
-                        >
-                            Cancelar
-                        </Button>
-
-                        <Button
                             type="submit"
-                            disabled={cargando}
+                            disabled={cargando || exitoso}
                         >
-                            {cargando ? "Registrando..." : "Registrar Embajador"}
+                            {cargando ? "Registrando..." : exitoso ? "Embajador Registrado ✓" : "Registrar Embajador"}
                         </Button>
                     </div>
                 </form>

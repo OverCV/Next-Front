@@ -13,6 +13,7 @@ import { Button } from "@/src/components/ui/button"
 import { Form } from "@/src/components/ui/form"
 import { useAuth } from "@/src/providers/auth-provider"
 import { pacientesService } from "@/src/services/domain/pacientes.service"
+import { prediccionesService } from "@/src/services/domain/predicciones.service"
 
 // Esquema de validación para el triaje - ACTUALIZADO según backend
 const triajeSchema = z.object({
@@ -176,6 +177,23 @@ export default function TriajeInicialForm() {
             await pacientesService.crearTriaje(datosTriaje)
 
             console.log("✅ Triaje creado correctamente")
+
+            // **NUEVO: Actualizar priorización automáticamente después del triaje**
+            try {
+                console.log("🔄 Actualizando priorización después del triaje...")
+                const resultadoPriorizacion = await prediccionesService.actualizarPriorizacionPorTriaje(pacienteId)
+                
+                if (resultadoPriorizacion) {
+                    console.log("✅ Priorización actualizada exitosamente:", resultadoPriorizacion)
+                    if (resultadoPriorizacion.campanasActualizadas?.length > 0) {
+                        console.log(`📊 Se actualizó la priorización en ${resultadoPriorizacion.campanasActualizadas.length} campaña(s)`)
+                    }
+                }
+            } catch (errorPriorizacion) {
+                // No falla el flujo principal si hay error en la priorización
+                console.warn("⚠️ No se pudo actualizar la priorización automáticamente:", errorPriorizacion)
+            }
+
             setNecesitaTriajeInicial(false)
 
             // Redirigir al usuario después de un breve retraso

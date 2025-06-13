@@ -1,5 +1,6 @@
 "use client"
 
+import { Stethoscope } from "lucide-react"
 import React from 'react'
 
 import { StatCard } from '@/src/components/StatCard'
@@ -35,7 +36,7 @@ export function EstadisticasEntidad({ estadisticas }: EstadisticasEntidadProps) 
                 type="ejecucion"
                 count={estadisticas.medicosRegistrados}
                 label="Médicos Registrados"
-                icon="/assets/icons/doctor.svg"
+                icon={<Stethoscope size={24} />}
             />
 
             <StatCard

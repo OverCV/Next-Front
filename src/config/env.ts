@@ -4,16 +4,13 @@
  */
 
 // URLs base de API según entorno
-export const API_SPRINGBOOT_URL = process.env.NEXT_PUBLIC_API_URL ||
-    (process.env.NODE_ENV === 'production'
-        ? 'https://spring-logic.onrender.com/api'
-        : 'http://localhost:8090/api')
+export const API_SPRINGBOOT_URL = process.env.NEXT_PUBLIC_API_SPRINGBOOT_URL || 'http://localhost:8090/api'
 
 // URL para la API de predicciones de riesgo cardiovascular (FastAPI)
-export const API_FASTAPI_URL = process.env.NEXT_PUBLIC_FASTAPI_URL ||
-    (process.env.NODE_ENV === 'production'
-        ? 'https://fastapi-back-ps1z.onrender.com'
-        : 'http://127.0.0.1:8000')
+export const API_FASTAPI_URL = process.env.NEXT_PUBLIC_API_FASTAPI_URL || 'http://localhost:8000'
+
+// URL para la API de n8n
+export const API_N8N_URL = process.env.NEXT_PUBLIC_API_N8N_URL || 'http://localhost:5678'
 
 // Determine si estamos en producción
 export const IS_PRODUCTION = process.env.NODE_ENV === 'production'
