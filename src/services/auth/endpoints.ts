@@ -84,6 +84,7 @@ export const ENDPOINTS = {
 	PERSONAL_MEDICO: {
 		BASE: `${API_SPRINGBOOT_URL}/personal-medico`,
 		POR_ID: (medicoId: number) => `${API_SPRINGBOOT_URL}/personal-medico/${medicoId}`,
+		POR_ID_CON_DETALLES: (medicoId: number) => `${API_SPRINGBOOT_URL}/personal-medico/${medicoId}/details`,
 		POR_USUARIO: (usuarioId: number) => `${API_SPRINGBOOT_URL}/personal-medico/usuario/${usuarioId}`,
 		PAGINADO: `${API_SPRINGBOOT_URL}/personal-medico/paged`,
 		POR_ESPECIALIDAD: (especialidad: string) => `${API_SPRINGBOOT_URL}/personal-medico/especialidad/${especialidad}`,
@@ -111,7 +112,8 @@ export const ENDPOINTS = {
 		POR_MEDICO: (medicoId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/medico/${medicoId}`,
 		POR_CAMPANA: (campanaId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/campana/${campanaId}`,
 		ACTUALIZAR_ESTADO: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}/estado`,
-		ACTUALIZAR: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}`
+		ACTUALIZAR: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}`,
+		ELIMINAR: (citacionId: number) => `${API_SPRINGBOOT_URL}/citaciones-medicas/${citacionId}`
 	},
 
 	// Diagnósticos

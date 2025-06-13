@@ -162,7 +162,7 @@ export interface DatoClinicoMedico {
 // Interfaz para inscripciones a campañas
 export interface InscripcionCampana {
   id: number
-  pacienteId: number
+  usuarioId: number
   campanaId: number
   fechaInscripcion: string
   estado: "INSCRITO" | "RETIRADO" | "COMPLETADO"
@@ -379,7 +379,7 @@ export interface CampanaConLocalizacion {
   minParticipantes: number
   maxParticipantes: number
   entidadId: number
-  estado: 'POSTULADA' | 'EJECUCION' | 'FINALIZADA' | 'CANCELADA'
+  estado: EstadoCampana
   localizacion?: {
     id: number
     departamento: string
